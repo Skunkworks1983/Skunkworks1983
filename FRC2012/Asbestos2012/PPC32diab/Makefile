@@ -31,8 +31,8 @@ else
 MODE_DIR := NonDebug
 endif
 OBJ_DIR := .
-PRJ_ROOT_DIR := C:/WindRiver/FRC2012/Asbestos2012
-WS_ROOT_DIR := C:/WindRiver/FRC2012
+PRJ_ROOT_DIR := C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012
+WS_ROOT_DIR := C:/WindRiver/Skunkworks1983/FRC2012
 
 
 
@@ -52,9 +52,9 @@ CC_ARCH_SPEC = -tPPCFH:vxworks63 -Xstmw-slow -DPPC32_fp60x
 LIBPATH = 
 LIBS = 
 
-IDE_INCLUDES = -I$(WIND_BASE)/target/h -IC:/WindRiver/vxworks-6.3/target/h/WPILib -I$(WIND_BASE)/target/h/wrn/coreip 
+IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/wrn/coreip -IC:/WindRiver/vxworks-6.3/target/h/WPILib 
 
-IDE_LIBRARIES = 
+IDE_LIBRARIES = C:/WindRiver/vxworks-6.3/target/lib/WPILib.a 
 
 
 
@@ -99,8 +99,8 @@ Asbestos2012/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker =
 Asbestos2012/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
 Asbestos2012/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -XO -Xsize-opt
 endif
-Asbestos2012/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -IC:/WindRiver/vxworks-6.3/target/h/WPILib -I$(WIND_BASE)/target/h/wrn/coreip 
-Asbestos2012/$(MODE_DIR)/% : IDE_LIBRARIES = 
+Asbestos2012/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/wrn/coreip -IC:/WindRiver/vxworks-6.3/target/h/WPILib 
+Asbestos2012/$(MODE_DIR)/% : IDE_LIBRARIES = C:/WindRiver/vxworks-6.3/target/lib/WPILib.a 
 Asbestos2012/$(MODE_DIR)/% : PROJECT_TYPE = DKM
 Asbestos2012/$(MODE_DIR)/% : DEFINES = 
 Asbestos2012/$(MODE_DIR)/% : EXPAND_DBG = 0
@@ -143,8 +143,8 @@ Asbestos2012_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker =
 Asbestos2012_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
 Asbestos2012_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -XO -Xsize-opt
 endif
-Asbestos2012_partialImage/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -IC:/WindRiver/vxworks-6.3/target/h/WPILib -I$(WIND_BASE)/target/h/wrn/coreip 
-Asbestos2012_partialImage/$(MODE_DIR)/% : IDE_LIBRARIES = 
+Asbestos2012_partialImage/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/wrn/coreip -IC:/WindRiver/vxworks-6.3/target/h/WPILib 
+Asbestos2012_partialImage/$(MODE_DIR)/% : IDE_LIBRARIES = C:/WindRiver/vxworks-6.3/target/lib/WPILib.a 
 Asbestos2012_partialImage/$(MODE_DIR)/% : PROJECT_TYPE = DKM
 Asbestos2012_partialImage/$(MODE_DIR)/% : DEFINES = 
 Asbestos2012_partialImage/$(MODE_DIR)/% : EXPAND_DBG = 0
@@ -158,15 +158,35 @@ Asbestos2012_partialImage/$(MODE_DIR)/% : LIBPATH =
 Asbestos2012_partialImage/$(MODE_DIR)/% : LIBS = 
 Asbestos2012_partialImage/$(MODE_DIR)/% : OBJ_DIR := Asbestos2012_partialImage/$(MODE_DIR)
 
-Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.o : C:/WindRiver/FRC2012/Asbestos2012/C1983Drive.cpp
+Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Collector.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Collector.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xforce-declarations  -Xmake-dependency=0xd $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/PewPewBot.o : C:/WindRiver/FRC2012/Asbestos2012/PewPewBot.cpp
+Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Drive.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xforce-declarations  -Xmake-dependency=0xd $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-OBJECTS_Asbestos2012_partialImage = Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.o \
+Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983PIDOutput.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983PIDOutput.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xforce-declarations  -Xmake-dependency=0xd $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
+Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Shooter.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Shooter.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xforce-declarations  -Xmake-dependency=0xd $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
+Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Tipper.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Tipper.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xforce-declarations  -Xmake-dependency=0xd $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
+Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/PewPewBot.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/PewPewBot.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)dcc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -W:c:,-Xclib-optim-off -Xansi -Xlocal-data-area-static-only -Xforce-declarations  -Xmake-dependency=0xd $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
+OBJECTS_Asbestos2012_partialImage = Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Collector.o \
+	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.o \
+	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983PIDOutput.o \
+	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Shooter.o \
+	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Tipper.o \
 	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/PewPewBot.o
 
 Asbestos2012_partialImage/$(MODE_DIR)/Asbestos2012_partialImage.o : $(OBJECTS_Asbestos2012_partialImage)
@@ -179,7 +199,8 @@ _clean :: Asbestos2012_partialImage/$(MODE_DIR)/Asbestos2012_partialImage_clean
 Asbestos2012_partialImage/$(MODE_DIR)/Asbestos2012_partialImage_clean : 
 	$(TRACE_FLAG)if [ -d "Asbestos2012_partialImage" ]; then cd "Asbestos2012_partialImage"; rm -rf $(MODE_DIR); fi
 
-DEP_FILES := Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.d Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/PewPewBot.d
+DEP_FILES := Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Collector.d Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.d Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983PIDOutput.d \
+	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Shooter.d Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Tipper.d Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/PewPewBot.d
 -include $(DEP_FILES)
 
 

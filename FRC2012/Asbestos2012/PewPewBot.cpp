@@ -8,7 +8,8 @@ PewPewBot::PewPewBot()
 	rStick = new Joystick(2);
 }
 
-PewPewBot::~PewPewBot() {
+PewPewBot::~PewPewBot() 
+{
 }
 
 void PewPewBot::Autonomous() 

@@ -2,6 +2,7 @@
 #define __C1983DRIVE_H
 #include "1983Defines2012.h"
 #include "WPILib.h"
+#include "C1983PIDOutput.h"
 
 
 class C1983Drive
