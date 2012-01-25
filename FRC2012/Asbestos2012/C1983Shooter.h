@@ -38,8 +38,11 @@ public:
 	//Get the current wheel speed
 	float getVelocity();
 
-	//Set the amount of the hood that covers the shooter and allows the angle to be changed
+	//Get the angle needed to shoot at the hoop.
 	float getAngle();
+	
+	//Set the angle that is needed to shoot.
+	float angle( float angle );
 	
 	//Does the wheel try to get up to speed
 	void setIsRunning(bool state);
