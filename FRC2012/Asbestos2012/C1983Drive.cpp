@@ -1,10 +1,16 @@
 #include "C1983Drive.h"
 C1983Drive::C1983Drive()
 {
-	leftJag1 = new Jaguar(JAGPORTLEFT1);
-	leftJag2 = new Jaguar(JAGPORTLEFT2);
-	rightJag1 = new Jaguar(JAGPORTRIGHT1);
-	rightJag2 = new Jaguar(JAGPORTRIGHT2);
+	leftJag1 = new Jaguar(JAG_PORT_LEFT_1);
+	leftJag2 = new Jaguar(JAG_PORT_LEFT_2);
+	rightJag1 = new Jaguar(JAG_PORT_RIGHT_1);
+	rightJag2 = new Jaguar(JAG_PORT_RIGHT_2);
+	
+	leftEncoder = new Encoder(LEFT_ENCODER_PORT_A,LEFT_ENCODER_PORT_B);
+	rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A,RIGHT_ENCODER_PORT_B);
+	
+	leftPID = new PIDController(DRIVE_P,DRIVE_I,DRIVE_D,leftEncoder,)
+	rightPID = new PIDController(DRIVE_P,DRIVE_I,DRIVE_D,rightEncoder,);
 }
 
 //Set both jags left side to the given speed -1.0 to 1.0

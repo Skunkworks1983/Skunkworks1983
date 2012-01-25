@@ -12,12 +12,19 @@ private:
 	Jaguar *rightJag1;
 	Jaguar *rightJag2;
 	
-	/*
-	Encoder *FakeEncoder1;
-	Encoder *encoderLeft;
-	Encoder *FakeEncoder2;
-	Encoder *encoderRight;
-	*/
+	PIDController *leftPID;
+	PIDController *rightPID;
+	
+	PIDSource *leftPIDSource;
+	PIDSource *rightPIDSource;
+	
+	PIDOutput *leftPIDOutput;
+	PIDOutput *rightPIDOutput;
+	
+	Encoder *fakeEncoder1;
+	Encoder *leftEncoder;
+	Encoder *fakeEncoder2;
+	Encoder *rightEncoder;
 	
 public:
 	C1983Drive();
