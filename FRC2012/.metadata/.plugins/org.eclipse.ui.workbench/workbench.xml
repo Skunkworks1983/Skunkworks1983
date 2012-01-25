@@ -8,7 +8,7 @@
 </perspectiveBar>
 <coolbarLayout locked="0">
 <coolItem id="group.file" itemType="typeGroupMarker"/>
-<coolItem id="org.eclipse.ui.workbench.file" itemType="typeToolBarContribution" x="153" y="22"/>
+<coolItem id="org.eclipse.ui.workbench.file" itemType="typeToolBarContribution" x="130" y="22"/>
 <coolItem id="additions" itemType="typeGroupMarker"/>
 <coolItem id="com.windriver.analysis.windview.actionSet" itemType="typeToolBarContribution" x="61" y="22"/>
 <coolItem id="com.windriver.ide.target.ui.actionset.global" itemType="typeToolBarContribution" x="38" y="22"/>
@@ -37,11 +37,11 @@
 </editorArea>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="C1983Tipper.h" partName="C1983Tipper.h" path="C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Tipper.h" title="C1983Tipper.h" tooltip="Asbestos2012/C1983Tipper.h" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Asbestos2012/C1983Tipper.h"/>
-<editorState selectionHPixel="0" selectionLength="11" selectionOffset="297"/>
+<editorState selectionHPixel="0" selectionLength="0" selectionOffset="130"/>
 </editor>
 <editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="C1983Tipper.cpp" partName="C1983Tipper.cpp" path="C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Tipper.cpp" title="C1983Tipper.cpp" tooltip="Asbestos2012/C1983Tipper.cpp" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Asbestos2012/C1983Tipper.cpp"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="408"/>
+<editorState selectionHPixel="0" selectionLength="0" selectionOffset="309"/>
 </editor>
 </editors>
 <views>
@@ -280,12 +280,19 @@
 <editors>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Asbestos2012/C1983Tipper.h"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Asbestos2012/C1983Tipper.cpp"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Asbestos2012/C1983Tipper.h"/>
 </editors>
 <item historyLabel="C1983Tipper.h" index="0">
 <position/>
 </item>
-<item active="true" historyLabel="C1983Tipper.cpp" index="1">
+<item historyLabel="C1983Tipper.cpp" index="1">
 <position/>
+</item>
+<item historyLabel="C1983Tipper.h" index="2">
+<position info="not_deleted" x="130" y="0"/>
+</item>
+<item active="true" historyLabel="C1983Tipper.cpp" index="1">
+<position info="not_deleted" x="408" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>

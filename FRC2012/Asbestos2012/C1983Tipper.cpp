@@ -1,7 +1,7 @@
 #include "C1983Tipper.h"
 C1983Tipper::C1983Tipper()
 {
-	tipper = new Solenoid(TIPPERPORT);
+	tipper = new Solenoid(TIPPER_PORT);
 }
 
 /*
