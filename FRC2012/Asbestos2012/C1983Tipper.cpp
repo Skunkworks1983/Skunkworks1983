@@ -19,12 +19,12 @@ void C1983Tipper::tip(bool open)
 	if(open==true)
 	{
 		tipper->Set(false);
-		open = false;
+		tipperState = false;
 	}
 	else
 	{
 		tipper->Set(true);
-		open = true;
+		tipperState = true;
 	}
 };
 
