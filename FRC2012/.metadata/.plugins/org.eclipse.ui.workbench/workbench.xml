@@ -8,7 +8,7 @@
 </perspectiveBar>
 <coolbarLayout locked="0">
 <coolItem id="group.file" itemType="typeGroupMarker"/>
-<coolItem id="org.eclipse.ui.workbench.file" itemType="typeToolBarContribution" x="153" y="22"/>
+<coolItem id="org.eclipse.ui.workbench.file" itemType="typeToolBarContribution" x="130" y="22"/>
 <coolItem id="additions" itemType="typeGroupMarker"/>
 <coolItem id="com.windriver.analysis.windview.actionSet" itemType="typeToolBarContribution" x="61" y="22"/>
 <coolItem id="com.windriver.ide.target.ui.actionset.global" itemType="typeToolBarContribution" x="38" y="22"/>
@@ -19,7 +19,7 @@
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="190" y="22"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
-<coolItem id="org.eclipse.cdt.ui.editor.CEditor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="org.eclipse.cdt.ui.editor.CEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
 </coolbarLayout>
@@ -28,10 +28,21 @@
 <editorArea activeWorkbook="DefaultEditorWorkbook">
 <info part="DefaultEditorWorkbook">
 <folder appearance="1" expanded="2">
-<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33"/>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">
+<part id="0"/>
+<part id="1"/>
+</presentation>
 </folder>
 </info>
 </editorArea>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="C1983Tipper.h" partName="C1983Tipper.h" path="C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Tipper.h" title="C1983Tipper.h" tooltip="Asbestos2012/C1983Tipper.h" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Asbestos2012/C1983Tipper.h"/>
+<editorState selectionHPixel="0" selectionLength="0" selectionOffset="130"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="C1983Tipper.cpp" partName="C1983Tipper.cpp" path="C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Tipper.cpp" title="C1983Tipper.cpp" tooltip="Asbestos2012/C1983Tipper.cpp" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Asbestos2012/C1983Tipper.cpp"/>
+<editorState selectionHPixel="0" selectionLength="0" selectionOffset="309"/>
+</editor>
 </editors>
 <views>
 <view id="biz.junginger.newsfeed.eclipse.FeedView" partName="Feeds">
@@ -92,7 +103,7 @@
 </viewState>
 </view>
 </views>
-<perspectives activePart="org.eclipse.ui.navigator.ProjectExplorer" activePerspective="com.windriver.ide.perspective.ADE">
+<perspectives activePart="org.eclipse.cdt.ui.editor.CEditor" activePerspective="com.windriver.ide.perspective.ADE">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="com.windriver.ide.ui.ADEPerspectiveFactory" id="com.windriver.ide.perspective.ADE" label="Application Development"/>
 <alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
@@ -265,7 +276,25 @@
 </perspective>
 </perspectives>
 <workingSets/>
-<navigationHistory/>
+<navigationHistory>
+<editors>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Asbestos2012/C1983Tipper.h"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Asbestos2012/C1983Tipper.cpp"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/Asbestos2012/C1983Tipper.h"/>
+</editors>
+<item historyLabel="C1983Tipper.h" index="0">
+<position/>
+</item>
+<item historyLabel="C1983Tipper.cpp" index="1">
+<position/>
+</item>
+<item historyLabel="C1983Tipper.h" index="2">
+<position info="not_deleted" x="130" y="0"/>
+</item>
+<item active="true" historyLabel="C1983Tipper.cpp" index="1">
+<position info="not_deleted" x="408" y="0"/>
+</item>
+</navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
 </page>
 <workbenchWindowAdvisor/>
@@ -283,6 +312,12 @@
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="C1983Tipper.cpp" tooltip="Asbestos2012/C1983Tipper.cpp">
+<persistable path="/Asbestos2012/C1983Tipper.cpp"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="C1983Tipper.h" tooltip="Asbestos2012/C1983Tipper.h">
+<persistable path="/Asbestos2012/C1983Tipper.h"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="C1983Shooter.h" tooltip="Asbestos2012/C1983Shooter.h">
 <persistable path="/Asbestos2012/C1983Shooter.h"/>
 </file>
@@ -316,17 +351,11 @@
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="MyRobot.cpp" tooltip="SimpleTemplate/MyRobot.cpp">
 <persistable path="/SimpleTemplate/MyRobot.cpp"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="C1983Tipper.h" tooltip="Asbestos2012/C1983Tipper.h">
-<persistable path="/Asbestos2012/C1983Tipper.h"/>
-</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="AsbestosMain.cpp" tooltip="Asbestos2012/AsbestosMain.cpp">
 <persistable path="/Asbestos2012/AsbestosMain.cpp"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="MyRobot.cpp" tooltip="KinectStickExample/MyRobot.cpp">
 <persistable path="/KinectStickExample/MyRobot.cpp"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="SimpleRobot.cpp" tooltip="WPILib/SimpleRobot.cpp">
-<persistable path="/WPILib/SimpleRobot.cpp"/>
 </file>
 </mruList>
 </workbench>
