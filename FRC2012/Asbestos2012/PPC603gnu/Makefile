@@ -158,7 +158,19 @@ Asbestos2012_partialImage/$(MODE_DIR)/% : LIBPATH =
 Asbestos2012_partialImage/$(MODE_DIR)/% : LIBS = 
 Asbestos2012_partialImage/$(MODE_DIR)/% : OBJ_DIR := Asbestos2012_partialImage/$(MODE_DIR)
 
+Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Collector.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Collector.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Drive.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
+Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Shooter.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Shooter.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
+Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Tipper.o : C:/WindRiver/Skunkworks1983/FRC2012/Asbestos2012/C1983Tipper.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
@@ -166,7 +178,10 @@ Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/PewPewBot.o : C:/Wind
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-OBJECTS_Asbestos2012_partialImage = Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.o \
+OBJECTS_Asbestos2012_partialImage = Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Collector.o \
+	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.o \
+	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Shooter.o \
+	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Tipper.o \
 	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/PewPewBot.o
 
 Asbestos2012_partialImage/$(MODE_DIR)/Asbestos2012_partialImage.o : $(OBJECTS_Asbestos2012_partialImage)
@@ -179,7 +194,8 @@ _clean :: Asbestos2012_partialImage/$(MODE_DIR)/Asbestos2012_partialImage_clean
 Asbestos2012_partialImage/$(MODE_DIR)/Asbestos2012_partialImage_clean : 
 	$(TRACE_FLAG)if [ -d "Asbestos2012_partialImage" ]; then cd "Asbestos2012_partialImage"; rm -rf $(MODE_DIR); fi
 
-DEP_FILES := Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.d Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/PewPewBot.d
+DEP_FILES := Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Collector.d Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Drive.d Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Shooter.d \
+	 Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/C1983Tipper.d Asbestos2012_partialImage/$(MODE_DIR)/Objects/Asbestos2012/PewPewBot.d
 -include $(DEP_FILES)
 
 

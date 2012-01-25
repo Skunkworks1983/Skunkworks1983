@@ -1,39 +1,42 @@
+/*
+ * C1983Collector.cpp
+ *
+ *  Created on: Jan 14, 2012
+ *      Author: Austin
+ */
+
 #include "C1983Collector.h"
 
-/*bool sensor_1, sensor_2, sensor_3, sensor_4;
-bool ballRead;
+collectorJag1 = new Jaguar (COLLECTORJAG1PORT);
+collectorJag2 = new Jaguar (COLLECTORJAG2PORT);
+collectorJag3 = new Jaguar (COLLECTORJAG3PORT);
+collectorJag4 = new Jaguar (COLLECTORJAG4PORT);
 
-bool C1983Collector::BallEnter()
+Jag1encoder = new Encoder (JAG1COLLECTORENCODER);
+fakeEncoder1 = new Encoder (22);
+Jag2encoder = new Encoder (JAG2COLLECTORENCODER);
+fakeEncoder2 = new Encoder (29);
+Jag3encoder = new Encoder (JAG3COLLECTORENCODER);
+fakeEncoder3 = new Encoder (34);
+Jag4encoder = new Encoder (JAG4COLLECTORENCODER);
+fakeEncoder4 = new Encoder (19);
+
+C1983Collector::C1983Collector() 
 {
-	if (sensor_1 == true)
-		{
-			ballRead == 1;
-		}
-	else ()
-		{
-			ballRead == 2;
-		}
-
+	//Constructor
 }
 
 void C1983Collector::Feed()
 {
-	// Turn on first level and entrance of conveyor belt.
-
-	if (ballRead == 1)
-	{
-		// Turn on first level conveyor.
-	}
-	else ()
-		{
-			// Keep first level conveyor off.
-		}
-}*/
+	//Runs the ball through the collector.
+}
 
 void C1983Collector::isBallReadyShoot()
 {
-
-	//Using the infrared sensor, check if a ball is in place to shoot.
+	if (sensor <= specified amount)
+	{
+		
+	}	
 }
 
 void C1983Collector::isBallReadyStage()
@@ -56,12 +59,6 @@ void C1983Collector::setTop()
 {
 	//Not sure what set top means.
 }
-/*
- * C1983Collector.cpp
- *
- *  Created on: Jan 14, 2012
- *      Author: Austin
- */
 
 
 
