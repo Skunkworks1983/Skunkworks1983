@@ -12,10 +12,15 @@ private:
 		Jaguar *collectorJag3;
 		Jaguar *collectorJag4;
 
-		//Encoder *encoder1;
-		//Encoder *encoder2;
-		//Encoder *encoder3;
-		//Encoder *encoder4;
+		Encoder *Jag1encoder;
+		Encoder *fakeEncoder1;
+		Encoder *Jag2encoder;
+		Encoder *fakeEncoder2;
+		Encoder *Jag3encoder;
+		Encoder *fakeEncoder3;
+		Encoder *Jag4encoder;
+		Encoder *fakeEncoder4;
+
 
 public:
 
