@@ -13,7 +13,10 @@ C1983Tipper::C1983Tipper()
  * 
  */
 
-//Raises and lowers 
+/* Raises and lowers 
+ * allows crossing of the bridge
+ * grow as a person
+ */
 void C1983Tipper::tip(bool open)
 {
 	if(open==true)
