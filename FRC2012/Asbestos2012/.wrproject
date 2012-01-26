@@ -13,12 +13,11 @@
             <stringAttribute key="BLD::Info|GlobalMacro|PROJECT_TYPE" value="DKM"/>
             <listAttribute key="BLD::Info|Incl|PPC32diab">
                 <stringAttribute value="-I$(WIND_BASE)/target/h"/>
-                <stringAttribute value="-IC:/WindRiver/vxworks-6.3/target/h/WPILib"/>
                 <stringAttribute value="-I$(WIND_BASE)/target/h/wrn/coreip"/>
+                <stringAttribute value="-IC:/WindRiver/vxworks-6.3/target/h/WPILib"/>
             </listAttribute>
             <listAttribute key="BLD::Info|Incl|PPC32gnu">
                 <stringAttribute value="-I$(WIND_BASE)/target/h"/>
-                <stringAttribute value="-I$(WIND_BASE)/target/h/WPILib"/>
                 <stringAttribute value="-I$(WIND_BASE)/target/h/wrn/coreip"/>
             </listAttribute>
             <listAttribute key="BLD::Info|Incl|PPC603diab">
@@ -27,10 +26,9 @@
             </listAttribute>
             <listAttribute key="BLD::Info|Incl|PPC603gnu">
                 <stringAttribute value="-I$(WIND_BASE)/target/h"/>
-                <stringAttribute value="-IC:/WindRiver/vxworks-6.3/target/h/WPILib"/>
                 <stringAttribute value="-I$(WIND_BASE)/target/h/wrn/coreip"/>
             </listAttribute>
-            <listAttribute key="BLD::Info|Libs|PPC603gnu">
+            <listAttribute key="BLD::Info|Libs|PPC32diab">
                 <stringAttribute value="C:/WindRiver/vxworks-6.3/target/lib/WPILib.a"/>
             </listAttribute>
             <listAttribute key="BLD::Info|Macros">
@@ -46,7 +44,7 @@
             <stringAttribute key="BLD::Info|Macro|CC_ARCH_SPEC|value|PPC32diab" value="-tPPCFH:vxworks63 -Xstmw-slow -DPPC32_fp60x"/>
             <stringAttribute key="BLD::Info|Macro|CC_ARCH_SPEC|value|PPC32gnu" value="-mhard-float -mstrict-align -mno-implicit-fp -DPPC32_fp60x"/>
             <stringAttribute key="BLD::Info|Macro|CC_ARCH_SPEC|value|PPC603diab" value="-tPPC603FH:vxworks63"/>
-            <stringAttribute key="BLD::Info|Macro|CC_ARCH_SPEC|value|PPC603gnu" value="-mcpu=603 -mstrict-align -mno-implicit-fp -mlongcall"/>
+            <stringAttribute key="BLD::Info|Macro|CC_ARCH_SPEC|value|PPC603gnu" value="-mcpu=603 -mstrict-align -mno-implicit-fp"/>
             <stringAttribute key="BLD::Info|Macro|CPU|value|PPC32diab" value="PPC32"/>
             <stringAttribute key="BLD::Info|Macro|CPU|value|PPC32gnu" value="PPC32"/>
             <stringAttribute key="BLD::Info|Macro|CPU|value|PPC603diab" value="PPC603"/>
@@ -222,7 +220,7 @@
             <booleanAttribute key="BLD::Info|Tool|Partial Image Linker|passAble" value="true"/>
             <stringAttribute key="BLD::Info|Tool|Partial Image Linker|sigs" value=""/>
             <stringAttribute key="BLD::Info|cmd" value="%makeprefix% make --no-print-directory"/>
-            <stringAttribute key="BLD::Info|defaultSpec" value="PPC603gnu"/>
+            <stringAttribute key="BLD::Info|defaultSpec" value="PPC32diab"/>
             <stringAttribute key="BLD::Info|redirDir|PPC32diab" value="PPC32diab"/>
             <stringAttribute key="BLD::Info|redirDir|PPC32gnu" value="PPC32gnu"/>
             <stringAttribute key="BLD::Info|redirDir|PPC603diab" value="PPC603diab"/>
