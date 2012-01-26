@@ -4,7 +4,6 @@
  *  Created on: Jan 14, 2012
  *      Author: Austin
  */
-
 #include "C1983Collector.h"
 
 C1983Collector::C1983Collector()
@@ -48,4 +47,3 @@ bool C1983Collector::ballInSlot(int slot)
 {
 	return false;
 }
-
