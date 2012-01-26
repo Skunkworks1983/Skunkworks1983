@@ -39,3 +39,4 @@ public:
 	//Gets the left 'joystick' position
 	float getLeftSpeed();
 };
+#endif

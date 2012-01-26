@@ -39,4 +39,19 @@
 #define COLLECTOR_SLOT_COUNT 3
 //Collector End
 
+//GlyphCamera Start
+#define GLYPH_CAMERA_IP "10.19.83.4"
+
+//Low bound of threshold
+#define GLYPH_THRESH_R_L 200
+#define GLYPH_THRESH_G_L 200
+#define GLYPH_THRESH_B_L 200
+
+//High bound of threshold
+#define GLYPH_THRESH_R_H 255
+#define GLYPH_THRESH_G_H 255
+#define GLYPH_THRESH_B_H 255
+
+//GlyphCamera End
+
 #endif
