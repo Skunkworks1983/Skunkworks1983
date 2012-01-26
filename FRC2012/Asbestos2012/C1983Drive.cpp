@@ -19,13 +19,13 @@ C1983Drive::C1983Drive()
 //Set both jags left side to the given speed -1.0 to 1.0
 void C1983Drive::setSpeedL(float speed)
 {
-	leftPID->SetSetpoitn(speed);
+	leftPID->SetSetpoint(speed);
 }
 
 //Set both jags right side to the negative of a given speed -1.0 to 1.0
 void C1983Drive::setSpeedR(float speed)
 {
-	leftPID->SetSetpoint(-speed);
+	rightPID->SetSetpoint(-speed);
 }
 /*
 //TODO: Replace get function with something that actually gets speed
