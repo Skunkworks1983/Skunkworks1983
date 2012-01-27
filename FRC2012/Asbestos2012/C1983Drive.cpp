@@ -1,4 +1,6 @@
 #include "C1983Drive.h"
+#include <iostream>
+
 C1983Drive::C1983Drive()
 {
 	leftJag1 = new Jaguar(JAG_PORT_LEFT_1);
@@ -15,6 +17,17 @@ C1983Drive::C1983Drive()
 	leftPID = new PIDController(DRIVE_P,DRIVE_I,DRIVE_D,leftEncoder,leftPIDOutput);
 	rightPID = new PIDController(DRIVE_P,DRIVE_I,DRIVE_D,rightEncoder,rightPIDOutput);
 #endif
+
+	//Compressor and compressor switch. compressorSwitch reads 0 when the compressor needs to be running
+	compressor = new Relay(DIGITAL_MODULE,COMPRESSOR_PORT,Relay::kBothDirections);
+	compressorSwitch = new DigitalInput(DIGITAL_MODULE,COMPRESSOR_SWITCH_PORT);
+	
+	//Shifter
+	shifter = new Relay(DIGITAL_MODULE,2);
+	
+	//We start shifted high
+	shifter->Set(Relay::kReverse);
+	shiftedHigh = true;
 }
 
 //Set both jags left side to the given speed -1.0 to 1.0
@@ -37,6 +50,37 @@ void C1983Drive::setSpeedR(float speed)
 	rightJag1->Set(-speed);
 	rightJag2->Set(-speed);
 #endif	
+}
+
+void C1983Drive::updateCompressor()
+{
+	if(!compressorSwitch->Get()){
+		compressor->Set(Relay::kReverse);
+	}else{
+		compressor->Set(Relay::kOff);
+	}
+}
+
+
+/**If high is true, will shift high (if not already shifted high) and vice versa.
+ * kForward shifts low
+ **/
+
+void C1983Drive::shift(bool high)
+{
+	//Shift high
+	if(high && !shiftedHigh)
+	{
+		shifter->Set(Relay::kReverse);
+		shiftedHigh = true;
+	//Shift Low
+	}else if(!high && shiftedHigh){
+		shifter->Set(Relay::kForward);
+		shiftedHigh = false;
+		cout<<"Attempting to shift down"<<endl;
+	}else{
+		return;
+	}
 }
 /*
 //TODO: Replace get function with something that actually gets speed

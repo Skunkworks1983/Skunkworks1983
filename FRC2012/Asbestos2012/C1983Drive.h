@@ -25,6 +25,15 @@ private:
 	Encoder *leftEncoder;
 	Encoder *fakeEncoder2;
 	Encoder *rightEncoder;
+
+	//Compressor Relay
+	Relay *compressor;
+	DigitalInput *compressorSwitch;
+	
+	//Shifter Relay
+	Relay *shifter;
+	
+	bool shiftedHigh;
 	
 public:
 	C1983Drive();
@@ -34,6 +43,11 @@ public:
 	//Set the speed of the right side
 	void setSpeedR(float speed);
 	
+	//Set the compressor to the proper state
+	void updateCompressor();
+	
+	void shift(bool high);
+	
 	/*
 	//Get the speed of the left side
 	float getSpeedL();
@@ -41,11 +55,6 @@ public:
 	//Get the speed of the right side
 	float getSpeedR();
 	
-	//Get the current angle of the robot
-	float getAngle();
-	
-	//Reset the Gyro
-	float resetGyro();
 	
 	//Reset the PID's I term
 	float resetI();
