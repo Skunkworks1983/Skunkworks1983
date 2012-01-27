@@ -12,34 +12,20 @@ private:
 		Jaguar *collectorJag3;
 		Jaguar *collectorJag4;
 
-		Encoder *Jag1encoder;
-		Encoder *fakeEncoder1;
-		Encoder *Jag2encoder;
-		Encoder *fakeEncoder2;
-		Encoder *Jag3encoder;
-		Encoder *fakeEncoder3;
-		Encoder *Jag4encoder;
-		Encoder *fakeEncoder4;
-
 
 public:
-
+		C1983Collector();
+		
 		// Reads if a ball has entered the conveyor.
-		bool BallEnter();
+		//bool ballEnter();
 
-		//Feeds the nall through the collector.
-		void feed();
-
-		// Check if ball is in shooting position.
-		void isBallReadyShoot();
-
-		//Check if there is a ball ready to enter the shooting chamber of the collector.
-		void isBallReadyStage();
+		//Feeds the ball through the collector.
+		void doFeed();
 
 		// Checks the amount of balls that has entered the collector.
 		int getBallCount();
-
-		void setBottom();
-		void setTop();
+		
+		//Checks if a bell is in a slot.  Top-Bottom, starting at 0
+		bool ballInSlot(int slot);
 };
 #endif

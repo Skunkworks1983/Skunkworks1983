@@ -4,62 +4,46 @@
  *  Created on: Jan 14, 2012
  *      Author: Austin
  */
-
 #include "C1983Collector.h"
 
-collectorJag1 = new Jaguar (COLLECTORJAG1PORT);
-collectorJag2 = new Jaguar (COLLECTORJAG2PORT);
-collectorJag3 = new Jaguar (COLLECTORJAG3PORT);
-collectorJag4 = new Jaguar (COLLECTORJAG4PORT);
-
-Jag1encoder = new Encoder (JAG1COLLECTORENCODER);
-fakeEncoder1 = new Encoder (22);
-Jag2encoder = new Encoder (JAG2COLLECTORENCODER);
-fakeEncoder2 = new Encoder (29);
-Jag3encoder = new Encoder (JAG3COLLECTORENCODER);
-fakeEncoder3 = new Encoder (34);
-Jag4encoder = new Encoder (JAG4COLLECTORENCODER);
-fakeEncoder4 = new Encoder (19);
-
-C1983Collector::C1983Collector() 
+C1983Collector::C1983Collector()
 {
-	//Constructor
+	collectorJag1 = new Jaguar (COLLECTORJAG1PORT);
+	collectorJag2 = new Jaguar (COLLECTORJAG2PORT);
+	collectorJag3 = new Jaguar (COLLECTORJAG3PORT);
+	collectorJag4 = new Jaguar (COLLECTORJAG4PORT);
 }
 
-void C1983Collector::Feed()
+void C1983Collector::doFeed()
 {
 	//Runs the ball through the collector.
-}
-
-void C1983Collector::isBallReadyShoot()
-{
-	if (sensor <= specified amount)
+	if (/*autoFeed*/true)//Auto feed the next possible ball
 	{
-		
-	}	
+		for (int i = 1; i<COLLECTOR_SLOT_COUNT; i++)
+		{
+			if (ballInSlot(i) && !ballInSlot(i-1))
+			{
+				//Feed the ball up a level
+				break;
+			}
+		}
+	}
 }
 
-void C1983Collector::isBallReadyStage()
+int C1983Collector::getBallCount()
 {
-
-	//Check to see if there is a ball in the collector/stage area.
+	int count = 0;
+	for (int i = 0; i<COLLECTOR_SLOT_COUNT; i++)
+	{
+		if (ballInSlot(i))
+		{
+			count++;
+		}
+	}
+	return count;
 }
 
-void C1983Collector::getBallCount()
+bool C1983Collector::ballInSlot(int slot)
 {
-	//Using the infrared sensor count how many balls have entered the collector.
+	return false;
 }
-
-void C1983Collector::setBottom()
-{
-	//Not sure what set bottom means.
-}
-
-void C1983Collector::setTop()
-{
-	//Not sure what set top means.
-}
-
-
-
-

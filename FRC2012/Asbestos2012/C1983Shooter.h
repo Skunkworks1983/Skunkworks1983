@@ -7,9 +7,6 @@ class C1983Shooter
 {
 
 private:
-	//Does the shooter keep itself up to speed
-	bool isRunning = false;
-	
 	Jaguar *shooterjag1; //Jaguars for the shooting wheels
 	Jaguar *shooterjag2;
 	Jaguar *shooterjag3;
@@ -21,12 +18,16 @@ private:
 	//Encoder *encoder4;
 
 public:
-
+	//Does the shooter keep itself up to speed
+	bool isRunning;
+	
+	C1983Shooter();
+	
 	//shooting function
 	void shoot();
 
 	//setting the velocity needed
-	void setVelocity( float velocity );
+	void setVelocity(float velocity);
 
 	//Checks to see if ball is ready to be shot
 	bool isReady();
@@ -40,16 +41,10 @@ public:
 
 	//Get the angle needed to shoot at the hoop.
 	float getAngle();
-	
+
 	//Set the angle that is needed to shoot.
-	float angle( float angle );
-	
-	//Does the wheel try to get up to speed
-	void setIsRunning(bool state);
-	
-	//IS the wheel trying to stay up to speed
-	bool isRunning();
-	
+	float angle(float angle);
+
 	//Call this from main loop to get the motor up to speed
 	void run();
 

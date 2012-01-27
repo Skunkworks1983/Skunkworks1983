@@ -1,6 +1,11 @@
 #include "C1983Shooter.h"
 #include "Jaguar.h"
 
+C1983Shooter::C1983Shooter()
+{
+	isRunning = false;
+}
+
 void C1983Shooter::shoot()
 {
 
@@ -21,21 +26,10 @@ bool C1983Shooter::isReady()
 	float diff = getVelocity() - TARGET_SHOOT_VELOCITY;
 	return diff >= -SHOOT_VELOCITY_TOLERANCE && diff<=SHOOT_VELOCITY_TOLERANCE;
 }
-
 void C1983Shooter::run()
 {
-	if (isRunning())
+	if (isRunning)
 	{
 		//Get some stuff up to speed!
 	}
-}
-
-bool C1983Shooter::isRunning()
-{
-	return isRunning;
-}
-
-void C1983Shooter::setIsRunning(bool state)
-{
-	isRunning = state;
 }
