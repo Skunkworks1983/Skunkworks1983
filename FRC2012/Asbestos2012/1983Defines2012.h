@@ -2,6 +2,10 @@
 #define __1983DEFINES_H
 
 //DriveBase Start
+//Air Compressor
+#define AIR_COMP_SENSE 14
+#define AIR_COMP_CONTROL 8
+
 //Jaguars
 #define JAG_PORT_LEFT_1 1
 #define JAG_PORT_LEFT_2 2
@@ -18,6 +22,9 @@
 #define DRIVE_P 0
 #define DRIVE_I 0
 #define DRIVE_D 0
+
+#define KINECT 0
+#define USE_PID 0
 //DriveBase End
 
 //Shooter Start

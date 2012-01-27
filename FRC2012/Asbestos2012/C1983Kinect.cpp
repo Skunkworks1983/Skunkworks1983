@@ -13,11 +13,11 @@ C1983Kinect::C1983Kinect()
 	rightArm = new KinectStick(2);
 }
 
-float C1983Kinect::getLeftSpeed()
+float C1983Kinect::getLeft()
 {
 	return leftArm->GetY();
 }
-float C1983Kinect::getRightSpeed()
+float C1983Kinect::getRight()
 {
 	return rightArm->GetY();
 }

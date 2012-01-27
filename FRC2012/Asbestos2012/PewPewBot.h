@@ -1,6 +1,7 @@
 #include "WPILib.h"
 #include "1983Defines2012.h"
 #include "C1983Drive.h"
+#include "C1983Kinect.h"
 
 class PewPewBot : public SimpleRobot
 {
@@ -16,7 +17,9 @@ public:
 	//Controls
 	Joystick *lStick;
 	Joystick *rStick;
-	
+#if KINECT
+	C1983Kinect *kinect;
+#endif
 	PewPewBot();
 	void Autonomous();
 	void OperatorControl();
