@@ -4,7 +4,6 @@
 #include "WPILib.h"
 #include "C1983PIDOutput.h"
 
-
 class C1983Drive
 {
 private:
@@ -12,7 +11,7 @@ private:
 	Jaguar *leftJag2;
 	Jaguar *rightJag1;
 	Jaguar *rightJag2;
-	
+#if USE_PID
 	PIDController *leftPID;
 	PIDController *rightPID;
 	
@@ -21,7 +20,7 @@ private:
 	
 	PIDOutput *leftPIDOutput;
 	PIDOutput *rightPIDOutput;
-	
+#endif
 	Encoder *fakeEncoder1;
 	Encoder *leftEncoder;
 	Encoder *fakeEncoder2;

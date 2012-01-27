@@ -34,9 +34,9 @@ public:
 	C1983Kinect();
 
 	//Gets the right 'joystick' position
-	float getRightSpeed();
+	float getRight();
 
 	//Gets the left 'joystick' position
-	float getLeftSpeed();
+	float getLeft();
 };
 #endif

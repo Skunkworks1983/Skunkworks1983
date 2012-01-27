@@ -18,7 +18,7 @@ void C1983Shooter::setVelocity(float velocity)
 
 float C1983Shooter::getVelocity()
 {
-
+	return 0;
 }
 
 bool C1983Shooter::isReady()
