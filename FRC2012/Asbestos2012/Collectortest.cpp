@@ -11,12 +11,13 @@ void update()
 	{
 		collectorVicTop.Set(1.0);
 		collectorVicBottom.Set(1.0);
+		midToTop = !TOPSLOT;
 	}
 	else if(lowToMid)
 	{
 		collectorVicTop.Set(0.0);
 		collectorVicBottom.Set(1.0);
-		if(MIDSLOT)
+		lowToMid = !MIDSLOT;
 	}
 	else
 	{
