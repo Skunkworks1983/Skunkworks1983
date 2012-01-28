@@ -1,10 +1,17 @@
 #ifndef __1983DEFINES_H
 #define __1983DEFINES_H
 
+//PewPew Start
+#define KINECT 0
+#define USE_PID 0
+
+//PewPew End
+
 //DriveBase Start
 //Air Compressor
-#define AIR_COMP_SENSE 14
-#define AIR_COMP_CONTROL 8
+#define COMPRESSOR_SWITCH_PORT 14
+#define DIGITAL_MODULE 1
+#define COMPRESSOR_PORT 8
 
 //Jaguars
 #define JAG_PORT_LEFT_1 1
@@ -22,9 +29,6 @@
 #define DRIVE_P 0
 #define DRIVE_I 0
 #define DRIVE_D 0
-
-#define KINECT 0
-#define USE_PID 0
 //DriveBase End
 
 //Shooter Start
@@ -62,5 +66,8 @@
 #define GLYPH_THRESH_B_H 255
 
 //GlyphCamera End
+
+//Controls Begin
+#define SHIFT_BUTTON lStick->GetRawButton(1);
 
 #endif

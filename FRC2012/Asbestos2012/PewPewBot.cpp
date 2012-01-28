@@ -32,6 +32,10 @@ void PewPewBot::Autonomous() {
 
 void PewPewBot::OperatorControl() {
 	while (IsOperatorControl() && !IsDisabled()) {
+		
+		//Set the compressor
+		drive->updateCompressor();
+		
 #if KINECT
 		drive->setSpeedR(kinect->getRight());
 		drive->setSpeedL(kinect->getLeft());
@@ -39,6 +43,15 @@ void PewPewBot::OperatorControl() {
 		drive->setSpeedR(rStick->GetY());
 		drive->setSpeedL(lStick->GetY());
 #endif
+		
+		//Check for shifting
+		if(lStick->GetRawButton(1))
+		{
+			drive->shift(false);
+		}else{
+			drive->shift(true);
+		}
+		
 	}
 }
 

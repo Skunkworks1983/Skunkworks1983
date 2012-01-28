@@ -1,5 +1,5 @@
 #include "C1983Shooter.h"
-#include "Jaguar.h"
+#include "Victor.h"
 
 C1983Shooter::C1983Shooter()
 {
@@ -26,10 +26,4 @@ bool C1983Shooter::isReady()
 	float diff = getVelocity() - TARGET_SHOOT_VELOCITY;
 	return diff >= -SHOOT_VELOCITY_TOLERANCE && diff<=SHOOT_VELOCITY_TOLERANCE;
 }
-void C1983Shooter::run()
-{
-	if (isRunning)
-	{
-		//Get some stuff up to speed!
-	}
-}
+
