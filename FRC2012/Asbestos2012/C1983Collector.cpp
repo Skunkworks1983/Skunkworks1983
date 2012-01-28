@@ -8,23 +8,62 @@
 
 C1983Collector::C1983Collector()
 {
-	collectorJag1 = new Jaguar (COLLECTORJAG1PORT);
-	collectorJag2 = new Jaguar (COLLECTORJAG2PORT);
-	collectorJag3 = new Jaguar (COLLECTORJAG3PORT);
-	collectorJag4 = new Jaguar (COLLECTORJAG4PORT);
+	//Victor used for feeding
+	feedVic = new Victor (COLLECTOR_FEED_VIC);
+
+	//First victor used for collector
+	collectorVic1 = new Victor (COLLECTOR_VIC_1);
+
+	//Second victor used for collecting
+	collectorVic2 = new Victor (COLLECTOR_VIC_2);
+
+	//The auto feed for the collector, setting it to true.
+	autoFeed = true;
 }
 
-void C1983Collector::doFeed()
+void C1983Collector::feed()
 {
 	//Runs the ball through the collector.
-	if (/*autoFeed*/true)//Auto feed the next possible ball
+
+	//Checks to see if the goal slot is empty.
+	if (goalSlot != kNull)
 	{
-		for (int i = 1; i<COLLECTOR_SLOT_COUNT; i++)
+		if (goalSlot == kTop) //If the goal slot is the top, or the shooter
 		{
-			if (ballInSlot(i) && !ballInSlot(i-1))
+			//Set the speed of the first collector victor to move the ball through the feeder.
+			collectorVic1->Set(COLLECTOR_BELT_SPEED); //Top belt
+		}
+
+		//Set the speed of the second collector victor to move the ball through the feeder.
+		collectorVic2->Set(COLLECTOR_BELT_SPEED);
+
+		//If the goal slot is filled.
+		if (ballInSlot(goalSlot))
+		{
+			//Set the goal slot as full.
+			goalSlot = kNull;
+		}
+	}
+
+	//if the goal slot for the feeder is full.
+	if (goalSlot == kNull)
+	{
+		//Stop the victors in the collector.
+		collectorVic1->Set(0.0); //If there isn't a goal stop the victors
+		collectorVic2->Set(0.0);
+
+		if (autoFeed)//Auto feed the next possible ball
+
+		{
+			//Setting the area after the shot equal to variable i.
+			for (int i = kTop + 1; i <= kBottom; i++)
 			{
-				//Feed the ball up a level
-				break;
+				//Checks if the ball has been shot and there is not a ball in the area underneath it.
+				if (ballInSlot(i) && !ballInSlot(i - 1))
+				{
+					//Feed the ball, and balls below up a level
+					goalSlot = i - 1;
+				}
 			}
 		}
 	}
@@ -32,18 +71,33 @@ void C1983Collector::doFeed()
 
 int C1983Collector::getBallCount()
 {
-	int count = 0;
-	for (int i = 0; i<COLLECTOR_SLOT_COUNT; i++)
+	//If the goalslot is full.
+	if (goalSlot == kNull)
 	{
-		if (ballInSlot(i))
+
+		//Set the total ball count to zero.
+		cacheBallCount = 0;
+
+		//When i is less then the slots availiable in the feeder add one ball to the total ball count.
+		for (int i = 0; i < COLLECTOR_SLOT_COUNT; i++)
 		{
-			count++;
+			if (ballInSlot(i))
+			{
+				cacheBallCount++;
+			}
 		}
 	}
-	return count;
+	return cacheBallCount;
 }
 
 bool C1983Collector::ballInSlot(int slot)
 {
 	return false;
+}
+
+//Sees if the collector is feeding balls.
+bool C1983Collector::isFeeding()
+{
+	//Makes sure the collector victors are equal to zero to see if the collector is feeding.
+	return collectorVic1->Get() != 0 || collectorVic2->Get() != 0;
 }
