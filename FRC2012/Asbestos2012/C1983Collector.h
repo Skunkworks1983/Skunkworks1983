@@ -12,7 +12,7 @@ private:
 	int goalSlot;
 	bool autoFeed; //Automatically feed balls in the collector
 
-	typedef enum {kTop, kMid, kBottom,kNull} SlotName;
+	typedef enum {kTop, kMid, kBottom, kNull} SlotName;
 
 public:
 	C1983Collector();

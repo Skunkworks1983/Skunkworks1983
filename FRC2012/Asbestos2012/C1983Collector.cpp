@@ -3,7 +3,7 @@
  *
  *  Created on: Jan 14, 2012
  *      Author: Austin
- */
+ *
 #include "C1983Collector.h"
 
 C1983Collector::C1983Collector()
@@ -101,3 +101,4 @@ bool C1983Collector::isFeeding()
 	//Makes sure the collector victors are equal to zero to see if the collector is feeding.
 	return collectorVic1->Get() != 0 || collectorVic2->Get() != 0;
 }
+*/

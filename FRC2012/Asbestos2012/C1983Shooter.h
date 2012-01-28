@@ -7,13 +7,14 @@ class C1983Shooter
 {
 
 private:
-	Victor *shooterVic1; //Victor for the shooting wheel
-	Victor *shooterVic2; //Victor for the hood
+	Victor *shooterVic; //Victor for the shooting wheel
+	Victor *hoodVic; //Victor for the hood
 
 	//Encoder *encoder1;
 	//Encoder *encoder2;
 
 public:
+	C1983Shooter();
 	//Does the shooter keep itself up to speed
 	bool isWheelRunning;
 	
@@ -37,7 +38,14 @@ public:
 	float getAngle();
 
 	//Set the angle that is needed to shoot.
-	float angle(float angle);
-
+	void angle(float angle);
+	
+	//sets the spead and angle to the presets!
+	void aim(int Preset=0);
+	
+	//shooter class variable for speed
+	float targetSpeed;
+	//shooter class global variable for angle
+	float targetAngle;
 };
 #endif

@@ -32,11 +32,12 @@
 //DriveBase End
 
 //Shooter Start
-//The target RPM of the shooter wheel
-#define TARGET_SHOOT_VELOCITY 0
-//Tolerance of the velocity
-#define SHOOT_VELOCITY_TOLERANCE 10
-//Shooter End
+#define SHOOTER_WHEEL 0
+#define SHOOTER_HOOD 0
+#define SHOOT_VELOCITY_TOLERANCE 0
+#define SHOOT_ANGLE_TOLERANCE
+//Tipper End
+
 
 //Tipper Start
 #define TIPPER_PORT 5
