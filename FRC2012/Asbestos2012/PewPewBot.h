@@ -3,10 +3,15 @@
 #include "C1983Drive.h"
 #include "C1983Kinect.h"
 
+/**
+ * @author:
+ * 
+ */
 class PewPewBot : public SimpleRobot
 {
 public:
 	C1983Drive *drive;
+	
 	/*
 	C1983Collector collector;
 	C1983Shooter shooter;
