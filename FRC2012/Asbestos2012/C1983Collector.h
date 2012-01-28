@@ -6,13 +6,12 @@
 class C1983Collector {
 
 private:
-	Victor *collectorVic1; //Victors for the collection belts
-	Victor *collectorVic2;
+	Victor *collectorVicBottom; //Victors for the collection belts
+	Victor *collectorVicTop;
 	Victor *feedVic;
 	int goalSlot;
 	bool autoFeed; //Automatically feed balls in the collector
-
-	typedef enum {kTop, kMid, kBottom, kNull} SlotName;
+	typedef enum {kTop, kMid, kBottom, kShooter, kNull} SlotName;
 
 public:
 	C1983Collector();

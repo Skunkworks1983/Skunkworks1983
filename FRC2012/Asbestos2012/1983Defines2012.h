@@ -45,8 +45,8 @@
 
 //Collector Start
 #define COLLECTOR_FEED_VIC 0
-#define COLLECTOR_VIC_1 0
-#define COLLECTOR_VIC_2 0
+#define COLLECTOR_VIC_BOTTOM 0
+#define COLLECTOR_VIC_TOP 0
 //Number of sensed ball storage spots
 #define COLLECTOR_SLOT_COUNT 3
 //Belt speed
@@ -70,5 +70,7 @@
 
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1);
+
+#define COLLECTORDRIVESPEED = 1;
 
 #endif
