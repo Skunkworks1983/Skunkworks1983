@@ -9,14 +9,13 @@ C1983Drive::C1983Drive()
 	rightJag2 = new Jaguar(JAG_PORT_RIGHT_2);
 	
 	//fakeEncoder1 = new Encoder(1,12,1,13,true,Encoder::k4X);
-	leftEncoder = new Encoder(1,LEFT_ENCODER_PORT_A,1,LEFT_ENCODER_PORT_B,true,Encoder::k2X);
+	leftEncoder = new Encoder(LEFT_ENCODER_PORT_A,LEFT_ENCODER_PORT_B);
 	//fakeEncoder2 = new Encoder(1,9,1,10,true,Encoder::k4X);
-	rightEncoder = new Encoder(1,RIGHT_ENCODER_PORT_A,1,RIGHT_ENCODER_PORT_B,false,Encoder::k2X);
+	rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A,RIGHT_ENCODER_PORT_B);
+	
 	//initialize encoders
 	leftEncoder->Start();
-	leftEncoder->Reset();
 	rightEncoder->Start();
-	rightEncoder->Reset();
 	
 #if USE_PID
 	leftPIDOutput = new C1983PIDOutput(leftJag1,leftJag2);

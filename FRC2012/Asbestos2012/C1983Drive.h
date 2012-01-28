@@ -21,9 +21,9 @@ private:
 	PIDOutput *leftPIDOutput;
 	PIDOutput *rightPIDOutput;
 #endif
-	Encoder *fakeEncoder1;
+	//Encoder *fakeEncoder1;
 	Encoder *leftEncoder;
-	Encoder *fakeEncoder2;
+	//Encoder *fakeEncoder2;
 	Encoder *rightEncoder;
 
 	//Compressor Relay
