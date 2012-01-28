@@ -1,31 +1,32 @@
 #ifndef __C1983COLLECTOR_H
 #define __C1983COLLECTOR_H
-#include "WPIlib.h"
+#include "WPILib.h"
 #include "1983Defines2012.h"
 
-class C1983Collector
-{
+class C1983Collector {
 
-private:		
-		Jaguar *collectorJag1; //Jaguars for the shooting wheels
-		Jaguar *collectorJag2;
-		Jaguar *collectorJag3;
-		Jaguar *collectorJag4;
+private:
+	Victor *collectorVicBottom; //Victors for the collection belts
+	Victor *collectorVicTop;
+	Victor *feedVic;
+	int goalSlot;
+	bool autoFeed; //Automatically feed balls in the collector
 
+	typedef enum {kTop, kMid, kBottom, kShooter, kNull} SlotName;
 
 public:
-		C1983Collector();
-		
-		// Reads if a ball has entered the conveyor.
-		//bool ballEnter();
+	C1983Collector();
 
-		//Feeds the ball through the collector.
-		void doFeed();
+	// Reads if a ball has entered the conveyor.
+	//bool ballEnter();
 
-		// Checks the amount of balls that has entered the collector.
-		int getBallCount();
-		
-		//Checks if a bell is in a slot.  Top-Bottom, starting at 0
-		bool ballInSlot(int slot);
+	//Feeds the ball through the collector.
+	void feed();
+
+	// Checks the amount of balls that has entered the collector.
+	int getBallCount();
+
+	//Checks if a bell is in a slot.  Top-Bottom, starting at 0
+	bool ballInSlot(int slot);
 };
 #endif

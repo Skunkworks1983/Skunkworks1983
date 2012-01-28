@@ -7,21 +7,15 @@ class C1983Shooter
 {
 
 private:
-	Jaguar *shooterjag1; //Jaguars for the shooting wheels
-	Jaguar *shooterjag2;
-	Jaguar *shooterjag3;
-	Jaguar *shooterjag4;
+	Victor *shooterVic1; //Victor for the shooting wheel
+	Victor *shooterVic2; //Victor for the hood
 
 	//Encoder *encoder1;
 	//Encoder *encoder2;
-	//Encoder *encoder3;
-	//Encoder *encoder4;
 
 public:
 	//Does the shooter keep itself up to speed
-	bool isRunning;
-	
-	C1983Shooter();
+	bool isWheelRunning;
 	
 	//shooting function
 	void shoot();
@@ -44,9 +38,6 @@ public:
 
 	//Set the angle that is needed to shoot.
 	float angle(float angle);
-
-	//Call this from main loop to get the motor up to speed
-	void run();
 
 };
 #endif

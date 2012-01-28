@@ -43,12 +43,13 @@
 //Tipper End
 
 //Collector Start
-#define COLLECTORJAG1PORT 0
-#define COLLECTORJAG2PORT 0
-#define COLLECTORJAG3PORT 0
-#define COLLECTORJAG4PORT 0
+#define COLLECTOR_FEED_VIC 0
+#define COLLECTOR_VIC_BOTTOM 0
+#define COLLECTOR_VIC_TOP 0
 //Number of sensed ball storage spots
 #define COLLECTOR_SLOT_COUNT 3
+//Belt speed
+#define COLLECTOR_BELT_SPEED 1.0
 //Collector End
 
 //GlyphCamera Start
@@ -68,5 +69,7 @@
 
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1);
+
+#define COLLECTORDRIVESPEED = 1;
 
 #endif
