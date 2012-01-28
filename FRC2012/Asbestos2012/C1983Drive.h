@@ -48,6 +48,10 @@ public:
 	
 	void shift(bool high);
 	
+	int getL();
+	
+	int getR();
+	
 	/*
 	//Get the speed of the left side
 	float getSpeedL();

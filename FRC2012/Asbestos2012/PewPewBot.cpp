@@ -14,6 +14,7 @@ PewPewBot::~PewPewBot() {
 
 void PewPewBot::Autonomous() {
 	bool done = false;
+	
 	while (IsAutonomous() && IsEnabled()) {
 		if (!done) {
 			drive->setSpeedL(0.05);
@@ -31,7 +32,13 @@ void PewPewBot::Autonomous() {
 }
 
 void PewPewBot::OperatorControl() {
+	int count = 0;//DEBUG (C1983)
 	while (IsOperatorControl() && !IsDisabled()) {
+		count++;
+		if(count/200 == ((float)count)/200)
+		{
+			printf("Left: %d Right: %d \n",drive->getL(),drive->getR());
+		}
 		
 		//Set the compressor
 		drive->updateCompressor();
@@ -40,6 +47,7 @@ void PewPewBot::OperatorControl() {
 		drive->setSpeedR(kinect->getRight());
 		drive->setSpeedL(kinect->getLeft());
 #else
+		//Set the drive base to the stick speeds
 		drive->setSpeedR(rStick->GetY());
 		drive->setSpeedL(lStick->GetY());
 #endif

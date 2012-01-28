@@ -8,8 +8,16 @@ C1983Drive::C1983Drive()
 	rightJag1 = new Jaguar(JAG_PORT_RIGHT_1);
 	rightJag2 = new Jaguar(JAG_PORT_RIGHT_2);
 	
-	leftEncoder = new Encoder(LEFT_ENCODER_PORT_A,LEFT_ENCODER_PORT_B);
-	rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A,RIGHT_ENCODER_PORT_B);
+	//fakeEncoder1 = new Encoder(1,12,1,13,true,Encoder::k4X);
+	leftEncoder = new Encoder(1,LEFT_ENCODER_PORT_A,1,LEFT_ENCODER_PORT_B,true,Encoder::k2X);
+	//fakeEncoder2 = new Encoder(1,9,1,10,true,Encoder::k4X);
+	rightEncoder = new Encoder(1,RIGHT_ENCODER_PORT_A,1,RIGHT_ENCODER_PORT_B,false,Encoder::k2X);
+	//initialize encoders
+	leftEncoder->Start();
+	leftEncoder->Reset();
+	rightEncoder->Start();
+	rightEncoder->Reset();
+	
 #if USE_PID
 	leftPIDOutput = new C1983PIDOutput(leftJag1,leftJag2);
 	rightPIDOutput = new C1983PIDOutput(rightJag1,rightJag2);
@@ -26,7 +34,7 @@ C1983Drive::C1983Drive()
 	shifter = new Relay(DIGITAL_MODULE,2);
 	
 	//We start shifted high
-	shifter->Set(Relay::kReverse);
+	shift(true);
 	shiftedHigh = true;
 }
 
@@ -77,11 +85,21 @@ void C1983Drive::shift(bool high)
 	}else if(!high && shiftedHigh){
 		shifter->Set(Relay::kForward);
 		shiftedHigh = false;
-		cout<<"Attempting to shift down"<<endl;
 	}else{
 		return;
 	}
 }
+
+int C1983Drive::getL()
+{
+	return leftEncoder->GetRaw();
+}
+
+int C1983Drive::getR()
+{
+	return rightEncoder->GetRaw();
+}
+
 /*
 //TODO: Replace get function with something that actually gets speed
 C1983Drive::getSpeedR()
