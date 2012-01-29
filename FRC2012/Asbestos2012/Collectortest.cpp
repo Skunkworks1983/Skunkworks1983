@@ -1,3 +1,4 @@
+#if 0
 bool lowToMid, midToTop;
 
 void update() 
@@ -9,8 +10,8 @@ void update()
 	
 	if(midToTop)
 	{
-		collectorVicTop.Set(1.0);
-		collectorVicBottom.Set(1.0);
+		collectorVicTop->Set(1.0);
+		collectorVicBottom->Set(1.0);
 	}
 	else if(lowToMid)
 	{
@@ -26,3 +27,4 @@ void update()
 		lowToMid = !MIDSLOT && LOWSLOT;
 	}
 }
+#endif
