@@ -19,8 +19,44 @@ C1983Collector::C1983Collector()
 
 	//The auto feed for the collector, setting it to true.
 	autoFeed = true;
+	lowToMid = false;
+	midToTop = false;
 }
 
+void C1983Collector::update()
+{
+	if(midToTop)
+	{
+		collectorVicTop.Set(COLLECTOR_BELT_SPEED);
+		collectorVicBottom.Set(COLLECTOR_BELT_SPEED);
+		midToTop = !TOPSLOT;
+		lowToMid = LOWSLOT;
+	}
+	if(lowToMid)
+	{
+		lowToMid = !MIDSLOT;
+		if(!midToTop)
+		{
+			collectorVicTop.Set(0);
+			collectorVicBottom.Set(COLLECTOR_BELT_SPEED);
+		}
+	}
+	if(!midToTop && !lowToMid)
+	{
+		collectorVicTop.Set(0.0);
+		collectorVicBottom.Set(0.0);
+		midToTop = !TOPSLOT && MIDSLOT;
+		lowToMid = !MIDSLOT && LOWSLOT;
+	}
+}
+
+void C1983Collector::shoot()
+{
+	
+}
+
+
+/*
 void C1983Collector::feed()
 {
 	//Runs the ball through the collector.
@@ -86,32 +122,18 @@ if (goalSlot == kNull)
 	}
 
 }
-}
+*/
 
-int C1983Collector::getBallCount()
+char C1983Collector::getBallCount()
 {
-//If the goalslot is full.
-if (goalSlot == kNull)
-{
-
-	//Set the total ball count to zero.
-	cacheBallCount = 0;
-
-	//When i is less then the slots availiable in the feeder add one ball to the total ball count.
-	for (int i = 0; i < COLLECTOR_SLOT_COUNT; i++)
-	{
-		if (ballInSlot(i))
-		{
-			cacheBallCount++;
-		}
+	char ballCount = (char)LOWSLOT + (char)MIDSLOT + (char)TOPSLOT;
+	if(!isFeeding){
+		return ballCount;
 	}
-}
-return cacheBallCount;
-}
-
-bool C1983Collector::ballInSlot(int slot)
-{
-	return false;
+	else
+	{
+		return 0;
+	}
 }
 
 //Sees if the collector is feeding balls.

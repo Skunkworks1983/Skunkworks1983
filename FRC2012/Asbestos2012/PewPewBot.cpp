@@ -15,18 +15,15 @@ PewPewBot::~PewPewBot() {
 void PewPewBot::Autonomous() {
 	bool done = false;
 	
-	while (IsAutonomous() && IsEnabled()) {
-		if (!done) {
-			drive->setSpeedL(0.05);
-			drive->setSpeedR(0.05);
-			Wait(2);
-			drive->setSpeedL(0.05);
-			drive->setSpeedR(0.05);
-			Wait(2);
-			drive->setSpeedR(0.0);
-			drive->setSpeedL(0.0);
+	while (IsAutonomous() && IsEnabled()) 
+	{
+		if(!lightSensor->Get()){
+			drive->setSpeedL(1.0);
+			drive->setSpeedR(1.0);
+		}else{
+			drive->SetSpeedL(0.0);
+			drive->SetSpeedR(0.0);
 		}
-		done = true;
 	}
 
 }

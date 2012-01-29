@@ -33,6 +33,9 @@ private:
 	//Shifter Relay
 	Relay *shifter;
 	
+	//The light sensor
+	DigitalInput *lightSensor;
+	
 	bool shiftedHigh;
 	
 public:

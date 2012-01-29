@@ -29,6 +29,8 @@
 #define DRIVE_P 0
 #define DRIVE_I 0
 #define DRIVE_D 0
+
+#define LIGHT_SENSOR_CHANNEL 0
 //DriveBase End
 
 //Shooter Start

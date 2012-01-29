@@ -9,10 +9,8 @@ private:
 	Victor *collectorVicBottom; //Victors for the collection belts
 	Victor *collectorVicTop;
 	Victor *feedVic;
-	int goalSlot;
 	bool autoFeed; //Automatically feed balls in the collector
-
-	typedef enum {kTop, kMid, kBottom, kShooter, kNull} SlotName;
+	bool lowToMid, midToTop;
 
 public:
 	C1983Collector();
@@ -20,13 +18,10 @@ public:
 	// Reads if a ball has entered the conveyor.
 	//bool ballEnter();
 
-	//Feeds the ball through the collector.
-	void feed();
+	//Sets the collector right
+	void update();
 
 	// Checks the amount of balls that has entered the collector.
 	int getBallCount();
-
-	//Checks if a bell is in a slot.  Top-Bottom, starting at 0
-	bool ballInSlot(int slot);
 };
 #endif

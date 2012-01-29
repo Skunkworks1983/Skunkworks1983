@@ -2,11 +2,6 @@ bool lowToMid, midToTop;
 
 void update() 
 {
-	bool m_midToTop,m_lowToMid;
-	
-	m_midToTop = !TOPSLOT && MIDSLOT;
-	m_lowToMid = !MIDSLOT && LOWSLOT;
-	
 	if(midToTop)
 	{
 		collectorVicTop.Set(1.0);

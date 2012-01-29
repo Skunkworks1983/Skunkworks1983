@@ -32,6 +32,8 @@ C1983Drive::C1983Drive()
 	//Shifter
 	shifter = new Relay(DIGITAL_MODULE,2);
 	
+	lightSensor = new DigitalInput(LIGHT_SENSOR_CHANNEL);
+	
 	//We start shifted high
 	shift(true);
 	shiftedHigh = true;
