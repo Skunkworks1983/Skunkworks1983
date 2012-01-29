@@ -22,7 +22,6 @@ public:
 		kLayup, kFreeThrow, kOther
 	};
 	C1983Shooter();
-
 	//shooting function
 	void shoot();
 
@@ -44,7 +43,7 @@ public:
 
 	//Get the angle needed to shoot at the hoop.
 	float getAngle();
-
+	
 	//sets the spead and angle to the presets!
 	void aim(int preset);
 };
