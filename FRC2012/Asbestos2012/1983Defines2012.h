@@ -34,10 +34,37 @@
 //DriveBase End
 
 //Shooter Start
-//The target RPM of the shooter wheel
-#define TARGET_SHOOT_VELOCITY 0
-//Tolerance of the velocity
-#define SHOOT_VELOCITY_TOLERANCE 10
+#define SHOOTER_WHEEL	0				//Channel for shooter wheel
+#define SHOOTER_HOOD 	0				//Channel for shooter hood
+
+#define SHOOTER_HOOD_POT		0		//Channel of the hood measurment pot	
+#define SHOOTER_WHEEL_ENCODER_A 0		//Channels for the shooter wheel's encoder
+#define SHOOTER_WHEEL_ENCODER_B 0		
+
+										//Accuracy tolerance.  How close the speed/position has to get to be accurate
+#define SHOOT_VELOCITY_TOLERANCE	0	//Tolerance of the velocity
+#define SHOOT_ANGLE_TOLERANCE 		0	//Tolerance of the angle
+
+//SHooter PIDs
+#define SHOOTER_WHEEL_P 0
+#define SHOOTER_WHEEL_I 0
+#define SHOOTER_WHEEL_D 0
+
+#define SHOOTER_HOOD_P 0
+#define SHOOTER_HOOD_I 0
+#define SHOOTER_HOOD_D 0
+
+//Preset shot speeds
+#define SHOT_LAYUP_SPEED 0.0
+#define SHOT_LAYUP_ANGLE 0.0
+
+#define SHOT_FREETHROW_SPEED 0.0
+#define SHOT_FREETHROW_ANGLE 0.0
+
+#define SHOT_OTHER_SPEED 0.0
+#define SHOT_OTHER_ANGLE 0.0
+
+#define BALL_SPEED_TO_RPM(speed) {return speed;}   //TODO Conversion
 //Shooter End
 
 //Tipper Start
@@ -52,6 +79,10 @@
 #define COLLECTOR_SLOT_COUNT 3
 //Belt speed
 #define COLLECTOR_BELT_SPEED 1.0
+//Collector IR Sensors
+#define COLLECTOR_IR_LOW 0
+#define COLLECTOR_IR_MID 0
+#define COLLECTOR_IR_TOP 0
 //Collector End
 
 //GlyphCamera Start
@@ -66,12 +97,9 @@
 #define GLYPH_THRESH_R_H 255
 #define GLYPH_THRESH_G_H 255
 #define GLYPH_THRESH_B_H 255
-
 //GlyphCamera End
 
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1);
-
-#define COLLECTORDRIVESPEED = 1;
 
 #endif

@@ -3,26 +3,35 @@
 #include "WPIlib.h"
 #include "1983Defines2012.h"
 
-class C1983Shooter
-{
-
+class C1983Shooter {
 private:
-	Victor *shooterVic1; //Victor for the shooting wheel
-	Victor *shooterVic2; //Victor for the hood
+	Victor *shooterVic; //Victor for the shooting wheel
+	Victor *hoodVic; //Victor for the hood
+	AnalogChannel * hoodPot; //Pot that reads the current hood angle
+	Encoder *wheelEncoder; //Encoder that reads the shooting wheel
 
-	//Encoder *encoder1;
-	//Encoder *encoder2;
+	//PID Control
+	PIDController *hoodPID;
+	PIDController *wheelPID;
+	//End PID Control
 
+	float targetVelocity;
+	float targetAngle;
 public:
-	//Does the shooter keep itself up to speed
-	bool isWheelRunning;
-	
+	enum ShotType {
+		kLayup, kFreeThrow, kOther
+	};
+	C1983Shooter();
+
 	//shooting function
 	void shoot();
 
 	//setting the velocity needed
 	void setVelocity(float velocity);
 
+	//Set the angle that is needed to shoot.
+	void setAngle(float angle);
+	
 	//Checks to see if ball is ready to be shot
 	bool isReady();
 
@@ -31,13 +40,12 @@ public:
 	//void getCorrections();
 
 	//Get the current wheel speed
-	float getVelocity();
+	double getVelocity();
 
 	//Get the angle needed to shoot at the hoop.
 	float getAngle();
 
-	//Set the angle that is needed to shoot.
-	float angle(float angle);
-
+	//sets the spead and angle to the presets!
+	void aim(int preset);
 };
 #endif

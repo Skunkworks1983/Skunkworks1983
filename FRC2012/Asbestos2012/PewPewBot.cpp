@@ -12,22 +12,6 @@ PewPewBot::PewPewBot() {
 PewPewBot::~PewPewBot() {
 }
 
-void PewPewBot::Autonomous() {
-	bool done = false;
-	
-	while (IsAutonomous() && IsEnabled()) 
-	{
-		if(!lightSensor->Get()){
-			drive->setSpeedL(1.0);
-			drive->setSpeedR(1.0);
-		}else{
-			drive->SetSpeedL(0.0);
-			drive->SetSpeedR(0.0);
-		}
-	}
-
-}
-
 void PewPewBot::OperatorControl() {
 	int count = 0;//DEBUG (C1983)
 	while (IsOperatorControl() && !IsDisabled()) {
