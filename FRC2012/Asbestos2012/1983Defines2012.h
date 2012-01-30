@@ -3,7 +3,7 @@
 
 //PewPew Start
 #define KINECT 0
-#define USE_PID 0
+#define USE_PID 1
 
 //PewPew End
 
@@ -26,9 +26,13 @@
 #define RIGHT_ENCODER_PORT_B 5
 
 //PIDs
-#define DRIVE_P 0
-#define DRIVE_I 0
+#define DRIVE_P 1.5
+#define DRIVE_I 0.1
 #define DRIVE_D 0
+
+//Max speeds for the wheels in low and high gears
+#define MAXSPEEDHIGH 51
+#define MAXSPEEDLOW  10
 //DriveBase End
 
 //Shooter Start

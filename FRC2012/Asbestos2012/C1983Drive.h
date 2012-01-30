@@ -3,6 +3,7 @@
 #include "1983Defines2012.h"
 #include "WPILib.h"
 #include "C1983PIDOutput.h"
+#include "C1983PIDSource.h"
 
 class C1983Drive
 {
@@ -14,18 +15,16 @@ private:
 #if USE_PID
 	PIDController *leftPID;
 	PIDController *rightPID;
-	
-	PIDSource *leftPIDSource;
-	PIDSource *rightPIDSource;
+
+	C1983PIDSource *leftPIDSource;
+	C1983PIDSource *rightPIDSource;
 	
 	PIDOutput *leftPIDOutput;
 	PIDOutput *rightPIDOutput;
 #endif
-	Encoder *fakeEncoder1;
 	Encoder *leftEncoder;
-	Encoder *fakeEncoder2;
 	Encoder *rightEncoder;
-
+	
 	//Compressor Relay
 	Relay *compressor;
 	DigitalInput *compressorSwitch;
@@ -48,24 +47,30 @@ public:
 	
 	void shift(bool high);
 	
-	int getL();
+
+
+	double getR();
+	double getL();
 	
-	int getR();
+#if USE_PID
+	void iUp();
 	
-	/*
-	//Get the speed of the left side
-	float getSpeedL();
+	void iDown();
 	
-	//Get the speed of the right side
-	float getSpeedR();
+	void resetLeftI();
+	void resetRightI();
+	
+	float getLError();
 	
 	
-	//Reset the PID's I term
-	float resetI();
+	float getI();
+	float getLSetpoint();
+	float getRSetpoint();
+	double getLPercent();
+	double getRPercent();
 	
-	//Move a certain distance
-	void move(float distance);
-	*/
+#endif
+	
 	~C1983Drive();
 };
 #endif
