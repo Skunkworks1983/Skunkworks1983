@@ -2,7 +2,7 @@
 #define __1983DEFINES_H
 
 //PewPew Start
-#define KINECT 1
+#define KINECT 0
 #define USE_PID 1
 
 //PewPew End
@@ -34,7 +34,8 @@
 #define DRIVE_I_LOW 0
 #define DRIVE_D_LOW 0
 
-#define LIGHT_SENSOR_CHANNEL 0
+#define LIGHT_SENSOR_CHANNEL_FRONT 13
+#define LIGHT_SENSOR_CHANNEL_BACK 11
 
 //Max speeds for the wheels in low and high gears
 #define MAXSPEEDHIGH 43

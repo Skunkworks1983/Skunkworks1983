@@ -1,19 +1,22 @@
 #include "PewPewBot.h"
 void PewPewBot::Autonomous() {
+	int count = 0;
+	drive->shift(true);
 	while (IsAutonomous() && IsEnabled()) 
 	{
+		drive->updateCompressor();
 #if !KINECT
-		if(!lightSensor->Get()){
-			drive->setSpeedL(1.0);
-			drive->setSpeedR(1.0);
+		if(!drive->getLightSensorFront() && !drive->getLightSensorBack()){
+			drive->setSpeedL(-1.0);
+			drive->setSpeedR(-1.0);
 		}else{
-			drive->SetSpeedL(0.0);
-			drive->SetSpeedR(0.0);
+			drive->setSpeedL(0.0);
+			drive->setSpeedR(0.0);
 		}
+		count++;
+		if(count/50 == (float)count/50) cout<<"Front Sensor: "<<drive->getLightSensorFront()<<" Back Sensor: "<<drive->getLightSensorBack()<<endl;
+		
 #else	
-	//Drive
-	drive->updateCompressor();
-	
 	if(fabs(kinect->getRight()) > 0.05)
 	{
 		drive->setSpeedR(kinect->getRight());

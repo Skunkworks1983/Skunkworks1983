@@ -32,8 +32,9 @@ private:
 	//Shifter Relay
 	Relay *shifter;
 	
-	//The light sensor
-	DigitalInput *lightSensor;
+	//The light sensors
+	DigitalInput *lightSensorFront;
+	DigitalInput *lightSensorBack;
 	
 	bool shiftedHigh;
 	
@@ -50,7 +51,9 @@ public:
 	
 	void shift(bool high);
 	
-
+	bool getLightSensorBack();
+	
+	bool getLightSensorFront();
 
 	double getR();
 	double getL();
