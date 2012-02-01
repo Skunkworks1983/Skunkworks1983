@@ -1,7 +1,7 @@
 #include "C1983Collector.h"
 C1983Collector::C1983Collector() {
 	//Victor used for feeding
-	feedVic = new Victor (COLLECTOR_FEED_VIC);
+	collectorVicPickup = new Victor (COLLECTOR_VIC_PICKUP);
 
 	//First victor used for collector
 	collectorVicBottom = new Victor (COLLECTOR_VIC_BOTTOM);
@@ -10,14 +10,54 @@ C1983Collector::C1983Collector() {
 	collectorVicTop = new Victor (COLLECTOR_VIC_TOP);
 
 	//Sensors
-	lowSlot = new DigitalInput(COLLECTOR_IR_LOW);
-	midSlot = new DigitalInput(COLLECTOR_IR_MID);
-	topSlot = new DigitalInput(COLLECTOR_IR_TOP);
+	lowSlot = new DigitalInput(COLLECTOR_IR_LOW_CHANNEL);
+	topSlot = new DigitalInput(COLLECTOR_IR_TOP_CHANNEL);
 	//The auto feed for the collector, setting it to true.
-	autoFeed = true;
-	lowToMid = false;
-	midToTop = false;
 }
+
+void C1983Collector::collect()
+{
+	if(!TOPSLOT)
+	{
+		collectorVicBottom->Set(COLLECTOR_BELT_SPEED);
+		collectorVicTop->Set(COLLECTOR_BELT_SPEED);
+		collectorVicPickup->Set(PICKUP_SPEED);
+	}else if(!LOWSLOT){
+		collectorVicBottom->Set(COLLECTOR_BELT_SPEED);
+		collectorVicPickup->Set(PICKUP_SPEED);
+	}else{
+		collectorVicPickup->Set(PICKUP_SPEED);
+	}
+}
+
+void C1983Collector::shoot() {
+	
+}
+
+
+/*
+//Sees if the collector is feeding balls.
+bool C1983Collector::isFeeding() {
+	//Makes sure the collector victors are equal to zero to see if the collector is feeding.
+	return collectorVicBottom->Get() != 0 || collectorVicTop->Get() != 0;
+}
+
+
+char C1983Collector::getBallCount() {
+	char ballCount = (char)LOWSLOT + (char)MIDSLOT + (char)TOPSLOT;
+	if (!isFeeding()) {
+		return ballCount;
+	} else {
+		return 0;
+	}
+}*/
+
+/*
+ * C1983Collector.cpp
+ *
+ *  Created on: Jan 14, 2012
+ *      Author: Austin
+ *
 
 void C1983Collector::update() {
 	if (midToTop) {
@@ -33,39 +73,14 @@ void C1983Collector::update() {
 			collectorVicBottom->Set(COLLECTOR_BELT_SPEED);
 		}
 	}
-	if (!midToTop && !lowToMid) {
+	if (!midToTop && !lowToMid){
 		collectorVicTop->Set(0.0);
 		collectorVicBottom->Set(0.0);
 		midToTop = !TOPSLOT && MIDSLOT;
 		lowToMid = !MIDSLOT && LOWSLOT;
 	}
-}
-
-void C1983Collector::shoot() {
-
-}
-
-//Sees if the collector is feeding balls.
-bool C1983Collector::isFeeding() {
-	//Makes sure the collector victors are equal to zero to see if the collector is feeding.
-	return collectorVicBottom->Get() != 0 || collectorVicTop->Get() != 0;
-}
-
-char C1983Collector::getBallCount() {
-	char ballCount = (char)LOWSLOT + (char)MIDSLOT + (char)TOPSLOT;
-	if (!isFeeding()) {
-		return ballCount;
-	} else {
-		return 0;
-	}
-}
-
-/*
- * C1983Collector.cpp
- *
- *  Created on: Jan 14, 2012
- *      Author: Austin
- *
+} 
+ 
  void C1983Collector::feed()
  {
  //Runs the ball through the collector.

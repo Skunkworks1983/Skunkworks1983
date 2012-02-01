@@ -112,6 +112,8 @@ void C1983Drive::shift(bool high)
 #if USE_PID
 		leftPIDSource->setMaxSpeed(MAXSPEEDHIGH);
 		rightPIDSource->setMaxSpeed(MAXSPEEDHIGH);
+		leftPID->SetPID(DRIVE_P,DRIVE_I,DRIVE_D);
+		rightPID->SetPID(DRIVE_P,DRIVE_I,DRIVE_D);
 #endif
 	//Shift Low
 	}else if(!high && shiftedHigh){
@@ -120,6 +122,8 @@ void C1983Drive::shift(bool high)
 #if USE_PID
 		leftPIDSource->setMaxSpeed(MAXSPEEDLOW);
 		rightPIDSource->setMaxSpeed(MAXSPEEDLOW);
+		leftPID->SetPID(DRIVE_P_LOW,DRIVE_I_LOW,DRIVE_D_LOW);
+		rightPID->SetPID(DRIVE_P_LOW,DRIVE_I_LOW,DRIVE_D_LOW);
 #endif
 	}else{
 		return;
@@ -144,6 +148,11 @@ float C1983Drive::getLError()
 float C1983Drive::getI()
 {
 	return leftPID->GetI();
+}
+
+float C1983Drive::getP()
+{
+	return leftPID->GetP();
 }
 
 float C1983Drive::getLSetpoint()
@@ -176,6 +185,18 @@ void C1983Drive::iDown()
 {
 	rightPID->SetPID(rightPID->GetP(),rightPID->GetI() - .01,rightPID->GetD());
 	leftPID->SetPID(rightPID->GetP(),leftPID->GetI() - .01,leftPID->GetD());
+}
+
+void C1983Drive::pUp()
+{
+	rightPID->SetPID(rightPID->GetP() + .05,rightPID->GetI(),rightPID->GetD());
+	leftPID->SetPID(leftPID->GetP() + .05,leftPID->GetI(),leftPID->GetD());
+}
+	
+void C1983Drive::pDown()
+{
+	rightPID->SetPID(rightPID->GetP() - .05,rightPID->GetI(),rightPID->GetD());
+	leftPID->SetPID(rightPID->GetP() - .05,leftPID->GetI(),leftPID->GetD());
 }
 
 void C1983Drive::resetLeftI()

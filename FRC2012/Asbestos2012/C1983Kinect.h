@@ -30,6 +30,8 @@ class C1983Kinect
 private:
 	KinectStick *leftArm;
 	KinectStick *rightArm;
+	
+	bool shiftedHigh;
 public:
 	C1983Kinect();
 
@@ -38,5 +40,7 @@ public:
 
 	//Gets the left 'joystick' position
 	float getLeft();
+	
+	bool getShiftButton();
 };
 #endif

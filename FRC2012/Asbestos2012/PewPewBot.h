@@ -2,6 +2,7 @@
 #include "1983Defines2012.h"
 #include "C1983Drive.h"
 #include "C1983Kinect.h"
+#include <math.h>
 
 /**
  * @author:

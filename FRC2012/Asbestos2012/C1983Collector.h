@@ -5,7 +5,6 @@
 
 //IR Sensor Macros
 #define LOWSLOT (lowSlot->Get() == 1)
-#define MIDSLOT (midSlot->Get() == 1)
 #define TOPSLOT (topSlot->Get() == 1)
 
 class C1983Collector {
@@ -13,12 +12,10 @@ class C1983Collector {
 private:
 	Victor *collectorVicBottom; //Victors for the collection belts
 	Victor *collectorVicTop;
-	Victor *feedVic;
+	Victor *collectorVicPickup;
 	bool autoFeed; //Automatically feed balls in the collector
-	bool lowToMid, midToTop;
 
 	DigitalInput * lowSlot;
-	DigitalInput * midSlot;
 	DigitalInput * topSlot;
 
 public:
@@ -28,13 +25,7 @@ public:
 	//bool ballEnter();
 
 	//Sets the collector right
-	void update();
-
-	// Checks the amount of balls that has entered the collector.
-	char getBallCount();
-	
-	//Checks to see if the collector is feeding
-	bool isFeeding();
+	void collect();
 	
 	//Feeds to the shooter
 	void shoot();

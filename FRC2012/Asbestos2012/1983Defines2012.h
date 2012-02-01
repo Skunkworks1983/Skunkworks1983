@@ -2,7 +2,7 @@
 #define __1983DEFINES_H
 
 //PewPew Start
-#define KINECT 0
+#define KINECT 1
 #define USE_PID 1
 
 //PewPew End
@@ -26,15 +26,19 @@
 #define RIGHT_ENCODER_PORT_B 5
 
 //PIDs
-#define DRIVE_P 1.5
-#define DRIVE_I 0.1
+#define DRIVE_P 3.5
+#define DRIVE_I 0.0//0.1
 #define DRIVE_D 0
+
+#define DRIVE_P_LOW 2.3
+#define DRIVE_I_LOW 0
+#define DRIVE_D_LOW 0
 
 #define LIGHT_SENSOR_CHANNEL 0
 
 //Max speeds for the wheels in low and high gears
-#define MAXSPEEDHIGH 51
-#define MAXSPEEDLOW  10
+#define MAXSPEEDHIGH 43
+#define MAXSPEEDLOW  13
 //DriveBase End
 
 //Shooter Start
@@ -76,17 +80,19 @@
 //Tipper End
 
 //Collector Start
-#define COLLECTOR_FEED_VIC 0
+#define COLLECTOR_VIC_PICKUP 0
 #define COLLECTOR_VIC_BOTTOM 0
 #define COLLECTOR_VIC_TOP 0
 //Number of sensed ball storage spots
 #define COLLECTOR_SLOT_COUNT 3
-//Belt speed
+//Belt Vic Speed
 #define COLLECTOR_BELT_SPEED 1.0
+//Collector Vic Speed
+#define PICKUP_SPEED 1.0
+
 //Collector IR Sensors
-#define COLLECTOR_IR_LOW 0
-#define COLLECTOR_IR_MID 0
-#define COLLECTOR_IR_TOP 0
+#define COLLECTOR_IR_LOW_CHANNEL 0
+#define COLLECTOR_IR_TOP_CHANNEL 0
 //Collector End
 
 //GlyphCamera Start

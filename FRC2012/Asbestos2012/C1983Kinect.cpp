@@ -11,6 +11,7 @@ C1983Kinect::C1983Kinect()
 {
 	leftArm = new KinectStick(1);
 	rightArm = new KinectStick(2);
+	shiftedHigh = true;
 }
 
 float C1983Kinect::getLeft()
@@ -20,4 +21,11 @@ float C1983Kinect::getLeft()
 float C1983Kinect::getRight()
 {
 	return rightArm->GetY();
+}
+
+bool C1983Kinect::getShiftButton()
+{
+	if(rightArm->GetRawButton(0)) shiftedHigh = true;
+	if(rightArm->GetRawButton(1)) shiftedHigh = false;
+	return shiftedHigh;
 }

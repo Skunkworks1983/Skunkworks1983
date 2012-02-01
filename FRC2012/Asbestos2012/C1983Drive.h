@@ -57,8 +57,9 @@ public:
 	
 #if USE_PID
 	void iUp();
-	
 	void iDown();
+	void pUp();
+	void pDown();
 	
 	void resetLeftI();
 	void resetRightI();
@@ -67,6 +68,7 @@ public:
 	
 	
 	float getI();
+	float getP();
 	float getLSetpoint();
 	float getRSetpoint();
 	double getLPercent();
