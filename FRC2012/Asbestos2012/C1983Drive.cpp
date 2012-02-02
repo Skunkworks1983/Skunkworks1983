@@ -49,6 +49,8 @@ C1983Drive::C1983Drive()
 	//Shifter
 	shifter = new Relay(DIGITAL_MODULE,2);
 	
+	light = new Relay(DIGITAL_MODULE,1);
+	
 	lightSensorFront = new DigitalInput(LIGHT_SENSOR_CHANNEL_FRONT);
 	lightSensorBack = new DigitalInput(LIGHT_SENSOR_CHANNEL_BACK);
 	
@@ -128,6 +130,16 @@ void C1983Drive::shift(bool high)
 #endif
 	}else{
 		return;
+	}
+}
+
+void C1983Drive::setLight(bool on)
+{
+	if(on)
+	{
+		light->Set(Relay::kForward);
+	}else{
+		light->Set(Relay::kOff);
 	}
 }
 

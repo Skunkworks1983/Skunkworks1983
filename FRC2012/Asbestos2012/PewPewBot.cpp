@@ -54,6 +54,14 @@ void PewPewBot::OperatorControl() {
 			drive->shift(true);
 		}
 		
+		//check for light
+		if(rStick->GetRawButton(1))
+		{
+			drive->setLight(true);
+		}else{
+			drive->setLight(false);
+		}
+		
 #if USE_PID
 		//Check for PID modification DEBUG
 		if (lStick->GetRawButton(2) && count/5 == (float)count/5)

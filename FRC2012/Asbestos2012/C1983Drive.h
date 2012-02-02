@@ -32,6 +32,9 @@ private:
 	//Shifter Relay
 	Relay *shifter;
 	
+	//Light Relay
+	Relay *light;
+	
 	//The light sensors
 	DigitalInput *lightSensorFront;
 	DigitalInput *lightSensorBack;
@@ -50,6 +53,8 @@ public:
 	void updateCompressor();
 	
 	void shift(bool high);
+	
+	void setLight(bool on);
 	
 	bool getLightSensorBack();
 	

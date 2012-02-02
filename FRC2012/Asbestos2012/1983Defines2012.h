@@ -34,8 +34,9 @@
 #define DRIVE_I_LOW 0
 #define DRIVE_D_LOW 0
 
-#define LIGHT_SENSOR_CHANNEL_FRONT 13
-#define LIGHT_SENSOR_CHANNEL_BACK 11
+#define LIGHT_SENSOR_CHANNEL_FRONT 11
+#define LIGHT_SENSOR_CHANNEL_BACK 13
+#define LIGHT_CHANNEL 1
 
 //Max speeds for the wheels in low and high gears
 #define MAXSPEEDHIGH 43
