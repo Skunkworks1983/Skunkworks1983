@@ -15,7 +15,8 @@ PewPewBot::~PewPewBot()
 {
 }
 
-void PewPewBot::OperatorControl() {
+void PewPewBot::OperatorControl()
+{
 	int count = 0;//DEBUG (C1983)
 	while (IsOperatorControl() && !IsDisabled())
 	{
@@ -23,7 +24,10 @@ void PewPewBot::OperatorControl() {
 		if (count/100 == (float)count/100)
 		{
 #if USE_PID
-			cout<<"Left Speed: "<<drive->getL()<<" Left Percent: "<<(int)(drive->getLPercent() * 100)<<" Left Error: "<<drive->getLError()<<" P: "<<drive->getP()<<" Setpoint: "<<drive->getLSetpoint()<<endl;
+			cout<<"Left Speed: "<<drive->getL()<<" Left Percent: "
+					<<(int)(drive->getLPercent() * 100)<<" Left Error: "
+					<<drive->getLError()<<" P: "<<drive->getP()<<" Setpoint: "
+					<<drive->getLSetpoint()<<endl;
 #else
 			cout<<"Left Speed: "<<drive->getL()<<" Right Speed: "<<drive->getR()<<endl;
 #endif
@@ -32,19 +36,21 @@ void PewPewBot::OperatorControl() {
 		//Set the compressor
 		drive->updateCompressor();
 		//Set the drive base to the stick speeds
-		if(fabs(rStick->GetY()) > 0.02)
+		if (fabs(rStick->GetY()) > 0.02)
 		{
 			drive->setSpeedR(rStick->GetY());
-		}else{
+		} else
+		{
 			drive->setSpeedR(0.0);
 		}
-		if(fabs(lStick->GetY()) > .02)
+		if (fabs(lStick->GetY()) > .02)
 		{
 			drive->setSpeedL(lStick->GetY());
-		}else{
+		} else
+		{
 			drive->setSpeedL(0.0);
 		}
-		
+
 		//check for shifting
 		if (lStick->GetRawButton(1))
 		{
@@ -53,15 +59,16 @@ void PewPewBot::OperatorControl() {
 		{
 			drive->shift(true);
 		}
-		
+
 		//check for light
-		if(rStick->GetRawButton(1))
+		if (rStick->GetRawButton(1))
 		{
 			drive->setLight(true);
-		}else{
+		} else
+		{
 			drive->setLight(false);
 		}
-		
+
 #if USE_PID
 		//Check for PID modification DEBUG
 		if (lStick->GetRawButton(2) && count/5 == (float)count/5)
@@ -88,6 +95,10 @@ void PewPewBot::OperatorControl() {
 	}
 }
 
+int PewPewBot::getOperatorControlMode()
+{
+	//
+}
 void PewPewBot::Disabled()
 {
 

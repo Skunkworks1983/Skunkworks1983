@@ -41,6 +41,8 @@
 //Max speeds for the wheels in low and high gears
 #define MAXSPEEDHIGH 43
 #define MAXSPEEDLOW  13
+
+#define LINE_STOP_SPEED .25 //The speed at which the robot runs to stop at the key
 //DriveBase End
 
 //Shooter Start
