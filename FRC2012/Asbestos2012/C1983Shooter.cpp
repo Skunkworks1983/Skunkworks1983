@@ -1,3 +1,4 @@
+#if 0
 #include "C1983Shooter.h"
 #include "Victor.h"
 
@@ -63,3 +64,4 @@ void C1983Shooter::aim(int preset = kLayup) {
 		break;
 	}
 }
+#endif

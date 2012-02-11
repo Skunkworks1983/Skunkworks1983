@@ -4,6 +4,7 @@
 #include "WPILib.h"
 #include "C1983PIDOutput.h"
 #include "C1983PIDSource.h"
+#include <math.h>
 
 class C1983Drive
 {
@@ -12,16 +13,18 @@ private:
 	Jaguar *leftJag2;
 	Jaguar *rightJag1;
 	Jaguar *rightJag2;
-#if USE_PID
+	
+	//Begin Drive PIDs
 	PIDController *leftPID;
 	PIDController *rightPID;
 
 	C1983PIDSource *leftPIDSource;
 	C1983PIDSource *rightPIDSource;
 	
-	PIDOutput *leftPIDOutput;
-	PIDOutput *rightPIDOutput;
-#endif
+	C1983PIDOutput *leftPIDOutput;
+	C1983PIDOutput *rightPIDOutput;
+	//End Drive Pids
+	
 	Encoder *leftEncoder;
 	Encoder *rightEncoder;
 	
@@ -38,6 +41,8 @@ private:
 	//The light sensors
 	DigitalInput *lightSensorFront;
 	DigitalInput *lightSensorBack;
+	
+	Gyro *gyro;
 	
 	bool shiftedHigh;
 	
@@ -60,29 +65,38 @@ public:
 	
 	bool getLightSensorFront();
 
+	float getGyro();
+	void resetGyro();
+	
 	double getR();
 	double getL();
 	
-#if USE_PID
+	double getRPosition();
+	double getLPosition();
+	
+	void resetEncoders();
+	
 	void iUp();
 	void iDown();
 	void pUp();
 	void pDown();
+	void dUp();
+	void dDown();
 	
 	void resetLeftI();
 	void resetRightI();
+	void cleanPID();
+	void enablePID();
 	
 	float getLError();
 	
-	
 	float getI();
 	float getP();
+	float getD();
 	float getLSetpoint();
 	float getRSetpoint();
 	double getLPercent();
 	double getRPercent();
-	
-#endif
 	
 	~C1983Drive();
 };

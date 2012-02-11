@@ -1,3 +1,4 @@
+#if 0
 #ifndef __C1983SHOOTER_H
 #define __C1983SHOOTER_H
 #include "WPIlib.h"
@@ -47,4 +48,5 @@ public:
 	//sets the spead and angle to the presets!
 	void aim(int preset);
 };
+#endif
 #endif

@@ -18,36 +18,28 @@ PewPewBot::~PewPewBot()
 void PewPewBot::OperatorControl()
 {
 	int count = 0;//DEBUG (C1983)
+	drive->enablePID();
 	while (IsOperatorControl() && !IsDisabled())
 	{
 		count++;
-		if (count/100 == (float)count/100)
+		if (count/25 == (float)count/25)
 		{
-#if USE_PID
-			cout<<"Left Speed: "<<drive->getL()<<" Left Percent: "
-					<<(int)(drive->getLPercent() * 100)<<" Left Error: "
-					<<drive->getLError()<<" P: "<<drive->getP()<<" Setpoint: "
-					<<drive->getLSetpoint()<<endl;
-#else
-			cout<<"Left Speed: "<<drive->getL()<<" Right Speed: "<<drive->getR()<<endl;
-#endif
+			cout<<"SetpointL: "<<drive->getLSetpoint()<<" ErrorL: "<<drive->getLError()<<" LPercent: "<<drive->getLPercent()<<" D: "<<drive->getD()<<endl;
 		}
 
 		//Set the compressor
 		drive->updateCompressor();
-		//Set the drive base to the stick speeds
+		//Set the drive base to the stick speeds (Joysticks are backwards yo!)
 		if (fabs(rStick->GetY()) > 0.02)
 		{
-			drive->setSpeedR(rStick->GetY());
-		} else
-		{
+			drive->setSpeedR(-rStick->GetY());
+		}else{
 			drive->setSpeedR(0.0);
 		}
 		if (fabs(lStick->GetY()) > .02)
 		{
-			drive->setSpeedL(lStick->GetY());
-		} else
-		{
+			drive->setSpeedL(-lStick->GetY());
+		} else{
 			drive->setSpeedL(0.0);
 		}
 
@@ -55,8 +47,7 @@ void PewPewBot::OperatorControl()
 		if (lStick->GetRawButton(1))
 		{
 			drive->shift(false);
-		} else
-		{
+		}else{
 			drive->shift(true);
 		}
 
@@ -69,15 +60,19 @@ void PewPewBot::OperatorControl()
 			drive->setLight(false);
 		}
 
-#if USE_PID
+		if(lStick->GetRawButton(10))
+		{
+			drive->resetGyro();
+		}
+		
 		//Check for PID modification DEBUG
 		if (lStick->GetRawButton(2) && count/5 == (float)count/5)
 		{
-			drive->pDown();
+			drive->dDown();
 		}
 		if (lStick->GetRawButton(3) && count/5 == (float)count/5)
 		{
-			drive->pUp();
+			drive->dUp();
 		}
 		if (lStick->GetRawButton(5))
 		{
@@ -90,7 +85,7 @@ void PewPewBot::OperatorControl()
 
 		if (fabs(drive->getRSetpoint()- drive->getR()) <= .01)
 			drive->resetRightI();
-#endif
+
 		Wait(.01);
 	}
 }
@@ -98,11 +93,17 @@ void PewPewBot::OperatorControl()
 int PewPewBot::getOperatorControlMode()
 {
 	//
+	return 0;
 }
+
 void PewPewBot::Disabled()
 {
-
+	drive->resetEncoders();
+	drive->cleanPID();
+	while(IsDisabled())
+	{
+		Wait(0.1);
+	}
 }
 
-START_ROBOT_CLASS(PewPewBot)
-;
+START_ROBOT_CLASS(PewPewBot);

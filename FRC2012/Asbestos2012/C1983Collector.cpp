@@ -15,6 +15,7 @@ C1983Collector::C1983Collector() {
 	//The auto feed for the collector, setting it to true.
 }
 
+//Method that runs all three belts until the top slot is full, the bottom two until the second is filled, and just the collector until the button stops running
 void C1983Collector::collect()
 {
 	if(!TOPSLOT)
