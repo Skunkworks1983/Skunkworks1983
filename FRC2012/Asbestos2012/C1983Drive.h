@@ -11,10 +11,10 @@
 class C1983Drive
 {
 private:
-	Jaguar *leftJag1;
-	Jaguar *leftJag2;
-	Jaguar *rightJag1;
-	Jaguar *rightJag2;
+	Victor *leftVic1;
+	Victor *leftVic2;
+	Victor *rightVic1;
+	Victor *rightVic2;
 	
 	//Begin Drive PIDs
 	PIDController *leftPID;

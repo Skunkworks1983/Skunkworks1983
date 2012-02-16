@@ -3,10 +3,10 @@
 
 C1983Drive::C1983Drive()
 {
-	leftJag1 = new Jaguar(JAG_PORT_LEFT_1);
-	leftJag2 = new Jaguar(JAG_PORT_LEFT_2);
-	rightJag1 = new Jaguar(JAG_PORT_RIGHT_1);
-	rightJag2 = new Jaguar(JAG_PORT_RIGHT_2);
+	leftVic1 = new Victor(VIC_PORT_LEFT_1);
+	leftVic2 = new Victor(VIC_PORT_LEFT_2);
+	rightVic1 = new Victor(VIC_PORT_RIGHT_1);
+	rightVic2 = new Victor(VIC_PORT_RIGHT_2);
 	
 	leftEncoder = new Encoder(LEFT_ENCODER_PORT_A,LEFT_ENCODER_PORT_B,true);
 	rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A,RIGHT_ENCODER_PORT_B);
@@ -26,8 +26,8 @@ C1983Drive::C1983Drive()
 	rightPIDSource = new C1983PIDSource(rightEncoder,MAXSPEEDHIGH,false);
 	
 	//Left is reversed, right isn't
-	leftPIDOutput = new C1983PIDOutput(leftJag1,leftJag2,true);
-	rightPIDOutput = new C1983PIDOutput(rightJag1,rightJag2,false);
+	leftPIDOutput = new C1983PIDOutput(leftVic1,leftVic2,true);
+	rightPIDOutput = new C1983PIDOutput(rightVic1,rightVic2,false);
 	
 	leftPID = new PIDController(DRIVE_P,DRIVE_I,DRIVE_D,leftPIDSource,leftPIDOutput);
 	rightPID = new PIDController(DRIVE_P,DRIVE_I,DRIVE_D,rightPIDSource,rightPIDOutput);
@@ -42,7 +42,7 @@ C1983Drive::C1983Drive()
 
 	//Turn PID Begin
 	turnPIDSource = new C1983TurnPIDSource(gyro);
-	turnPIDOutput = new C1983TurnPIDOutput(leftJag1,leftJag2,rightJag1,rightJag2);
+	turnPIDOutput = new C1983TurnPIDOutput(leftVic1,leftVic2,rightVic1,rightVic2);
 	turnPID = new PIDController(TURN_P,TURN_I,TURN_D,turnPIDSource,turnPIDOutput);
 	turnPID->SetOutputRange(-1.0,1.0);
 	turnPID->SetInputRange(-360,360);
@@ -65,7 +65,7 @@ C1983Drive::C1983Drive()
 	shiftedHigh = true;
 }
 
-//Set both jags left side to the given speed -1.0 to 1.0
+//Set both vicss left side to the given speed -1.0 to 1.0
 void C1983Drive::setSpeedL(float speed)
 {
 	leftPID->SetSetpoint(speed);
@@ -75,7 +75,7 @@ void C1983Drive::setSpeedL(float speed)
 	}
 }
 
-//Set both jags right side to the negative of a given speed -1.0 to 1.0
+//Set both vics right side to the negative of a given speed -1.0 to 1.0
 void C1983Drive::setSpeedR(float speed)
 {
 	if(fabs(rightPID->GetSetpoint())/rightPID->GetSetpoint() != fabs(speed)/speed || speed == 0.0)

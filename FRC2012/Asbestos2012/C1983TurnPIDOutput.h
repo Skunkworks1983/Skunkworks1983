@@ -3,9 +3,9 @@
 class C1983TurnPIDOutput : public PIDOutput
 {
 public:
-	C1983TurnPIDOutput(Jaguar *ljag1, Jaguar *ljag2, Jaguar *rjag1, Jaguar *rjag2);
+	C1983TurnPIDOutput(Victor *lvic1, Victor *lvic2, Victor *rvic1, Victor *rvic2);
 	void PIDWrite(float output);
 	
 private:
-	Jaguar *jagLeft1,*jagLeft2,*jagRight1,*jagRight2;
+	Victor *vicLeft1,*vicLeft2,*vicRight1,*vicRight2;
 };

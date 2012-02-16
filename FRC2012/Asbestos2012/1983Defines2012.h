@@ -13,17 +13,17 @@
 #define DIGITAL_MODULE 1
 #define COMPRESSOR_PORT 1
 
-//Jaguars
-#define JAG_PORT_LEFT_1 1
-#define JAG_PORT_LEFT_2 2
-#define JAG_PORT_RIGHT_1 3
-#define JAG_PORT_RIGHT_2 4
+//Drive Victors
+#define VIC_PORT_LEFT_1 1
+#define VIC_PORT_LEFT_2 2
+#define VIC_PORT_RIGHT_1 3
+#define VIC_PORT_RIGHT_2 4
 
 //Encoders
-#define LEFT_ENCODER_PORT_A 6
-#define LEFT_ENCODER_PORT_B 7
-#define RIGHT_ENCODER_PORT_A 4
-#define RIGHT_ENCODER_PORT_B 5
+#define LEFT_ENCODER_PORT_A 11
+#define LEFT_ENCODER_PORT_B 12
+#define RIGHT_ENCODER_PORT_A 13
+#define RIGHT_ENCODER_PORT_B 14
 
 //PIDs
 #define DRIVE_P 2.8
