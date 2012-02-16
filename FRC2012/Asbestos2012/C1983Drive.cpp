@@ -38,6 +38,16 @@ C1983Drive::C1983Drive()
 	leftPID->SetInputRange(-1.0,1.0);
 	rightPID->SetInputRange(-1.0,1.0);
 
+	gyro = new Gyro(GYRO_CHANNEL);
+
+	//Turn PID Begin
+	turnPIDSource = new C1983TurnPIDSource(gyro);
+	turnPIDOutput = new C1983TurnPIDOutput(leftJag1,leftJag2,rightJag1,rightJag2);
+	turnPID = new PIDController(TURN_P,TURN_I,TURN_D,turnPIDSource,turnPIDOutput);
+	turnPID->SetOutputRange(-1.0,1.0);
+	turnPID->SetInputRange(-360,360);
+	//Turn PID End
+	
 	//Compressor and compressor switch. compressorSwitch reads 0 when the compressor needs to be running
 	compressor = new Relay(DIGITAL_MODULE,COMPRESSOR_PORT,Relay::kBothDirections);
 	compressorSwitch = new DigitalInput(DIGITAL_MODULE,COMPRESSOR_SWITCH_PORT);
@@ -50,7 +60,6 @@ C1983Drive::C1983Drive()
 	lightSensorFront = new DigitalInput(LIGHT_SENSOR_CHANNEL_FRONT);
 	lightSensorBack = new DigitalInput(LIGHT_SENSOR_CHANNEL_BACK);
 	
-	gyro = new Gyro(GYRO_CHANNEL);
 	//We start shifted high
 	shift(true);
 	shiftedHigh = true;

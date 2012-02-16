@@ -4,6 +4,8 @@
 #include "WPILib.h"
 #include "C1983PIDOutput.h"
 #include "C1983PIDSource.h"
+#include "C1983TurnPIDSource.h"
+#include "C1983TurnPIDOutput.h"
 #include <math.h>
 
 class C1983Drive
@@ -23,7 +25,12 @@ private:
 	
 	C1983PIDOutput *leftPIDOutput;
 	C1983PIDOutput *rightPIDOutput;
-	//End Drive Pids
+	//End Drive PIDs
+	
+	//TurnPID
+	C1983TurnPIDSource *turnPIDSource;
+	C1983TurnPIDOutput *turnPIDOutput;
+	//End TurnPID
 	
 	Encoder *leftEncoder;
 	Encoder *rightEncoder;
@@ -97,6 +104,10 @@ public:
 	float getRSetpoint();
 	double getLPercent();
 	double getRPercent();
+	
+	//Begin Turn PID
+	PIDController *turnPID;
+	//End Turn PID
 	
 	~C1983Drive();
 };

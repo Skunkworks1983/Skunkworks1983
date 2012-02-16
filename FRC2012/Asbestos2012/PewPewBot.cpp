@@ -9,6 +9,7 @@ PewPewBot::PewPewBot()
 #endif
 	lStick = new Joystick(1);
 	rStick = new Joystick(2);
+	driverStation = DriverStation::GetInstance();
 }
 
 PewPewBot::~PewPewBot()
@@ -17,18 +18,24 @@ PewPewBot::~PewPewBot()
 
 void PewPewBot::OperatorControl()
 {
+	DriverStationEnhancedIO &myEIO = driverStation->GetEnhancedIO();
 	int count = 0;//DEBUG (C1983)
 	drive->enablePID();
+	
+	//drive->turnPID->Enable();
 	while (IsOperatorControl() && !IsDisabled())
 	{
 		count++;
 		if (count/25 == (float)count/25)
 		{
-			cout<<"SetpointL: "<<drive->getLSetpoint()<<" ErrorL: "<<drive->getLError()<<" LPercent: "<<drive->getLPercent()<<" D: "<<drive->getD()<<endl;
+			//cout<<"SetpointL: "<<drive->getLSetpoint()<<" ErrorL: "<<drive->getLError()<<" LPercent: "<<drive->getLPercent()<<" D: "<<drive->getD()<<endl;
+			cout<<"Setpoint: "<<drive->turnPID->GetSetpoint()<<" Angle: "<<drive->getGyro()<<" Error: "<<drive->turnPID->GetError()<<endl;
 		}
+		
 
 		//Set the compressor
 		drive->updateCompressor();
+		
 		//Set the drive base to the stick speeds (Joysticks are backwards yo!)
 		if (fabs(rStick->GetY()) > 0.02)
 		{
@@ -86,7 +93,7 @@ void PewPewBot::OperatorControl()
 		if (fabs(drive->getRSetpoint()- drive->getR()) <= .01)
 			drive->resetRightI();
 
-		Wait(.01);
+		Wait(0.02);
 	}
 }
 
@@ -102,7 +109,7 @@ void PewPewBot::Disabled()
 	drive->cleanPID();
 	while(IsDisabled())
 	{
-		Wait(0.1);
+		Wait(0.02);
 	}
 }
 

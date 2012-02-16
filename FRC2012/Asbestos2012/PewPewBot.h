@@ -28,6 +28,8 @@ public:
 	//Controls
 	Joystick *lStick;
 	Joystick *rStick;
+	DriverStation * driverStation;
+	
 #if KINECT
 	C1983Kinect *kinect;
 #endif

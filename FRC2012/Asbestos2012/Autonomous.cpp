@@ -66,7 +66,7 @@ void PewPewBot::Autonomous()
 #else	
 		kinectCode();
 #endif
-		Wait(0.1);
+		Wait(0.02);
 	}
 }
 

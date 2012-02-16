@@ -1,150 +1,83 @@
 #include "C1983Collector.h"
-C1983Collector::C1983Collector() {
+
+C1983Collector::C1983Collector(C1983Shooter *sh) {
+	shooter = sh;
 	//Victor used for feeding
 	collectorVicPickup = new Victor (COLLECTOR_VIC_PICKUP);
 
 	//First victor used for collector
-	collectorVicBottom = new Victor (COLLECTOR_VIC_BOTTOM);
+	collectorVicLow = new Victor (COLLECTOR_VIC_LOW);
 
 	//Second victor used for collecting
 	collectorVicTop = new Victor (COLLECTOR_VIC_TOP);
 
 	//Sensors
 	lowSlot = new DigitalInput(COLLECTOR_IR_LOW_CHANNEL);
+	midSlot = new DigitalInput(COLLECTOR_IR_MID_CHANNEL);
 	topSlot = new DigitalInput(COLLECTOR_IR_TOP_CHANNEL);
+	
+	lowLastState = false;
+	collectorTransition = false;
+	collectorCount = 0;
+	
+	manual = false;
+	forward = true;
 	//The auto feed for the collector, setting it to true.
 }
 
-//Method that runs all three belts until the top slot is full, the bottom two until the second is filled, and just the collector until the button stops running
-void C1983Collector::collect()
-{
-	if(!TOPSLOT)
+void C1983Collector::update()
+{	
+	if(manual && forward) //Manual forward
 	{
-		collectorVicBottom->Set(COLLECTOR_BELT_SPEED);
+		collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+		collectorVicLow->Set(COLLECTOR_BELT_SPEED);
 		collectorVicTop->Set(COLLECTOR_BELT_SPEED);
-		collectorVicPickup->Set(PICKUP_SPEED);
-	}else if(!LOWSLOT){
-		collectorVicBottom->Set(COLLECTOR_BELT_SPEED);
-		collectorVicPickup->Set(PICKUP_SPEED);
-	}else{
-		collectorVicPickup->Set(PICKUP_SPEED);
-	}
-}
-
-void C1983Collector::shoot() {
-	
-}
-
-
-/*
-//Sees if the collector is feeding balls.
-bool C1983Collector::isFeeding() {
-	//Makes sure the collector victors are equal to zero to see if the collector is feeding.
-	return collectorVicBottom->Get() != 0 || collectorVicTop->Get() != 0;
-}
-
-
-char C1983Collector::getBallCount() {
-	char ballCount = (char)LOWSLOT + (char)MIDSLOT + (char)TOPSLOT;
-	if (!isFeeding()) {
-		return ballCount;
-	} else {
-		return 0;
-	}
-}*/
-
-/*
- * C1983Collector.cpp
- *
- *  Created on: Jan 14, 2012
- *      Author: Austin
- *
-
-void C1983Collector::update() {
-	if (midToTop) {
+	}else if(manual){ //Manual reverse
+		collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
+		collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
+		collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
+	}else if(collecting && !shooting){ 
+		if(collectorCount > COLLECTOR_TIMEOUT)
+		{
+			collectorVicPickup->Set(0.0);
+			collectorVicLow->Set(0.0);
+			collectorVicTop->Set(0.0);
+			collecting = false;
+			collectorCount = 0;
+		}else if(!TOPSLOT){
+			collectorVicTop->Set(COLLECTOR_BELT_SPEED);
+			collectorVicLow->Set(COLLECTOR_BELT_SPEED);
+			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+		}else if(!MIDSLOT){
+			collectorVicTop->Set(0.0);
+			collectorVicLow->Set(COLLECTOR_BELT_SPEED);
+			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);			
+		}else if(!LOWSLOT){
+			collectorVicTop->Set(0.0);
+			collectorVicLow->Set(0.0);
+			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+		}else{
+			collectorVicTop->Set(0.0);
+			collectorVicLow->Set(0.0);
+			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+		}
+		collectorCount++;
+	}else if(shooting && shooter->isReady()){
 		collectorVicTop->Set(COLLECTOR_BELT_SPEED);
-		collectorVicBottom->Set(COLLECTOR_BELT_SPEED);
-		midToTop = !TOPSLOT;
-		lowToMid = LOWSLOT;
-	}
-	if (lowToMid) {
-		lowToMid = !MIDSLOT;
-		if (!midToTop) {
-			collectorVicTop->Set(0);
-			collectorVicBottom->Set(COLLECTOR_BELT_SPEED);
+		if(SHOT_AWAY_SWITCH)
+		{
+			collectorVicTop->Set(0.0);
+			shooting = false;
+			collecting = true;
 		}
 	}
-	if (!midToTop && !lowToMid){
-		collectorVicTop->Set(0.0);
-		collectorVicBottom->Set(0.0);
-		midToTop = !TOPSLOT && MIDSLOT;
-		lowToMid = !MIDSLOT && LOWSLOT;
-	}
-} 
- 
- void C1983Collector::feed()
- {
- //Runs the ball through the collector.
 
- //Checks to see if the goal slot is empty.
- if (goalSlot != kNull)
- {
- //If the goal slot is the shooter which is controlled by the driver, do this.
- if (goalSlot == kShooter)
- {
- //Set the speed of the top and bottom victor.
- collectorVicTop->Set(COLLECTORDRIVESPEED);
- collectorVicBottom->Set(COLLECTORDRIVESPEED);
- }
- 
- //If the top microswitch has found that a ball has shot, then do the following:
- if (ballInSlot(goalSlot))
- {
- //Set the top slot under the shooter as empty, which will allow the autofeed to to move the balls up again.
- kTop = goalslot;
- kTop = kNull;
- }
+}
 
- }
+void C1983Collector::requestShot(){
+	shooting = true;
+}
 
- if (goalSlot == kTop) //If the goal slot is the top, or the shooter
- {
- //Set the speed of the first collector victor to move the ball through the feeder.
- collectorVicBottom->Set(COLLECTORDRIVESPEED); //Top belt
- }
-
- //Set the speed of the second collector victor to move the ball through the feeder.
- collectorVicTop->Set(COLLECTORDRIVESPEED);
-
- //If the goal slot is filled.
- if (ballInSlot(goalSlot))
- {
- //Set the goal slot as full.
- goalSlot = kNull;
- }
- }
-
- //if the goal slot for the feeder is full.
- if (goalSlot == kNull)
- {
- //Stop the victors in the collector.
- collectorVicBottom->Set(0.0); //If there isn't a goal stop the victors
- collectorVicTop->Set(0.0);
-
- if (autoFeed)//Auto feed the next possible ball
-
- {
- //Setting the area after the shot equal to variable i.
- for (int i = kTop + 1; i <= kBottom; i++)
- {
- //Checks if the ball has been shot and there is not a ball in the area underneath it.
- if (ballInSlot(i) && !ballInSlot(i - 1))
- {
- //Feed the ball, and balls below up a level
- goalSlot = i - 1;
- }
- }
- }
-
- }
- */
+void C1983Collector::requestCollect(){
+	collecting = true;
+}

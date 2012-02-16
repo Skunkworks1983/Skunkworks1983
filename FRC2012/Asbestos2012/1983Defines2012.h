@@ -3,14 +3,15 @@
 
 //PewPew Start
 #define KINECT 0
+#define DEADBAND 0.05
 
 //PewPew End
 
 //DriveBase Start
 //Air Compressor
-#define COMPRESSOR_SWITCH_PORT 14
+#define COMPRESSOR_SWITCH_PORT 4
 #define DIGITAL_MODULE 1
-#define COMPRESSOR_PORT 8
+#define COMPRESSOR_PORT 1
 
 //Jaguars
 #define JAG_PORT_LEFT_1 1
@@ -33,8 +34,17 @@
 #define DRIVE_I_LOW 0.0
 #define DRIVE_D_LOW 0
 
-#define LIGHT_SENSOR_CHANNEL_FRONT 11
-#define LIGHT_SENSOR_CHANNEL_BACK 13
+#define TURN_P 0.05
+#define TURN_I 0.0
+#define TURN_D 0.0
+
+#define TURN_P_LOW 2.3
+#define TURN_I_LOW 0.0
+#define TURN_D_LOW 0.0
+
+#define LIGHT_SENSOR_CHANNEL_FRONT 1
+#define LIGHT_SENSOR_CHANNEL_BACK 2
+#define LIGHT_SENSOR_CHANNEL_BRIDGE 3
 #define LIGHT_CHANNEL 1
 
 //Gyro Channel	
@@ -48,7 +58,7 @@
 //DriveBase End
 
 //Shooter Start
-#define SHOOTER 0
+#define SHOOTER 1
 
 #define SHOOTER_VIC_CHANNEL 0				//Channel for shooter wheel
 #define SHOOTER_HOOD_CHANNEL 0
@@ -78,6 +88,8 @@
 
 #define HOOD_HIGH Relay::kReverse
 #define HOOD_LOW Relay::kForward
+
+#define SHOT_AWAY_SWITCH 0
 //Shooter End
 
 //Tipper Start
@@ -86,17 +98,20 @@
 
 //Collector Start
 #define COLLECTOR_VIC_PICKUP 0
-#define COLLECTOR_VIC_BOTTOM 0
+#define COLLECTOR_VIC_LOW 0
 #define COLLECTOR_VIC_TOP 0
 //Number of sensed ball storage spots
 #define COLLECTOR_SLOT_COUNT 3
 //Belt Vic Speed
-#define COLLECTOR_BELT_SPEED 1.0
+#define COLLECTOR_BELT_SPEED 0.2
 //Collector Vic Speed
-#define PICKUP_SPEED 1.0
+#define COLLECTOR_PICKUP_SPEED 0.2
+//Timeout for blind running collectors
+#define COLLECTOR_TIMEOUT 150
 
 //Collector IR Sensors
 #define COLLECTOR_IR_LOW_CHANNEL 0
+#define COLLECTOR_IR_MID_CHANNEL 0
 #define COLLECTOR_IR_TOP_CHANNEL 0
 //Collector End
 
@@ -116,5 +131,20 @@
 
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1);
+#define COLLECT_BUTTON
+#define SHOOT_BUTTON
+#define ARM_BUTTON
+#define MANUAL_BUTTON
+#define MANUAL_SWITCH
+#define FORWARD_SWITCH
+#define TIPPER_SWITCH
+#define COLLECT_BUTTON_OP //operator's collect button
+#define LAYUP_BUTTON
+#define FREETHROW_BUTTON
+#define RPM_MANUAL_SLIDER
+#define KEY_ALIGN_BUTTON
+#define AUTO_TARGER_BUTTON
+#define FULL_AUTO_SWTICH
+
 
 #endif
