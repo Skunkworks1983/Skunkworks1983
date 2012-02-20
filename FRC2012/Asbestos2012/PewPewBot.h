@@ -2,6 +2,8 @@
 #include "1983Defines2012.h"
 #include "C1983Drive.h"
 #include "C1983Kinect.h"
+#include "C1983Collector.h"
+#include "C1983Shooter.h"
 #include <math.h>
 
 /**
@@ -17,14 +19,11 @@ class PewPewBot : public SimpleRobot
 	};
 public:
 	C1983Drive *drive;
-
-	/*
-	 C1983Collector collector;
-	 C1983Shooter shooter;
-	 C1983Tipper tipper;
-	 C1983Camera camera;
-	 */
-
+	
+	 C1983Collector *collector;
+	 C1983Shooter *shooter;
+	 //C1983Camera *camera;
+	 
 	//Controls
 	Joystick *lStick;
 	Joystick *rStick;

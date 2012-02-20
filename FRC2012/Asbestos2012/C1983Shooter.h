@@ -3,14 +3,18 @@
 #include "WPILib.h"
 #include "math.h"
 #include "1983Defines2012.h"
+#include "C1983PIDOutput.h"
+#include "C1983Encoder.h"
 #if SHOOTER
 class C1983Shooter
 {
 private:
-	Encoder *shooterEncoder;
-	Victor *shooterVic;
+	Victor *shooterVic1;
+	Victor *shooterVic2;
 	Relay *hoodAngler;
+	C1983PIDOutput *shooterPIDOutput;
 	PIDController *shooterPID;
+	//C1983Encoder *shooterEncoder;
 	
 	float goalRPM;
 	bool angleHigh;
@@ -24,6 +28,8 @@ public:
 	void setPower(float powerRPM);
 	void setAngle(bool high);
 	void setShot(short shotNum);
+	void setJankyPower(float power);
+	void jankyStop();
 	
 	enum {kLayup, kFreethrow, kOther} shot;
 };

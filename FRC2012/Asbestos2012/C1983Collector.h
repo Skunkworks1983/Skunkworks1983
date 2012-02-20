@@ -26,8 +26,10 @@ private:
 	bool shooting;
 	bool collecting;
 	int collectorCount;
+	int shooterCount;
 	bool manual;
 	bool forward;
+	bool beganShotCheck;
 public:
 	C1983Collector(C1983Shooter *sh);
 
@@ -41,5 +43,11 @@ public:
 	
 	//Feeds to the shooter
 	void requestShot();
+	
+	void jankyGo();
+	
+	void jankyStop();
+	
+	bool getSense(int height);
 };
 #endif

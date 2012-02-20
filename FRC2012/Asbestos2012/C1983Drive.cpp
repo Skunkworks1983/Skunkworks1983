@@ -8,8 +8,8 @@ C1983Drive::C1983Drive()
 	rightVic1 = new Victor(VIC_PORT_RIGHT_1);
 	rightVic2 = new Victor(VIC_PORT_RIGHT_2);
 	
-	leftEncoder = new Encoder(LEFT_ENCODER_PORT_A,LEFT_ENCODER_PORT_B,true);
-	rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A,RIGHT_ENCODER_PORT_B);
+	leftEncoder = new Encoder(ENCODER_SLOT,LEFT_ENCODER_PORT_A,ENCODER_SLOT,LEFT_ENCODER_PORT_B,false,Encoder::k4X);
+	rightEncoder = new Encoder(ENCODER_SLOT,RIGHT_ENCODER_PORT_A,ENCODER_SLOT,RIGHT_ENCODER_PORT_B,true,Encoder::k4X);
 	
 	//initialize encoders
 	leftEncoder->Start();
@@ -19,15 +19,16 @@ C1983Drive::C1983Drive()
 	leftEncoder->SetPIDSourceParameter(Encoder::kRate);
 	rightEncoder->SetPIDSourceParameter(Encoder::kRate);
 	
-	leftEncoder->SetDistancePerPulse(0.01925);
-	rightEncoder->SetDistancePerPulse(0.01925);
+	leftEncoder->SetDistancePerPulse(FEET_PER_TICK_HIGH);
+	rightEncoder->SetDistancePerPulse(FEET_PER_TICK_HIGH);
 
+#if DRIVE_PID
 	leftPIDSource = new C1983PIDSource(leftEncoder,MAXSPEEDHIGH,false);
 	rightPIDSource = new C1983PIDSource(rightEncoder,MAXSPEEDHIGH,false);
 	
-	//Left is reversed, right isn't
-	leftPIDOutput = new C1983PIDOutput(leftVic1,leftVic2,true);
-	rightPIDOutput = new C1983PIDOutput(rightVic1,rightVic2,false);
+	//right is reversed, left isn't
+	leftPIDOutput = new C1983PIDOutput(leftVic1,leftVic2,false);
+	rightPIDOutput = new C1983PIDOutput(rightVic1,rightVic2,true);
 	
 	leftPID = new PIDController(DRIVE_P,DRIVE_I,DRIVE_D,leftPIDSource,leftPIDOutput);
 	rightPID = new PIDController(DRIVE_P,DRIVE_I,DRIVE_D,rightPIDSource,rightPIDOutput);
@@ -37,7 +38,7 @@ C1983Drive::C1983Drive()
 	
 	leftPID->SetInputRange(-1.0,1.0);
 	rightPID->SetInputRange(-1.0,1.0);
-
+#endif
 	gyro = new Gyro(GYRO_CHANNEL);
 
 	//Turn PID Begin
@@ -53,36 +54,49 @@ C1983Drive::C1983Drive()
 	compressorSwitch = new DigitalInput(DIGITAL_MODULE,COMPRESSOR_SWITCH_PORT);
 	
 	//Shifter
-	shifter = new Relay(DIGITAL_MODULE,2);
+	shiftHigh = new Solenoid(SOLENOID_MODULE,SHIFTER_CHANNEL);
+	shiftLow = new Solenoid(SOLENOID_MODULE,SHIFTER_LOW_CHANNEL);
 	
-	light = new Relay(DIGITAL_MODULE,1);
+	tipper = new C1983Tipper();
+	
+	light = new Relay(DIGITAL_MODULE,LIGHT_CHANNEL);
 	
 	lightSensorFront = new DigitalInput(LIGHT_SENSOR_CHANNEL_FRONT);
 	lightSensorBack = new DigitalInput(LIGHT_SENSOR_CHANNEL_BACK);
 	
 	//We start shifted high
+	shiftedHigh = false;
 	shift(true);
-	shiftedHigh = true;
 }
 
 //Set both vicss left side to the given speed -1.0 to 1.0
 void C1983Drive::setSpeedL(float speed)
 {
+#if DRIVE_PID
 	leftPID->SetSetpoint(speed);
 	if(fabs(leftPID->GetSetpoint())/leftPID->GetSetpoint() != fabs(speed)/speed || speed == 0.0)
 	{
 		resetLeftI();
 	}
+#else
+	leftVic1->Set(speed);
+	leftVic2->Set(speed);
+#endif
 }
 
 //Set both vics right side to the negative of a given speed -1.0 to 1.0
 void C1983Drive::setSpeedR(float speed)
 {
+#if DRIVE_PID
 	if(fabs(rightPID->GetSetpoint())/rightPID->GetSetpoint() != fabs(speed)/speed || speed == 0.0)
 	{
 		resetRightI();
 	}
 	rightPID->SetSetpoint(speed);
+#else
+	rightVic1->Set(speed);
+	rightVic2->Set(speed);
+#endif
 }
 
 void C1983Drive::updateCompressor()
@@ -104,27 +118,45 @@ void C1983Drive::shift(bool high)
 	//Shift high
 	if(high && !shiftedHigh)
 	{
-		shifter->Set(Relay::kReverse);
+		cout<<"SHIFTING HIGH"<<endl;
+		shiftHigh->Set(true);
+		shiftLow->Set(false);
 		shiftedHigh = true;
-
+#if DRIVE_PID
 		leftPIDSource->setMaxSpeed(MAXSPEEDHIGH);
 		rightPIDSource->setMaxSpeed(MAXSPEEDHIGH);
 		leftPID->SetPID(DRIVE_P,DRIVE_I,DRIVE_D);
 		rightPID->SetPID(DRIVE_P,DRIVE_I,DRIVE_D);
-
+#endif		
+		//Fix the distance per pulse to account for the new reduction
+		leftEncoder->SetDistancePerPulse(FEET_PER_TICK_HIGH);
+		rightEncoder->SetDistancePerPulse(FEET_PER_TICK_HIGH);
+		
 	//Shift Low
 	}else if(!high && shiftedHigh){
-		shifter->Set(Relay::kForward);
+		cout<<"SHIFTING LOW"<<endl;
+		shiftHigh->Set(false);
+		shiftLow->Set(true);
+		
 		shiftedHigh = false;
-
+#if DRIVE_PID
 		leftPIDSource->setMaxSpeed(MAXSPEEDLOW);
 		rightPIDSource->setMaxSpeed(MAXSPEEDLOW);
 		leftPID->SetPID(DRIVE_P_LOW,DRIVE_I_LOW,DRIVE_D_LOW);
 		rightPID->SetPID(DRIVE_P_LOW,DRIVE_I_LOW,DRIVE_D_LOW);
-
+#endif
+		//Fix the distance per pulse to account for the new reduction
+		leftEncoder->SetDistancePerPulse(FEET_PER_TICK_LOW);
+		rightEncoder->SetDistancePerPulse(FEET_PER_TICK_LOW);
+	
 	}else{
 		return;
 	}
+}
+
+void C1983Drive::tip(bool down)
+{
+	tipper->tip(down);
 }
 
 void C1983Drive::setLight(bool on)

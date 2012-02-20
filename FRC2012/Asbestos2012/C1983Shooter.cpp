@@ -5,13 +5,17 @@
 
 C1983Shooter::C1983Shooter()
 {
-	shooterEncoder = new Encoder(SHOOTER_WHEEL_ENCODER_A,SHOOTER_WHEEL_ENCODER_B);
-	shooterVic = new Victor(SHOOTER_VIC_CHANNEL);
-	hoodAngler = new Relay(SHOOTER_HOOD_CHANNEL);
-	shooterEncoder->SetPIDSourceParameter(Encoder::kRate);
-	shooterEncoder->Start();
-	shooterPID = new PIDController(SHOOTER_P,SHOOTER_I,SHOOTER_D,shooterEncoder,shooterVic);
-	power = SHOT_LAYUP_SPEED;
+	//shooterEncoder = new Encoder(SHOOTER_WHEEL_ENCODER_A,SHOOTER_WHEEL_ENCODER_B);
+	shooterVic1 = new Victor(SHOOTER_VIC_CHANNEL1);
+	shooterVic2 = new Victor(SHOOTER_VIC_CHANNEL2);
+	//shooterEncoder = new C1983Encoder(10);
+	//hoodAngler = new Relay(SHOOTER_HOOD_CHANNEL);
+	//shooterEncoder->SetPIDSourceParameter(Encoder::kRate);
+	//shooterEncoder->SetDistancePerPulse(SHOOTER_UNITS_PER_TICK);
+	//shooterEncoder->Start();
+	//shooterPIDOutput = new C1983PIDOutput(shooterVic1,shooterVic2,false);
+	//shooterPID = new PIDController(SHOOTER_P,SHOOTER_I,SHOOTER_D,shooterEncoder,shooterPIDOutput);
+	//power = SHOT_LAYUP_SPEED;
 }
 
 void C1983Shooter::setShot(short shotNum)
@@ -50,9 +54,10 @@ void C1983Shooter::setAngle(bool high)
 
 bool C1983Shooter::isReady()
 {
-	return fabs(shooterEncoder->GetRate() - goalRPM) <= SHOOTER_VELOCITY_TOLERANCE;
+	return true;
+	//return fabs(shooterEncoder->GetRate() - goalRPM) <= SHOOTER_VELOCITY_TOLERANCE;
 }
-
+/*
 void C1983Shooter::setOn(bool on)
 {
 	if(!on)
@@ -62,6 +67,19 @@ void C1983Shooter::setOn(bool on)
 	}else{
 		shooterPID->SetSetpoint(power);
 	}
+}*/
+
+void C1983Shooter::setJankyPower(float power)
+{
+	shooterVic1->Set(-(power + 1)/2);
+	shooterVic2->Set(-(power + 1)/2);
 }
+
+void C1983Shooter::jankyStop()
+{
+	shooterVic1->Set(0.0);
+	shooterVic2->Set(0.0);
+}
+
 #endif
 #endif

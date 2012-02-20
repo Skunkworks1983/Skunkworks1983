@@ -1,5 +1,5 @@
 #include "C1983Drive.h"
-
+#if DRIVE_PID
 float C1983Drive::getLError()
 {
 	return (float)((int)(leftPID->GetError() * 100))/100;
@@ -75,3 +75,4 @@ void C1983Drive::dDown()
 	rightPID->SetPID(rightPID->GetP(),rightPID->GetI(),rightPID->GetD() - .05);
 	leftPID->SetPID(rightPID->GetP(),leftPID->GetI(),leftPID->GetD() - .05);
 }
+#endif

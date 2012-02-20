@@ -25,7 +25,7 @@ void C1983Drive::resetEncoders()
 	leftEncoder->Reset();
 	rightEncoder->Reset();
 }
-
+#if DRIVE_PID
 void C1983Drive::resetLeftI()
 {
 	leftPID->Reset();
@@ -49,4 +49,4 @@ void C1983Drive::enablePID()
 	leftPID->Enable();
 	rightPID->Enable();
 }
-
+#endif

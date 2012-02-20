@@ -1,7 +1,8 @@
 #include "C1983Tipper.h"
 C1983Tipper::C1983Tipper()
 {
-	tipper = new Solenoid(TIPPER_PORT);
+	tipperUp = new Solenoid(TIPPER_UP_CHANNEL);
+	tipperDown = new Solenoid(TIPPER_DOWN_CHANNEL);
 }
 
 /*
@@ -17,23 +18,26 @@ C1983Tipper::C1983Tipper()
  * allows crossing of the bridge
  * grow as a person
  */
-void C1983Tipper::tip(bool open)
+void C1983Tipper::tip(bool down)
 {
-	if(open==true)
+	//lower the tipper
+	if(down && !isDown)
 	{
-		tipper->Set(false);
-		tipperState = false;
-	}
-	else
-	{
-		tipper->Set(true);
-		tipperState = true;
+		tipperUp->Set(false);
+		tipperDown->Set(true);
+		isDown = true;
+	}else if(!down && isDown){
+		tipperUp->Set(true);
+		tipperDown->Set(false);
+		isDown = false;
+	}else{
+		return;
 	}
 };
 
 //Gets state
 bool C1983Tipper::getState()
 {
-	return tipperState;
+	return isDown;
 };
 

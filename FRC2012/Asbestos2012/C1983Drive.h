@@ -6,6 +6,7 @@
 #include "C1983PIDSource.h"
 #include "C1983TurnPIDSource.h"
 #include "C1983TurnPIDOutput.h"
+#include "C1983Tipper.h"
 #include <math.h>
 
 class C1983Drive
@@ -40,7 +41,11 @@ private:
 	DigitalInput *compressorSwitch;
 	
 	//Shifter Relay
-	Relay *shifter;
+	Solenoid *shiftHigh;
+	Solenoid *shiftLow;
+	
+	//Tipper
+	C1983Tipper *tipper;
 	
 	//Light Relay
 	Relay *light;
@@ -66,6 +71,8 @@ public:
 	
 	void shift(bool high);
 	
+	void tip(bool down);
+	
 	void setLight(bool on);
 	
 	bool getLightSensorBack();
@@ -82,7 +89,7 @@ public:
 	double getLPosition();
 	
 	void resetEncoders();
-	
+#if DRIVE_PID
 	void iUp();
 	void iDown();
 	void pUp();
@@ -104,11 +111,11 @@ public:
 	float getRSetpoint();
 	double getLPercent();
 	double getRPercent();
-	
+#endif	
 	//Begin Turn PID
 	PIDController *turnPID;
 	//End Turn PID
-	
+
 	~C1983Drive();
 };
 #endif
