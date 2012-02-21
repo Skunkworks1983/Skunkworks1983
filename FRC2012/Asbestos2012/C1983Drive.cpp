@@ -94,8 +94,8 @@ void C1983Drive::setSpeedR(float speed)
 	}
 	rightPID->SetSetpoint(speed);
 #else
-	rightVic1->Set(speed);
-	rightVic2->Set(speed);
+	rightVic1->Set(-speed);
+	rightVic2->Set(-speed);
 #endif
 }
 

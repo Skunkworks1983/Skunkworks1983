@@ -22,12 +22,17 @@ void PewPewBot::OperatorControl()
 {
 	DriverStationEnhancedIO &myEIO = driverStation->GetEnhancedIO();
 	int count = 0;//DEBUG (C1983)
+	int tipperToggle = 0;
+	int shifterToggle = 0;
 #if DRIVE_PID
 	drive->enablePID();
 #endif
 	//drive->turnPID->Enable();
 	while (IsOperatorControl() && !IsDisabled())
 	{
+		tipperToggle--;
+		shifterToggle--;
+		
 		count++;
 		if (count/25 == (float)count/25)
 		{
@@ -35,9 +40,10 @@ void PewPewBot::OperatorControl()
 			//cout<<"SpeedL: "<<drive->getL()<<" SpeedR: "<<drive->getR()<<" Throttle: "<<rStick->GetThrottle()<<" Shooter power: "<<(rStick->GetThrottle() + 1)/2<<endl;
 			//cout<<"Setpoint: "<<drive->turnPID->GetSetpoint()<<" Angle: "<<drive->getGyro()<<" Error: "<<drive->turnPID->GetError()<<endl;
 			//cout<<"SpeedL: "<<drive->getL()<<"SetpointL: "<<drive->getLSetpoint()<<" ErrorL: "<<drive->getLError()<<" LeftP: "<<drive->getP()<<endl;
-			//cout<<"LSpeed: "<<drive->getL()<<" RSpeed: "<<drive->getR()<<" Speed/Ideal Max: "<<drive->getL()/MAXSPEEDHIGH<<endl;
+			cout<<"LSpeed: "<<drive->getL()<<" RSpeed: "<<drive->getR()
+					<<" Speed/Ideal Max: "<<drive->getL()/MAXSPEEDHIGH
+					<< "Shooter Power: "<<-(rStick->GetThrottle() + 1)/2<<endl;
 		}
-			
 
 		//Set the compressor
 		drive->updateCompressor();
@@ -45,46 +51,51 @@ void PewPewBot::OperatorControl()
 		//Set the drive base to the stick speeds (Joysticks are backwards yo!)
 		if (fabs(rStick->GetY()) >= DEADBAND)
 		{
-			drive->setSpeedR(-rStick->GetY());
-		}else{
+			drive->setSpeedR((-rStick->GetY()) * (-rStick->GetY())
+					* (-rStick->GetY()));
+		} else
+		{
 			drive->setSpeedR(0.0);
 		}
 		if (fabs(lStick->GetY()) >= DEADBAND)
 		{
-			drive->setSpeedL(-lStick->GetY());
-		} else{
+			drive->setSpeedL((-lStick->GetY()) * (-lStick->GetY())
+					* (-lStick->GetY()));
+		} else
+		{
 			drive->setSpeedL(0.0);
 		}
 
 		//check for shifting
-		if (lStick->GetRawButton(1))
+		if (lStick->GetRawButton(1) && shifterToggle <= 0)
 		{
-			drive->shift(false);
-		}else{
-			drive->shift(true);
+			cout << "Toggle shift" << endl;
+			drive->shift(!(drive->shiftedHigh));
+			shifterToggle = 20;
 		}
 
-//COLLECTOR
-		if(COLLECT_BUTTON)
+		//COLLECTOR
+		if (COLLECT_BUTTON)
 		{
 			collector->requestCollect();
 		}
 		collector->update();
-		
-//SHOOTER
+
+		//SHOOTER
 		shooter->setJankyPower(rStick->GetThrottle());
-		
+
 		//Check for shot
-		if(SHOOT_BUTTON)
+		if (SHOOT_BUTTON)
 		{
 			collector->requestShot();
 		}
-//Tipper
-		if(TIPPER_SWITCH)
+		//Tipper
+		if (TIPPER_SWITCH && tipperToggle < 0)
 		{
-			drive->tip(true);
-		}else{
-			drive->tip(false);
+			cout << "Toggle tipper" << endl;
+			//drive->toggleTipper()
+			tipperToggle = 20;
+			drive->tip(!(drive->tipper->getState()));
 		}
 		//check for light
 		if (rStick->GetRawButton(1))
@@ -95,11 +106,11 @@ void PewPewBot::OperatorControl()
 			drive->setLight(false);
 		}
 
-		if(lStick->GetRawButton(10))
+		if (lStick->GetRawButton(10))
 		{
 			drive->resetGyro();
 		}
-		
+
 		//Check for PID modification DEBUG
 #if DRIVE_PID
 		if (lStick->GetRawButton(2) && count/5 == (float)count/5)
@@ -118,10 +129,10 @@ void PewPewBot::OperatorControl()
 		}
 
 		if (fabs(drive->getLSetpoint()- drive->getL()) <= .01)
-			drive->resetLeftI();
+		drive->resetLeftI();
 
 		if (fabs(drive->getRSetpoint()- drive->getR()) <= .01)
-			drive->resetRightI();
+		drive->resetRightI();
 #endif
 		Wait(0.01);
 	}
@@ -129,7 +140,7 @@ void PewPewBot::OperatorControl()
 
 int PewPewBot::getOperatorControlMode()
 {
-	
+
 	return 0;
 }
 
@@ -139,10 +150,11 @@ void PewPewBot::Disabled()
 #if DRIVE_PID
 	drive->cleanPID();
 #endif
-	while(IsDisabled())
+	while (IsDisabled())
 	{
 		Wait(0.02);
 	}
 }
 
-START_ROBOT_CLASS(PewPewBot);
+START_ROBOT_CLASS(PewPewBot)
+;

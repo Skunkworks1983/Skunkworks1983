@@ -1,3 +1,4 @@
+#if 0
 #ifndef __C1983Encoder_H
 #define __C1983Encoder_H
 #include "WPILib.h"
@@ -30,4 +31,5 @@ private:
 	double fPrevSample;
 	double fSample;
 };
+#endif
 #endif

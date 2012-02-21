@@ -45,7 +45,6 @@ private:
 	Solenoid *shiftLow;
 	
 	//Tipper
-	C1983Tipper *tipper;
 	
 	//Light Relay
 	Relay *light;
@@ -56,9 +55,10 @@ private:
 	
 	Gyro *gyro;
 	
+public:
+	C1983Tipper *tipper;
 	bool shiftedHigh;
 	
-public:
 	C1983Drive();
 	//Set the speed of the left side -1 to 1
 	void setSpeedL(float speed);

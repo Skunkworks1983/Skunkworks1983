@@ -1,3 +1,4 @@
+#if 0
 #include "C1983Encoder.h"
 #include "math.h"
 #include <fstream>
@@ -99,3 +100,4 @@ double C1983Encoder::angleDifference(double angle1, double angle2)
 		return preCalc + 360;
 	}
 }
+#endif
