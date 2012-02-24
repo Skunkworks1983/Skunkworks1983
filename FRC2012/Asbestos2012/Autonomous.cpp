@@ -68,6 +68,7 @@ void PewPewBot::Autonomous()
 #endif
 		Wait(0.02);
 	}
+
 }
 
 int PewPewBot::getAutonomousMode()
@@ -79,6 +80,7 @@ int PewPewBot::getAutonomousMode()
 #if KINECT
 void PewPewBot::kinectCode()
 {
+	static int lastShooterChange = 30; 
 	if (fabs(kinect->getRight())> 0.05)
 	{
 		drive->setSpeedR(kinect->getRight());
@@ -93,7 +95,21 @@ void PewPewBot::kinectCode()
 	{
 		drive->setSpeedL(0.0);
 	}
-
+	
+	if(kinect->getShootButton())
+	{
+		collector->jankyGo()
+	}else{
+		collector->jankyStop();
+	}
+	
+	lastShooterChange--;
+	if(kinect->getShooterOnButton() && lastShooterChange < 0)
+	{
+		lastShooterChange = 30;
+		shooter->setOn(shooter->isOn());
+	}
+/*
 	//Shift Stuff
 	if (kinect->getShiftButton())
 	{
@@ -102,12 +118,14 @@ void PewPewBot::kinectCode()
 	{
 		drive->shift(false);
 	}
-
+	*/
+#if DRIVE_PID
 	//Check whether we're close enough to the setpoint. If so, reset I.
-	if (fabs(drive->getLSetpoint() - drive->getL()) <= .01)
+	if (drive->getLSetpoint() == 0.0)
 		drive->resetLeftI();
 
-	if (fabs(drive->getRSetpoint() - drive->getR()) <= .01)
+	if (fabs(drive->getRSetpoint() == 0.0)
 		drive->resetRightI();
+#endif
 }
 #endif

@@ -42,5 +42,7 @@ public:
 	float getLeft();
 	
 	bool getShiftButton();
+	bool getShootButton();
+	bool getShooterOnButton();
 };
 #endif

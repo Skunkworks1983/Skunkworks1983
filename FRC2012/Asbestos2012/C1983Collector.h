@@ -19,6 +19,7 @@ private:
 	DigitalInput * lowSlot;
 	DigitalInput * midSlot;
 	DigitalInput * topSlot;
+	
 	C1983Shooter * shooter;
 
 	bool lowLastState;

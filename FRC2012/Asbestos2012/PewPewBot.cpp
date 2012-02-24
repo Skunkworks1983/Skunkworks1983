@@ -11,6 +11,7 @@ PewPewBot::PewPewBot()
 #endif
 	lStick = new Joystick(1);
 	rStick = new Joystick(2);
+
 	driverStation = DriverStation::GetInstance();
 }
 
@@ -22,27 +23,32 @@ void PewPewBot::OperatorControl()
 {
 	DriverStationEnhancedIO &myEIO = driverStation->GetEnhancedIO();
 	int count = 0;//DEBUG (C1983)
-	int tipperToggle = 0;
-	int shifterToggle = 0;
+	bool tipperToggle = false;
+	bool shifterToggle = false;
+	//shooter->setEnabled(true);
+
+	GetWatchdog().SetEnabled(true);
+	GetWatchdog().SetExpiration(0.2);
 #if DRIVE_PID
 	drive->enablePID();
 #endif
 	//drive->turnPID->Enable();
 	while (IsOperatorControl() && !IsDisabled())
 	{
-		tipperToggle--;
-		shifterToggle--;
-		
 		count++;
-		if (count/25 == (float)count/25)
+		if (count%25 == 0)
 		{
-			//cout<<"Low(9): "<<collector->getSense(0)<<" Mid(7): "<<collector->getSense(1)<<" Top(8): "<<collector->getSense(2)<<endl;
 			//cout<<"SpeedL: "<<drive->getL()<<" SpeedR: "<<drive->getR()<<" Throttle: "<<rStick->GetThrottle()<<" Shooter power: "<<(rStick->GetThrottle() + 1)/2<<endl;
 			//cout<<"Setpoint: "<<drive->turnPID->GetSetpoint()<<" Angle: "<<drive->getGyro()<<" Error: "<<drive->turnPID->GetError()<<endl;
-			//cout<<"SpeedL: "<<drive->getL()<<"SetpointL: "<<drive->getLSetpoint()<<" ErrorL: "<<drive->getLError()<<" LeftP: "<<drive->getP()<<endl;
-			cout<<"LSpeed: "<<drive->getL()<<" RSpeed: "<<drive->getR()
-					<<" Speed/Ideal Max: "<<drive->getL()/MAXSPEEDHIGH
-					<< "Shooter Power: "<<-(rStick->GetThrottle() + 1)/2<<endl;
+#if DRIVE_PID
+			cout<<"SpeedL: "<<drive->getL()<<" SetpointL: "<<drive->getLSetpoint()<<" SpeedR: "<<drive->getR()<<" SetpointR: "<<drive->getRSetpoint()<<" LeftP: "<<drive->getP()<<endl;
+#endif
+			/*cout<<"LSpeed: "<<drive->getL()<<" RSpeed: "<<drive->getR()
+			 <<" Speed/Ideal Max: "<<drive->getL()/MAXSPEEDHIGH
+			 << "Shooter Power: "<<-(rStick->GetThrottle() + 1)/2<<endl;*/
+			//cout<<"Shooter Rate:" << shooter->getRate()<<endl;
+			shooter->printShit();
+			cout<<endl;
 		}
 
 		//Set the compressor
@@ -51,38 +57,44 @@ void PewPewBot::OperatorControl()
 		//Set the drive base to the stick speeds (Joysticks are backwards yo!)
 		if (fabs(rStick->GetY()) >= DEADBAND)
 		{
-			drive->setSpeedR((-rStick->GetY()) * (-rStick->GetY())
-					* (-rStick->GetY()));
+			drive->setSpeedR(-rStick->GetY());
 		} else
 		{
 			drive->setSpeedR(0.0);
 		}
 		if (fabs(lStick->GetY()) >= DEADBAND)
 		{
-			drive->setSpeedL((-lStick->GetY()) * (-lStick->GetY())
-					* (-lStick->GetY()));
+			drive->setSpeedL(-lStick->GetY());
 		} else
 		{
 			drive->setSpeedL(0.0);
 		}
 
 		//check for shifting
-		if (lStick->GetRawButton(1) && shifterToggle <= 0)
+		if (!shifterToggle && (shifterToggle = SHIFT_BUTTON))
 		{
-			cout << "Toggle shift" << endl;
 			drive->shift(!(drive->shiftedHigh));
-			shifterToggle = 20;
+		}else{
+			shifterToggle = SHIFT_BUTTON;
 		}
 
 		//COLLECTOR
 		if (COLLECT_BUTTON)
 		{
+#if SENSORS
 			collector->requestCollect();
 		}
 		collector->update();
+#else
+			collector->jankyGo();
+		} else
+		{
+			collector->jankyStop();
+		}
+#endif
 
 		//SHOOTER
-		shooter->setJankyPower(rStick->GetThrottle());
+		shooter->setJankyPower((rStick->GetThrottle() - 1)/(-2.0));
 
 		//Check for shot
 		if (SHOOT_BUTTON)
@@ -90,15 +102,15 @@ void PewPewBot::OperatorControl()
 			collector->requestShot();
 		}
 		//Tipper
-		if (TIPPER_SWITCH && tipperToggle < 0)
+		if (!tipperToggle && (tipperToggle = TIPPER_SWITCH))
 		{
-			cout << "Toggle tipper" << endl;
-			//drive->toggleTipper()
-			tipperToggle = 20;
 			drive->tip(!(drive->tipper->getState()));
+		}else{
+			tipperToggle = TIPPER_SWITCH;
 		}
+		
 		//check for light
-		if (rStick->GetRawButton(1))
+		if (LIGHT_BUTTON)
 		{
 			drive->setLight(true);
 		} else
@@ -134,7 +146,8 @@ void PewPewBot::OperatorControl()
 		if (fabs(drive->getRSetpoint()- drive->getR()) <= .01)
 		drive->resetRightI();
 #endif
-		Wait(0.01);
+		GetWatchdog().Feed();
+		Wait(0.02);
 	}
 }
 
@@ -146,7 +159,8 @@ int PewPewBot::getOperatorControlMode()
 
 void PewPewBot::Disabled()
 {
-	drive->resetEncoders();
+	//drive->resetEncoders();
+	//shooter->setEnabled(false);
 #if DRIVE_PID
 	drive->cleanPID();
 #endif

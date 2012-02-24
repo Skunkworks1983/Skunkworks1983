@@ -18,17 +18,18 @@ class PewPewBot : public SimpleRobot
 		kLineDepthAlign, kCameraDepthAlign
 	};
 public:
+
 	C1983Drive *drive;
-	
-	 C1983Collector *collector;
-	 C1983Shooter *shooter;
-	 //C1983Camera *camera;
-	 
+
+	C1983Collector *collector;
+	C1983Shooter *shooter;
+	//C1983GlyphCamera *camera;
+
 	//Controls
+	DriverStation * driverStation;
 	Joystick *lStick;
 	Joystick *rStick;
-	DriverStation * driverStation;
-	
+
 #if KINECT
 	C1983Kinect *kinect;
 #endif
@@ -37,13 +38,14 @@ public:
 	void OperatorControl();
 	void Disabled();
 	~PewPewBot();
-	
+
 	//Decides automatic state
 	int getAutonomousMode();
 	int getOperatorControlMode();
 
 	//Automatic Functions
 	void automaticMode(int autoMode); //Switches to the correct auto mode
+
 	void lineDepthAlign(); //Aligns the robot based on 'Z'
 	void kinectCode(); //Controls the robot with kinect data
 };

@@ -29,3 +29,13 @@ bool C1983Kinect::getShiftButton()
 	if(rightArm->GetRawButton(1)) shiftedHigh = false;
 	return shiftedHigh;
 }
+
+bool C1983Kinect::getShootButton()
+{
+	return rightArm->GetRawButton(1);
+}
+
+bool C1983Kinect::getShooterOnButton()
+{
+	return rightArm->GetRawButton(0);
+}

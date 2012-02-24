@@ -5,6 +5,7 @@
 #include "1983Defines2012.h"
 #include "C1983PIDOutput.h"
 #include "C1983Encoder.h"
+#include "C1983PIDSource.h"
 #if SHOOTER
 class C1983Shooter
 {
@@ -13,8 +14,10 @@ private:
 	Victor *shooterVic2;
 	Relay *hoodAngler;
 	C1983PIDOutput *shooterPIDOutput;
+	C1983PIDSource *shooterPIDSource;
 	PIDController *shooterPID;
 	//C1983Encoder *shooterEncoder;
+	Encoder *shooterEncoder;
 	
 	float goalRPM;
 	bool angleHigh;
@@ -24,12 +27,16 @@ private:
 public:
 	C1983Shooter();
 	bool isReady();
+	double getRate();
 	void setOn(bool on);
 	void setPower(float powerRPM);
 	void setAngle(bool high);
 	void setShot(short shotNum);
 	void setJankyPower(float power);
 	void jankyStop();
+	void printShit();
+	void setEnabled(bool enabled);
+	bool isOn();
 	
 	enum {kLayup, kFreethrow, kOther} shot;
 };

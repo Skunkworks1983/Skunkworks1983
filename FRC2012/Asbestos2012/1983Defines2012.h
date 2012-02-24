@@ -1,17 +1,23 @@
 #ifndef __1983DEFINES_H
 #define __1983DEFINES_H
 
+#define PRACTICE_BOT 1
+
 //PewPew Start
 #define KINECT 0
-#define DEADBAND 0.05
+#define DEADBAND 0.03
 
 //PewPew End
 
 //DriveBase Start
 #define DRIVE_PID 0
 //Air Compressor
+#if PRACTICE_BOT
+#define COMPRESSOR_SWITCH_PORT 5
+#else
 #define COMPRESSOR_SWITCH_PORT 4
-#define DIGITAL_MODULE 1
+#endif
+#define DIGITAL_MODULE 1 
 #define SOLENOID_MODULE 1
 #define COMPRESSOR_PORT 1
 #define SHIFTER_CHANNEL 1
@@ -48,7 +54,7 @@
 #define DRIVE_I 0.00//0.1
 #define DRIVE_D 0
 
-#define DRIVE_P_LOW 2.3
+#define DRIVE_P_LOW 1.0
 #define DRIVE_I_LOW 0.0
 #define DRIVE_D_LOW 0
 
@@ -63,7 +69,7 @@
 #define LIGHT_SENSOR_CHANNEL_FRONT 1
 #define LIGHT_SENSOR_CHANNEL_BACK 2
 #define LIGHT_SENSOR_CHANNEL_BRIDGE 3
-#define LIGHT_CHANNEL 5 //Last value: 1
+#define LIGHT_CHANNEL 3 //Last value: 1
 
 //Gyro Channel	
 #define GYRO_CHANNEL 1
@@ -79,20 +85,20 @@
 #define SHOOTER 1
 
 //Conversion stuff
-#define SHOOTER_UNITS_PER_TICK 60.0/250.0
+#define SHOOTER_UNITS_PER_TICK 1 //(60.0/256.0) Last bit is janky hack 
 
 #define SHOOTER_VIC_CHANNEL1 8				//Channel for shooter wheel
 #define SHOOTER_VIC_CHANNEL2 9
 #define SHOOTER_HOOD_CHANNEL 0
 
-#define SHOOTER_WHEEL_ENCODER_A 1		//Channels for the shooter wheel's encoder
-#define SHOOTER_WHEEL_ENCODER_B 2
+#define SHOOTER_WHEEL_ENCODER_A 9		//Channels for the shooter wheel's encoder
+#define SHOOTER_WHEEL_ENCODER_B 10
 
-										//Accuracy tolerance.  How close the speed/position has to get to be accurate
+									
+//Accuracy tolerance.  How close	 the speed/position has to get to be accurate
 #define SHOOTER_VELOCITY_TOLERANCE	0	//Tolerance of the velocity
-
 //SHooter PIDs
-#define SHOOTER_P 0
+#define SHOOTER_P 0.1
 #define SHOOTER_I 0
 #define SHOOTER_D 0
 
@@ -135,9 +141,9 @@
 #define SHOOTER_TIMEOUT 30
 
 //Collector IR Sensors
-#define COLLECTOR_IR_LOW_CHANNEL 9
-#define COLLECTOR_IR_MID_CHANNEL 8
-#define COLLECTOR_IR_TOP_CHANNEL 7
+#define COLLECTOR_IR_LOW_CHANNEL 6
+#define COLLECTOR_IR_MID_CHANNEL 7
+#define COLLECTOR_IR_TOP_CHANNEL 8
 //Collector End
 
 //GlyphCamera Start
@@ -158,6 +164,7 @@
 #define SHIFT_BUTTON lStick->GetRawButton(1)
 #define COLLECT_BUTTON rStick->GetRawButton(1)
 #define SHOOT_BUTTON lStick->GetRawButton(10)
+#define LIGHT_BUTTON rStick->GetRawButton(10)
 #define ARM_BUTTON
 #define MANUAL_BUTTON
 #define MANUAL_SWITCH

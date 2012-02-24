@@ -12,6 +12,8 @@ void PewPewBot::automaticMode(int autoMode)
 		break;
 	}
 }
+
+
 void PewPewBot::lineDepthAlign()
 {
 	if (drive->getLightSensorBack() && drive->getLightSensorFront()) //We are on the key, backwards

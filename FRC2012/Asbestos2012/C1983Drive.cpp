@@ -8,8 +8,11 @@ C1983Drive::C1983Drive()
 	rightVic1 = new Victor(VIC_PORT_RIGHT_1);
 	rightVic2 = new Victor(VIC_PORT_RIGHT_2);
 	
-	leftEncoder = new Encoder(ENCODER_SLOT,LEFT_ENCODER_PORT_A,ENCODER_SLOT,LEFT_ENCODER_PORT_B,false,Encoder::k4X);
-	rightEncoder = new Encoder(ENCODER_SLOT,RIGHT_ENCODER_PORT_A,ENCODER_SLOT,RIGHT_ENCODER_PORT_B,true,Encoder::k4X);
+	leftEncoder = new Encoder(ENCODER_SLOT,LEFT_ENCODER_PORT_A,ENCODER_SLOT,LEFT_ENCODER_PORT_B,true,Encoder::k4X);
+	rightEncoder = new Encoder(ENCODER_SLOT,RIGHT_ENCODER_PORT_A,ENCODER_SLOT,RIGHT_ENCODER_PORT_B,false,Encoder::k4X);
+	
+	leftEncoder->Reset();
+	rightEncoder->Reset();
 	
 	//initialize encoders
 	leftEncoder->Start();
@@ -63,6 +66,7 @@ C1983Drive::C1983Drive()
 	
 	lightSensorFront = new DigitalInput(LIGHT_SENSOR_CHANNEL_FRONT);
 	lightSensorBack = new DigitalInput(LIGHT_SENSOR_CHANNEL_BACK);
+	lightSensorBridge = new DigitalInput(LIGHT_SENSOR_CHANNEL_BRIDGE);
 	
 	//We start shifted high
 	shiftedHigh = false;

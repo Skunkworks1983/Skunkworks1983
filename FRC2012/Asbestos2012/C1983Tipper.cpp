@@ -3,6 +3,7 @@ C1983Tipper::C1983Tipper()
 {
 	tipperUp = new Solenoid(TIPPER_UP_CHANNEL);
 	tipperDown = new Solenoid(TIPPER_DOWN_CHANNEL);
+	isDown = false;
 }
 
 /*

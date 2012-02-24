@@ -52,6 +52,7 @@ private:
 	//The light sensors
 	DigitalInput *lightSensorFront;
 	DigitalInput *lightSensorBack;
+	DigitalInput *lightSensorBridge;
 	
 	Gyro *gyro;
 	
@@ -112,6 +113,8 @@ public:
 	double getLPercent();
 	double getRPercent();
 #endif	
+	void printShit();
+	
 	//Begin Turn PID
 	PIDController *turnPID;
 	//End Turn PID

@@ -11,11 +11,12 @@ C1983Collector::C1983Collector(C1983Shooter *sh) {
 	//Second victor used for collecting
 	collectorVicTop = new Victor (COLLECTOR_VIC_TOP);
 
+
 	//Sensors
 	lowSlot = new DigitalInput(COLLECTOR_IR_LOW_CHANNEL);
 	midSlot = new DigitalInput(COLLECTOR_IR_MID_CHANNEL);
 	topSlot = new DigitalInput(COLLECTOR_IR_TOP_CHANNEL);
-	
+
 	lowLastState = false;
 	collectorTransition = false;
 	collectorCount = 0;
