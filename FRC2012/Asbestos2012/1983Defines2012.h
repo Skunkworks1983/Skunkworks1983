@@ -9,6 +9,10 @@
 
 //PewPew End
 
+//Autonomous Start
+#define LOOP_STABILITY 10 //This define represents the amount of loops a readout must be consistently true to for the autonomous stuff to read it
+//Autonomous Stop
+
 //DriveBase Start
 #define DRIVE_PID 0
 //Air Compressor
@@ -70,7 +74,6 @@
 #define LIGHT_SENSOR_CHANNEL_BACK 2
 #define LIGHT_SENSOR_CHANNEL_BRIDGE 3
 #define LIGHT_CHANNEL 3 //Last value: 1
-
 //Gyro Channel	
 #define GYRO_CHANNEL 1
 
@@ -86,7 +89,6 @@
 
 //Conversion stuff
 #define SHOOTER_UNITS_PER_TICK 1 //(60.0/256.0) Last bit is janky hack 
-
 #define SHOOTER_VIC_CHANNEL1 8				//Channel for shooter wheel
 #define SHOOTER_VIC_CHANNEL2 9
 #define SHOOTER_HOOD_CHANNEL 0
@@ -94,7 +96,6 @@
 #define SHOOTER_WHEEL_ENCODER_A 9		//Channels for the shooter wheel's encoder
 #define SHOOTER_WHEEL_ENCODER_B 10
 
-									
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
 #define SHOOTER_VELOCITY_TOLERANCE	0	//Tolerance of the velocity
 //SHooter PIDs
@@ -113,7 +114,6 @@
 #define SHOT_OTHER_ANGLE true
 
 #define BALL_SPEED_TO_RPM(speed) {return speed;}   //TODO Conversion
-
 #define HOOD_HIGH Relay::kReverse
 #define HOOD_LOW Relay::kForward
 
@@ -146,20 +146,6 @@
 #define COLLECTOR_IR_TOP_CHANNEL 8
 //Collector End
 
-//GlyphCamera Start
-#define GLYPH_CAMERA_IP "10.19.83.11"
-
-//Low bound of threshold
-#define GLYPH_THRESH_R_L 200
-#define GLYPH_THRESH_G_L 200
-#define GLYPH_THRESH_B_L 200
-
-//High bound of threshold
-#define GLYPH_THRESH_R_H 255
-#define GLYPH_THRESH_G_H 255
-#define GLYPH_THRESH_B_H 255
-//GlyphCamera End
-
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1)
 #define COLLECT_BUTTON rStick->GetRawButton(1)
@@ -177,6 +163,5 @@
 #define KEY_ALIGN_BUTTON
 #define AUTO_TARGET_BUTTON
 #define FULL_AUTO_SWTICH
-
 
 #endif

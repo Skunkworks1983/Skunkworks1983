@@ -13,6 +13,9 @@ PewPewBot::PewPewBot()
 	rStick = new Joystick(2);
 
 	driverStation = DriverStation::GetInstance();
+	
+	hasResetItem = false;
+	stableCount = 0;
 }
 
 PewPewBot::~PewPewBot()
@@ -81,17 +84,11 @@ void PewPewBot::OperatorControl()
 		//COLLECTOR
 		if (COLLECT_BUTTON)
 		{
-#if SENSORS
 			collector->requestCollect();
+		}else{
+			collector->requestStop();
 		}
 		collector->update();
-#else
-			collector->jankyGo();
-		} else
-		{
-			collector->jankyStop();
-		}
-#endif
 
 		//SHOOTER
 		shooter->setJankyPower((rStick->GetThrottle() - 1)/(-2.0));
@@ -149,12 +146,6 @@ void PewPewBot::OperatorControl()
 		GetWatchdog().Feed();
 		Wait(0.02);
 	}
-}
-
-int PewPewBot::getOperatorControlMode()
-{
-
-	return 0;
 }
 
 void PewPewBot::Disabled()

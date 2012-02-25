@@ -1,68 +1,89 @@
 #include "PewPewBot.h"
 #define GYROTEST 1
+char * PewPewBot::getModeName(AutonomousMode mode)
+{
+	switch (mode)
+	{
+	case kDoYawAlign:
+		return "DoYawAlign";
+	case kDoDepthAlign:
+		return "DoDepthAlign";
+	case kShoot:
+		return "ShootAll";
+	case kRotate180:
+		return "Rotate180";
+	case kTipBridge:
+		return "TipBridge";
+	case kDone:
+		return "Complete";
+	default:
+		return "BadMode";
+	}
+}
 void PewPewBot::Autonomous()
 {
-	drive->shift(true);
-#if GYROTEST
 	int count = 0;
-	int phase = 0;
+
+	drive->shift(true);
 	drive->resetEncoders();
-#endif
+	autonomousMode = kDoDepthAlign;
+	stableCount = 0;
+
 	while (IsAutonomous() && !IsDisabled())
 	{
 		count++;
-		if(count/10 == (float)count/10) cout<<"Phase: "<<phase<<" LEnc: "<<drive->getLPosition()<<" REnc: "<<drive->getRPosition()<<" Gyro: "<<drive->getGyro()<<endl;
+		if (count % 25 == 0)
+			cout << "Phase: " << getModeName(autonomousMode) << endl;
 		drive->updateCompressor();
 #if !KINECT
-#if GYROTEST
-		switch(phase)
+		switch (autonomousMode)
 		{
-		case 0:
-			if((drive->getLPosition() + drive->getRPosition())/2 < 50)
+		case kDoYawAlign:
+			break;
+		case kDoDepthAlign:
+			if (lineDepthAlign())
+				autonomousMode = kShoot;
+			break;
+		case kShoot:
+			if (shootAllBalls())
+				autonomousMode = kRotate180;
+			break;
+		case kRotate180:
+			if (!hasResetItem)
 			{
-				drive->setSpeedL(0.2);
-				drive->setSpeedR(0.2);
-			}else{
-				phase++;
 				drive->resetGyro();
+				hasResetItem = true;
+			}
+			if (!drive->turnPID->IsEnabled())
+				drive->turnPID->Enable();
+			drive->turnPID->SetSetpoint(180);
+			if (fabs(drive->turnPID->GetError()) <= 5)
+			{
+				autonomousMode = kTipBridge;
+				drive->turnPID->Disable();
 			}
 			break;
-		case 1:
-			if(drive->getGyro() < 165)
+		case kTipBridge:
+			if (!hasResetItem)
 			{
-				drive->setSpeedR(-0.2);
-				drive->setSpeedL(0.2);
-			}else{
-				phase++;
 				drive->resetEncoders();
+				hasResetItem = true;
 			}
-			break;
-		case 2:
-			if((drive->getLPosition() + drive->getRPosition())/2 < 50)
+			drive->tip(true);
+			drive->setSpeedL(.25);
+			drive->setSpeedR(.25);
+			double distance = (drive->getLPosition() + drive->getRPosition())
+					/ 2.0;
+			if (fabs(distance - 7.0) < 0.5)
 			{
-				drive->setSpeedL(0.2);
-				drive->setSpeedR(0.2);
-			}else{
-				phase++;
-				drive->resetGyro();
+				hasResetItem = false;
+				autonomousMode = kDone;
 			}
 			break;
-		case 3:
-			if(drive->getGyro() < 165)
-			{
-				drive->setSpeedR(-0.2);
-				drive->setSpeedL(0.2);
-			}else{
-				phase++;
-			}
+		default:
+			//We are done
 			break;
-		case 4:
-			drive->setSpeedR(0.0);
-			drive->setSpeedL(0.0);
 		}
-#else
-		lineDepthAlign();
-#endif
 #else	
 		kinectCode();
 #endif
@@ -71,16 +92,10 @@ void PewPewBot::Autonomous()
 
 }
 
-int PewPewBot::getAutonomousMode()
-{
-	//Return an AutomaticMode enum
-	return 0;
-}
-
 #if KINECT
 void PewPewBot::kinectCode()
 {
-	static int lastShooterChange = 30; 
+	static int lastShooterChange = 30;
 	if (fabs(kinect->getRight())> 0.05)
 	{
 		drive->setSpeedR(kinect->getRight());
@@ -95,37 +110,38 @@ void PewPewBot::kinectCode()
 	{
 		drive->setSpeedL(0.0);
 	}
-	
+
 	if(kinect->getShootButton())
 	{
 		collector->jankyGo()
-	}else{
+	} else
+	{
 		collector->jankyStop();
 	}
-	
+
 	lastShooterChange--;
 	if(kinect->getShooterOnButton() && lastShooterChange < 0)
 	{
 		lastShooterChange = 30;
 		shooter->setOn(shooter->isOn());
 	}
-/*
-	//Shift Stuff
-	if (kinect->getShiftButton())
-	{
-		drive->shift(true);
-	} else
-	{
-		drive->shift(false);
-	}
-	*/
+	/*
+	 //Shift Stuff
+	 if (kinect->getShiftButton())
+	 {
+	 drive->shift(true);
+	 } else
+	 {
+	 drive->shift(false);
+	 }
+	 */
 #if DRIVE_PID
 	//Check whether we're close enough to the setpoint. If so, reset I.
 	if (drive->getLSetpoint() == 0.0)
-		drive->resetLeftI();
+	drive->resetLeftI();
 
 	if (fabs(drive->getRSetpoint() == 0.0)
-		drive->resetRightI();
+			drive->resetRightI();
 #endif
-}
+		}
 #endif
