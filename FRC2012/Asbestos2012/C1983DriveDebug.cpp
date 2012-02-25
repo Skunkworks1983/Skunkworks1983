@@ -76,7 +76,7 @@ void C1983Drive::dDown()
 	leftPID->SetPID(rightPID->GetP(),leftPID->GetI(),leftPID->GetD() - .05);
 }
 #endif
-void C1983Drive::printShit()
+void C1983Drive::debugPrint()
 {
 	cout<<"Compressor Switch: "<<compressorSwitch->Get();
 }

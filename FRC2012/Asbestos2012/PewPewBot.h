@@ -5,6 +5,7 @@
 #include "C1983Collector.h"
 #include "C1983Shooter.h"
 #include <math.h>
+#include <fstream>
 
 /**
  * @author:
@@ -29,7 +30,8 @@ public:
 	DriverStation * driverStation;
 	Joystick *lStick;
 	Joystick *rStick;
-
+	ofstream myfile;
+	
 #if KINECT
 	C1983Kinect *kinect;
 #endif

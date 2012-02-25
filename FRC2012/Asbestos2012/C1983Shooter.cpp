@@ -12,17 +12,29 @@ C1983Shooter::C1983Shooter()
 	shooterEncoder->SetPIDSourceParameter(Encoder::kRate);
 	shooterEncoder->SetDistancePerPulse(SHOOTER_UNITS_PER_TICK);
 	shooterEncoder->Start();
-	shooterEncoder->Reset();
+#if SHOOTER_PID
 	shooterPIDOutput = new C1983PIDOutput(shooterVic1,shooterVic2,true);
-	shooterPIDSource = new C1983PIDSource(shooterEncoder,3200.0,false);
+	shooterPIDSource = new C1983ShooterPIDSource(shooterEncoder,3200.0,false);
 	shooterPID = new PIDController(SHOOTER_P,SHOOTER_I,SHOOTER_D,shooterEncoder,shooterPIDOutput);
 	shooterPID->SetInputRange(-1.0,1.0);
 	shooterPID->SetOutputRange(-1.0,1.0);
+#endif
 	power = SHOT_LAYUP_SPEED;
+	//Moving average stuff
+	average = 0;
+	shooterCount = 0;
+	values = new double[(int)AVERAGE_LENGTH];
+	for(int i = 0;i < AVERAGE_LENGTH;i++)
+	{
+		values[i] = 0;
+	}
+	divisonNumber = AVERAGE_LENGTH * (AVERAGE_LENGTH + 1.0)/2.0;
+	cout<<"Divison Number: "<<divisonNumber<<endl;
 }
 
 void C1983Shooter::setShot(short shotNum)
 {
+#if SHOOTER_PID
 	switch(shotNum)
 	{
 	case 0:
@@ -37,13 +49,16 @@ void C1983Shooter::setShot(short shotNum)
 		setPower(SHOT_OTHER_SPEED);
 		setAngle(SHOT_OTHER_SPEED);
 	}
+#endif
 }
 
+#if SHOOTER_PID
 void C1983Shooter::setPower(float powerRPM)
 {
 	power = powerRPM;
 	shooterPID->SetSetpoint(power);
 }
+#endif
 
 void C1983Shooter::setAngle(bool high)
 {
@@ -53,11 +68,6 @@ void C1983Shooter::setAngle(bool high)
 	}else{
 		hoodAngler->Set(HOOD_LOW);
 	}
-}
-
-double C1983Shooter::getRate()
-{
-	return shooterEncoder->GetRate();
 }
 
 bool C1983Shooter::isReady()
@@ -99,19 +109,39 @@ void C1983Shooter::jankyStop()
 	shooterVic2->Set(0.0);
 }
 
-void C1983Shooter::printShit()
-{
-	cout<<" Actual: "<<shooterEncoder->GetRate();
-}
-
 void C1983Shooter::setEnabled(bool enabled)
 {
+#if SHOOTER_PID
 	if(enabled)
 	{
 		shooterPID->Enable();
 	}else{
 		shooterPID->Disable();
 	}
+#endif
+}
+
+void C1983Shooter::update()
+{
+	for(int i = AVERAGE_LENGTH - 1;i > 0;i--)
+	{
+		//shift the values up the array
+		values[i] = values[i-1];
+		values[0] = shooterEncoder->GetRate();
+	}
+	double temp = 0;
+	for(int i = 0;i < AVERAGE_LENGTH;i++)
+	{
+		temp += values[i];// * (AVERAGE_LENGTH - i);
+	}
+	average = temp/AVERAGE_LENGTH;
+	data<<shooterCount<<","<<average<<"\n";
+	shooterCount++;
+}
+
+double C1983Shooter::getAverage()
+{
+	return average;
 }
 
 bool C1983Shooter::isOn()

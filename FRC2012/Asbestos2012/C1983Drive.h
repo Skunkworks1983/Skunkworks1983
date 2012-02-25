@@ -113,7 +113,7 @@ public:
 	double getLPercent();
 	double getRPercent();
 #endif	
-	void printShit();
+	void debugPrint();
 	
 	//Begin Turn PID
 	PIDController *turnPID;

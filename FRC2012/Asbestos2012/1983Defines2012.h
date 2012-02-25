@@ -83,9 +83,10 @@
 
 //Shooter Start
 #define SHOOTER 1
+#define SHOOTER_PID 0
 
 //Conversion stuff
-#define SHOOTER_UNITS_PER_TICK 1 //(60.0/256.0) Last bit is janky hack 
+#define SHOOTER_UNITS_PER_TICK ((double)0.234375) //(60.0/256.0) Last bit is janky hack 
 
 #define SHOOTER_VIC_CHANNEL1 8				//Channel for shooter wheel
 #define SHOOTER_VIC_CHANNEL2 9
@@ -98,7 +99,7 @@
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
 #define SHOOTER_VELOCITY_TOLERANCE	0	//Tolerance of the velocity
 //SHooter PIDs
-#define SHOOTER_P 0.1
+#define SHOOTER_P 0.2
 #define SHOOTER_I 0
 #define SHOOTER_D 0
 
@@ -117,7 +118,9 @@
 #define HOOD_HIGH Relay::kReverse
 #define HOOD_LOW Relay::kForward
 
-#define SHOT_AWAY_SWITCH 0
+#define SHOT_AWAY_SWITCH
+
+#define AVERAGE_LENGTH 50.0
 //Shooter End
 
 //Tipper Start
@@ -177,6 +180,5 @@
 #define KEY_ALIGN_BUTTON
 #define AUTO_TARGET_BUTTON
 #define FULL_AUTO_SWTICH
-
 
 #endif
