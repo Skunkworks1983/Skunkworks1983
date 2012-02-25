@@ -7,21 +7,20 @@
 #ifndef __C1983GLYPHCAMERA_H
 #define __C1983GLYPHCAMERA_H
 
-#include "WPILib.h"
-#include "Vision/BinaryImage.h"
-#include "Vision/RGBImage.h"
+#include "server1180.h"
 
 class C1983GlyphCamera
 {
 private:
-	AxisCamera * camera;
-	BinaryImage * image;
-	RGBImage * camBuffer;
+	double currentYaw;
+	double currentDepth;
+	Server1180 * server;
 public:
 	C1983GlyphCamera();
-
-	//Get the location of the current set of glyphs
-	void doTracking();
+	void processPacket(char * data);
+	static void callProcessPacket(void * cam, char * data);
+	double getCurrentYaw();
+	double getCurrentDepth();
 };
 #endif
 

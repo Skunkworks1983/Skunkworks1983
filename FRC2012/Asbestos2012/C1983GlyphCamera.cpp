@@ -9,44 +9,24 @@
 #include "1983Defines2012.h"
 C1983GlyphCamera::C1983GlyphCamera()
 {
-	camera = &AxisCamera::GetInstance(GLYPH_CAMERA_IP);
-	image = new BinaryImage();
-	camBuffer = new RGBImage("C:\\Users\\Westin\\some.bmp");
+	currentDepth = -1;
+	currentYaw = -1;
+	server = new Server1180(C1983GlyphCamera::callProcessPacket, this, true);
 }
-void C1983GlyphCamera::doTracking()
+double C1983GlyphCamera::getCurrentDepth()
 {
-	if (camera->IsFreshImage())
-	{
-		if (camera->GetImage(camBuffer)==1) //Fetch
-		{
-			Range range1 =
-			{ GLYPH_THRESH_R_L, GLYPH_THRESH_R_H };
-			Range range2 =
-			{ GLYPH_THRESH_G_L, GLYPH_THRESH_G_H };
-			Range range3 =
-			{ GLYPH_THRESH_B_L, GLYPH_THRESH_B_H };
-			int success = imaqColorThreshold(image->GetImaqImage(),
-					camBuffer->GetImaqImage(), 1, IMAQ_RGB, &range1, &range2,
-					&range3);
-			if (success==0)
-				return;
-			LineDescriptor * lineDescriptor = new LineDescriptor();
-			lineDescriptor->minLength =10;
-			lineDescriptor->maxLength = 250;
-			CurveOptions * curveOptions = new CurveOptions();
-			ShapeDetectionOptions * shapeDetect = new ShapeDetectionOptions();
-			int * numLines;
-			ROI* roi = imaqCreateROI();
-			imaqAddRectContour(roi, IMAQ_NO_RECT);
-			LineMatch * lines = imaqDetectLines(image->GetImaqImage(),
-					lineDescriptor, curveOptions, shapeDetect, roi, numLines);
-			int i;
-			for (i = 0; i<*numLines; i++)
-			{
-				printf("Start: %f,%f End: %f,%f\n", lines[i].startPoint.x,
-						lines[i].startPoint.y, lines[i].endPoint.x,
-						lines[i].endPoint.y);
-			}
-		}
-	}
+	return currentDepth;
+}
+double C1983GlyphCamera::getCurrentYaw()
+{
+	return currentYaw;
+}
+
+void C1983GlyphCamera::callProcessPacket(void *obj, char * data)
+{
+	((C1983GlyphCamera*)obj)->processPacket(data);
+}
+void C1983GlyphCamera::processPacket(char * data)
+{
+	sscanf(data, "%lf,%lf", &currentDepth, &currentYaw);
 }

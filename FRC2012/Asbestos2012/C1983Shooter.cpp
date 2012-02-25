@@ -123,7 +123,7 @@ void C1983Shooter::setEnabled(bool enabled)
 
 void C1983Shooter::update()
 {
-	for(int i = AVERAGE_LENGTH - 1;i > 0;i--)
+	for(int i = ((int)AVERAGE_LENGTH) - 1;i > 0;i--)
 	{
 		//shift the values up the array
 		values[i] = values[i-1];

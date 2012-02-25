@@ -1,6 +1,7 @@
 #include "C1983Collector.h"
 
-C1983Collector::C1983Collector(C1983Shooter *sh) {
+C1983Collector::C1983Collector(C1983Shooter *sh)
+{
 	shooter = sh;
 	//Victor used for feeding
 	collectorVicPickup = new Victor (COLLECTOR_VIC_PICKUP);
@@ -11,7 +12,6 @@ C1983Collector::C1983Collector(C1983Shooter *sh) {
 	//Second victor used for collecting
 	collectorVicTop = new Victor (COLLECTOR_VIC_TOP);
 
-
 	//Sensors
 	lowSlot = new DigitalInput(COLLECTOR_IR_LOW_CHANNEL);
 	midSlot = new DigitalInput(COLLECTOR_IR_MID_CHANNEL);
@@ -21,90 +21,107 @@ C1983Collector::C1983Collector(C1983Shooter *sh) {
 	collectorTransition = false;
 	collectorCount = 0;
 	shooterCount = 0;
-	
+
 	shooting = false;
 	collecting = false;
-	manual = false;
-	forward = true;
+	automatic = false; //TODO if we have sensors, make this true
+	runInReverse = false;
 	beganShotCheck = false;
-	
+
 }
 
 void C1983Collector::update()
-{	
-	if(manual && forward) //Manual forward
+{
+	if (runInReverse)//Manual reverse
+	{
+		collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
+		collectorVicLow->Set(COLLECTOR_BELT_SPEED);
+		collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
+	} else if (!automatic && collecting) //Manual forward
 	{
 		collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
 		collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
 		collectorVicTop->Set(COLLECTOR_BELT_SPEED);
-	}else if(manual){ //Manual reverse
-		collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
-		collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
-		collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
-	}else if(collecting && !shooting){ 
-		if(collectorCount > COLLECTOR_TIMEOUT)
+	} else if (automatic && collecting && !shooting)
+	{
+		if (collectorCount> COLLECTOR_TIMEOUT)
 		{
 			collectorVicPickup->Set(0.0);
 			collectorVicLow->Set(-0.0);
 			collectorVicTop->Set(0.0);
 			collecting = false;
 			collectorCount = 0;
-		}else if(!TOPSLOT){
+		} else if (!TOPSLOT)
+		{
 			collectorVicTop->Set(COLLECTOR_BELT_SPEED);
 			collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
 			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
-		}else if(!MIDSLOT){
+		} else if (!MIDSLOT)
+		{
 			collectorVicTop->Set(0.0);
 			collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
-			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);			
-		}else if(!LOWSLOT){
+			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+		} else if (!LOWSLOT)
+		{
 			collectorVicTop->Set(0.0);
 			collectorVicLow->Set(-0.0);
 			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
-		}else{
+		} else
+		{
 			collectorVicTop->Set(0.0);
 			collectorVicLow->Set(-0.0);
 			collectorVicPickup->Set(0.0);
 		}
 		collectorCount++;
-	}else if(shooting && shooter->isReady()){
+	} else if (shooting && shooter->isReady())
+	{
 		shooterCount++;
 		collectorVicTop->Set(COLLECTOR_FEED_SPEED);
-		if(shooterCount > SHOOTER_TIMEOUT)
+		if (shooterCount > SHOOTER_TIMEOUT)
 		{
 			collectorVicTop->Set(0.0);
 			shooting = false;
 			shooterCount = 0;
-			collecting = true;
+			collecting = automatic;
+			//If we want to autocollect after shooting we need to be in auto mode
 		}
-	}	
+	}
 }
 
-void C1983Collector::requestShot(){
+void C1983Collector::requestShot()
+{
 	shooting = true;
 }
 
-void C1983Collector::requestCollect(){
+void C1983Collector::requestCollect()
+{
 	collecting = true;
 }
 
-void C1983Collector::jankyGo()
+void C1983Collector::requestStop()
 {
-	collectorVicTop->Set(0.5);
-	collectorVicLow->Set(-0.5);
-	collectorVicPickup->Set(0.5);
+	runInReverse = false;
+	collecting = collecting && automatic; //Only works in manual mode
 }
 
-void C1983Collector::jankyStop()
+void C1983Collector::requestReverse()
 {
-	collectorVicTop->Set(0.0);
-	collectorVicLow->Set(0.0);
-	collectorVicPickup->Set(0.0);
+	runInReverse = true;
+}
+
+bool C1983Collector::isShooting()
+{
+	return shooting;
+}
+
+bool C1983Collector::isCollecting()
+{
+	return collecting;
 }
 
 bool C1983Collector::getSense(int height)
 {
-	switch(height)
+	switch (height)
 	{
 	case 0:
 		return LOWSLOT;

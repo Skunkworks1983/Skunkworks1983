@@ -13,13 +13,17 @@
  */
 class PewPewBot : public SimpleRobot
 {
-	//enum representing control states
-	enum AutoMode
-	{
-		kLineDepthAlign, kCameraDepthAlign
-	};
 public:
-
+	enum AutonomousMode
+	{
+		kDoYawAlign, kDoDepthAlign, kShoot, kRotate180, kTipBridge, kDone
+	};
+	char * getModeName(AutonomousMode mode);
+private:
+	int stableCount; //This is just used for stablizing things like depth alignment
+	AutonomousMode autonomousMode; //The current autonomous mode
+	bool hasResetItem;
+public:
 	C1983Drive *drive;
 
 	C1983Collector *collector;
@@ -41,13 +45,11 @@ public:
 	void Disabled();
 	~PewPewBot();
 
-	//Decides automatic state
-	int getAutonomousMode();
-	int getOperatorControlMode();
-
 	//Automatic Functions
-	void automaticMode(int autoMode); //Switches to the correct auto mode
-
-	void lineDepthAlign(); //Aligns the robot based on 'Z'
+	bool lineDepthAlign(); //Aligns the robot based on the key
 	void kinectCode(); //Controls the robot with kinect data
+
+	//Autonomous Functions
+	bool shootAllBalls();
+	bool driveToBridge();
 };

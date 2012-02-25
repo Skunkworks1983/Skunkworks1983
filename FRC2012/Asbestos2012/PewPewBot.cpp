@@ -13,6 +13,9 @@ PewPewBot::PewPewBot()
 	rStick = new Joystick(2);
 
 	driverStation = DriverStation::GetInstance();
+	
+	hasResetItem = false;
+	stableCount = 0;
 }
 
 PewPewBot::~PewPewBot()
@@ -86,18 +89,11 @@ void PewPewBot::OperatorControl()
 //COLLECTOR
 		if (COLLECT_BUTTON)
 		{
-#if SENSORS
 			collector->requestCollect();
+		}else{
+			collector->requestStop();
 		}
 		collector->update();
-#else
-			collector->jankyGo();
-		} else
-		{
-			collector->jankyStop();
-		}
-#endif
-//END COLLECTOR
 
 //SHOOTER	
 		//Updates the average. Maybe some other stuff later.
@@ -175,12 +171,6 @@ void PewPewBot::OperatorControl()
 	}
 	shooter->closeFile();
 	myfile.close();
-}
-
-int PewPewBot::getOperatorControlMode()
-{
-
-	return 0;
 }
 
 void PewPewBot::Disabled()
