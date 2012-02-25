@@ -9,12 +9,24 @@
 #include "1983Defines2012.h"
 C1983GlyphCamera::C1983GlyphCamera()
 {
+	currentDepth = -1;
+	currentYaw = -1;
+	server = new Server1180(C1983GlyphCamera::callProcessPacket, this, true);
 }
-C1983GlyphCamera::getCurrentDepth()
+double C1983GlyphCamera::getCurrentDepth()
 {
 	return currentDepth;
 }
-C1983GlyphCamera::getCurrentYaw()
+double C1983GlyphCamera::getCurrentYaw()
 {
 	return currentYaw;
+}
+
+void C1983GlyphCamera::callProcessPacket(void *obj, char * data)
+{
+	((C1983GlyphCamera*)obj)->processPacket(data);
+}
+void C1983GlyphCamera::processPacket(char * data)
+{
+	sscanf(data, "%lf,%lf", &currentDepth, &currentYaw);
 }
