@@ -30,11 +30,7 @@ void PewPewBot::OperatorControl()
 	bool shifterToggle = false;
 	shooter->setEnabled(true);
 	shooter->setOn(true);
-	//shooter->setEnabled(true);
-	shooter->openFile();
-	myfile.open("drivedata.csv");
-	myfile<<"Index,Speed\n";
-	
+	//shooter->setEnabled(true);	
 	GetWatchdog().SetEnabled(true);
 	GetWatchdog().SetExpiration(0.2);
 #if DRIVE_PID
@@ -89,17 +85,19 @@ void PewPewBot::OperatorControl()
 //COLLECTOR
 		if (COLLECT_BUTTON)
 		{
-			collector->requestCollect();
+			collector->jankyGo();
+			//collector->requestCollect();
 		}else{
-			collector->requestStop();
+			collector->jankyStop();
+			//collector->requestStop();
 		}
-		collector->update();
+		//collector->update();
 
 //SHOOTER	
 		//Updates the average. Maybe some other stuff later.
 #if SHOOTER_PID
 		shooter->update();
-		shooter->setPower(500.0/3200.0);
+		shooter->setPower((rStick->GetThrottle() - 1)/(-2.0));
 #else
 		shooter->update();
 		shooter->setJankyPower((rStick->GetThrottle() - 1)/(-2.0));
@@ -134,11 +132,15 @@ void PewPewBot::OperatorControl()
 #if SHOOTER_PID
 		if (lStick->GetRawButton(2) && count/5 == (float)count/5)
 		{
-			shooter->pDown();
+			shooter->iDown();
 		}
 		if (lStick->GetRawButton(3) && count/5 == (float)count/5)
 		{
-			shooter->pUp();
+			shooter->iUp();
+		}
+		if (rStick->GetRawButton(5))
+		{
+			shooter->cleanPID();
 		}
 #endif
 		
@@ -169,8 +171,6 @@ void PewPewBot::OperatorControl()
 		myfile<<count<<","<<drive->getL()<<"\n";
 		Wait(0.02);
 	}
-	shooter->closeFile();
-	myfile.close();
 }
 
 void PewPewBot::Disabled()
@@ -178,6 +178,7 @@ void PewPewBot::Disabled()
 	//drive->resetEncoders();
 #if SHOOTER_PID
 	shooter->setEnabled(false);
+	shooter->cleanPID();
 #endif
 	//close file
 #if DRIVE_PID

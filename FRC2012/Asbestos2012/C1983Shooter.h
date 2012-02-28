@@ -27,9 +27,6 @@ private:
 	bool angleHigh;
 	bool active;
 	float power;
-	double average;
-	double *values;
-	double divisonNumber;
 	
 public:
 	C1983Shooter();
@@ -38,6 +35,7 @@ public:
 	void setOn(bool on);
 #if SHOOTER_PID
 	void setPower(float powerRPM);
+	void cleanPID();
 #endif
 	void setAngle(bool high);
 	void setShot(short shotNum);
@@ -62,12 +60,7 @@ public:
 	double getPercent();
 #endif
 	
-	void openFile();
-	void closeFile();
-	
 	void update();
-	double getAverage();
-	int shooterCount;
 	enum {kLayup, kFreethrow, kOther} shot;
 };
 #endif

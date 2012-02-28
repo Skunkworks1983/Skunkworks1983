@@ -11,6 +11,7 @@ private:
 	double maxSpeed;
 	double average;
 	double *values;
+	double *times;
 	bool reverse;
 	double divisonNumber;
 	

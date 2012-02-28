@@ -86,7 +86,7 @@
 
 //Shooter Start
 #define SHOOTER 1
-#define SHOOTER_PID 0
+#define SHOOTER_PID 1
 
 //Conversion stuff
 #define SHOOTER_UNITS_PER_TICK ((double)0.234375) //(60.0/256.0) Last bit is janky hack 
@@ -101,9 +101,9 @@
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
 #define SHOOTER_VELOCITY_TOLERANCE	0	//Tolerance of the velocity
 //SHooter PIDs
-#define SHOOTER_P 0.2
-#define SHOOTER_I 0
-#define SHOOTER_D 0
+#define SHOOTER_P 2.0
+#define SHOOTER_I 0.05
+#define SHOOTER_D 0.0
 
 //Preset shot speeds
 #define SHOT_LAYUP_SPEED 0.0
@@ -121,7 +121,7 @@
 
 #define SHOT_AWAY_SWITCH
 
-#define AVERAGE_LENGTH 50.0
+#define AVERAGE_LENGTH 10.0
 //Shooter End
 
 //Tipper Start

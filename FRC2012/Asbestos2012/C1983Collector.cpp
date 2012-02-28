@@ -135,3 +135,17 @@ bool C1983Collector::getSense(int height)
 	}
 	return 0;
 }
+
+void C1983Collector::jankyGo()
+{
+	collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+	collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
+	collectorVicTop->Set(COLLECTOR_BELT_SPEED);
+}
+
+void C1983Collector::jankyStop()
+{
+	collectorVicPickup->Set(0.0);
+	collectorVicLow->Set(0.0);
+	collectorVicTop->Set(0.0);
+}

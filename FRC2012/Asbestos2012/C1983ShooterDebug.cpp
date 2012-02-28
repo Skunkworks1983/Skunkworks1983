@@ -65,26 +65,17 @@ void C1983Shooter::debugPrint()
 {
 #if SHOOTER_PID
 	//cout<<"P: "<<getP()<<" Setpoint: "<<getSetpoint()<<" Value: "<<shooterEncoder->GetRate()<<endl;
-	cout<<"Rate: "<<shooterEncoder->GetRate()<<" PID Get: "<<shooterPIDSource->PIDGet()<<" P: "<<getP();
+	cout<<" Setpoint: "<<shooterPID->GetSetpoint() * 3200.0<<" Rate: "<<shooterPIDSource->PIDGet() * 3200.0<<" Error: "<<shooterPID->GetError() * 3200.0<<" I: "<<getI();
 #else
-	cout<<"Rate: "<<average;
+	cout<<"Rate: "<<shooterEncoder->GetRate();
 #endif
 }
 
 double C1983Shooter::getRate()
 {
-	return average;
-}
-
-void C1983Shooter::openFile()
-{
-	data.open("shooterData.csv");
-	cout<<"FILE OPEN"<<endl;
-	data<<"Index,Rate\n";
-}
-
-void C1983Shooter::closeFile()
-{
-	cout<<"CLOSING FILE"<<endl;
-	data.close();
+#if SHOOTER_PID
+	return shooterPIDSource->PIDGet();
+#else
+	return shooterEncoder->GetRate();
+#endif
 }

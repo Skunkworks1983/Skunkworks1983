@@ -58,5 +58,8 @@ public:
 	bool isShooting();
 	
 	bool isCollecting();
+	
+	void jankyGo();
+	void jankyStop();
 };
 #endif
