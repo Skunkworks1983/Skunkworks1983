@@ -30,3 +30,7 @@ void C1983GlyphCamera::processPacket(char * data)
 {
 	sscanf(data, "%lf,%lf", &currentDepth, &currentYaw);
 }
+
+bool C1983GlyphCamera::hasData(){
+	return currentDepth != -1;  //TODO  Check the current time against the last update time
+}

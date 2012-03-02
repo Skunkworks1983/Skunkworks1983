@@ -65,7 +65,7 @@ void C1983Shooter::debugPrint()
 {
 #if SHOOTER_PID
 	//cout<<"P: "<<getP()<<" Setpoint: "<<getSetpoint()<<" Value: "<<shooterEncoder->GetRate()<<endl;
-	cout<<" Setpoint: "<<shooterPID->GetSetpoint() * 3200.0<<" Rate: "<<shooterPIDSource->PIDGet() * 3200.0<<" Error: "<<shooterPID->GetError() * 3200.0<<" I: "<<getI();
+	cout<<" Setpoint: "<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<" Rate: "<<shooterPIDSource->PIDGet() * SHOOTER_MAX_SPEED<<" Error: "<<shooterPID->GetError() * SHOOTER_MAX_SPEED<<" I: "<<getI()<<" ShooterReady: "<<isReady();
 #else
 	cout<<"Rate: "<<shooterEncoder->GetRate();
 #endif

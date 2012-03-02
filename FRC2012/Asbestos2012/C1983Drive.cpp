@@ -45,11 +45,12 @@ C1983Drive::C1983Drive()
 	gyro = new Gyro(GYRO_CHANNEL);
 
 	//Turn PID Begin
+	/*
 	turnPIDSource = new C1983TurnPIDSource(gyro);
 	turnPIDOutput = new C1983TurnPIDOutput(leftVic1,leftVic2,rightVic1,rightVic2);
 	turnPID = new PIDController(TURN_P,TURN_I,TURN_D,turnPIDSource,turnPIDOutput);
 	turnPID->SetOutputRange(-1.0,1.0);
-	turnPID->SetInputRange(-360,360);
+	turnPID->SetInputRange(-360,360);*/
 	//Turn PID End
 	
 	//Compressor and compressor switch. compressorSwitch reads 0 when the compressor needs to be running

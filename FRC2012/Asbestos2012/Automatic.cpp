@@ -24,7 +24,9 @@ bool PewPewBot::lineDepthAlign()
 
 bool PewPewBot::shootAllBalls()
 {
-	shooter->setShot(C1983Shooter::kFreethrow);
+	shooter->setShot(C1983Shooter::kKeytop);
+	shooter->update();
+	collector->update();
 	if (!collector->isShooting() && shooter->isReady())
 	{
 		collector->requestShot();
@@ -40,6 +42,28 @@ bool PewPewBot::shootAllBalls()
 			}
 		}
 		return true;
+	}
+	return false;
+}
+
+bool PewPewBot::camYawAlign()
+{
+	if (camera->hasData())
+	{
+		if (!hasResetItem)  //If not made the reset gyro step
+		{
+			drive->resetGyro();
+			hasResetItem = true;
+		}
+		if (!drive->turnPID->IsEnabled())  //If the turning PID is not enabled
+			drive->turnPID->Enable();
+		drive->turnPID->SetSetpoint((float)camera->getCurrentYaw());  //Set the turning setpoint
+		if (fabs(drive->turnPID->GetError()) <= 5)
+		{
+			drive->turnPID->Disable();  //Disable and return
+			hasResetItem = false;
+			return true;
+		}
 	}
 	return false;
 }

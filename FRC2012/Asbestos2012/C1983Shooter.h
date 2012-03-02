@@ -13,7 +13,6 @@ class C1983Shooter
 private:
 	Victor *shooterVic1;
 	Victor *shooterVic2;
-	Relay *hoodAngler;
 #if SHOOTER_PID
 	C1983PIDOutput *shooterPIDOutput;
 	C1983ShooterPIDSource *shooterPIDSource;
@@ -23,27 +22,24 @@ private:
 	Encoder *shooterEncoder;
 	ofstream data;
 	
-	float goalRPM;
-	bool angleHigh;
-	bool active;
 	float power;
+	bool manual;
+	bool isEnabled;
 	
 public:
 	C1983Shooter();
 	bool isReady();
 	double getRate();
-	void setOn(bool on);
+	bool getEnabled();
 #if SHOOTER_PID
 	void setPower(float powerRPM);
 	void cleanPID();
 #endif
-	void setAngle(bool high);
 	void setShot(short shotNum);
 	void setJankyPower(float power);
 	void jankyStop();
 	void debugPrint();
 	void setEnabled(bool enabled);
-	bool isOn();
 #if SHOOTER_PID
 	void dUp();
 	void dDown();
@@ -61,7 +57,7 @@ public:
 #endif
 	
 	void update();
-	enum {kLayup, kFreethrow, kOther} shot;
+	enum {kKeytop, kFreethrow, kOther} shot;
 };
 #endif
 #endif

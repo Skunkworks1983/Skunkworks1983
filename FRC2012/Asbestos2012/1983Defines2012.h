@@ -4,7 +4,7 @@
 #define PRACTICE_BOT 1
 
 //PewPew Start
-#define KINECT 0
+#define KINECT 1	
 #define DEADBAND 0.03
 
 //PewPew End
@@ -14,7 +14,7 @@
 //Autonomous Stop
 
 //DriveBase Start
-#define DRIVE_PID 0
+#define DRIVE_PID 1
 //Air Compressor
 #if PRACTICE_BOT
 #define COMPRESSOR_SWITCH_PORT 5
@@ -54,17 +54,17 @@
 #define FEET_PER_TICK_LOW (1.0/(TICKS_PER_REVOLUTION * DRIVE_REDUCTION_LOW * REVOLUTIONS_PER_FOOT))
 
 //PIDs
-#define DRIVE_P 1.5
-#define DRIVE_I 0.00//0.1
-#define DRIVE_D 0
+#define DRIVE_P 1.05
+#define DRIVE_I 0.05//0.1
+#define DRIVE_D 0.05
 
-#define DRIVE_P_LOW 1.0
-#define DRIVE_I_LOW 0.0
-#define DRIVE_D_LOW 0
+#define DRIVE_P_LOW 0.85
+#define DRIVE_I_LOW 0.05
+#define DRIVE_D_LOW 0.05
 
-#define TURN_P 0.05
-#define TURN_I 0.0
-#define TURN_D 0.0
+#define TURN_P 0.00
+#define TURN_I 0.00
+#define TURN_D 0.00
 
 #define TURN_P_LOW 2.3
 #define TURN_I_LOW 0.0
@@ -99,21 +99,21 @@
 #define SHOOTER_WHEEL_ENCODER_B 10
 
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
-#define SHOOTER_VELOCITY_TOLERANCE	0	//Tolerance of the velocity
+#define SHOOTER_VELOCITY_TOLERANCE	10.0	//Tolerance of the velocity
 //SHooter PIDs
 #define SHOOTER_P 2.0
-#define SHOOTER_I 0.05
+#define SHOOTER_I 0.1
 #define SHOOTER_D 0.0
 
 //Preset shot speeds
-#define SHOT_LAYUP_SPEED 0.0
-#define SHOT_LAYUP_ANGLE true
+#define SHOT_KEYTOP_SPEED 3200.0 
 
-#define SHOT_FREETHROW_SPEED 0.0
-#define SHOT_FREETHROW_ANGLE true
+#define SHOT_FREETHROW_SPEED 2775.0
 
 #define SHOT_OTHER_SPEED 0.0
-#define SHOT_OTHER_ANGLE true
+
+#define SHOOTER_MAX_SPEED 3200.0
+
 
 #define BALL_SPEED_TO_RPM(speed) {return speed;}   //TODO Conversion
 #define HOOD_HIGH Relay::kReverse
@@ -136,7 +136,7 @@
 //Number of sensed ball storage spots
 #define COLLECTOR_SLOT_COUNT 3
 //Belt Vic Speed
-#define COLLECTOR_BELT_SPEED 0.3
+#define COLLECTOR_BELT_SPEED 0.7
 #define COLLECTOR_FEED_SPEED 1.0
 //Collector Vic Speed
 #define COLLECTOR_PICKUP_SPEED 0.8
@@ -152,20 +152,18 @@
 
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1)
-#define COLLECT_BUTTON rStick->GetRawButton(1)
-#define SHOOT_BUTTON lStick->GetRawButton(10)
+#define COLLECT_BUTTON rStick->GetRawButton(1)//rStick->GetRawButton(1)
+#define SHOOT_BUTTON (!myEIO.GetDigital(14))
 #define LIGHT_BUTTON rStick->GetRawButton(10)
-#define ARM_BUTTON
-#define MANUAL_BUTTON
-#define MANUAL_SWITCH
-#define FORWARD_SWITCH
-#define TIPPER_SWITCH rStick->GetRawButton(3)
-#define COLLECT_BUTTON_OP //operator's collect button
-#define LAYUP_BUTTON
-#define FREETHROW_BUTTON
+#define ARM_BUTTON (myEIO.GetDigital(16))
+#define FORWARD_SWITCH (!myEIO.GetDigital(4))
+#define REVERSE_SWITCH (!myEIO.GetDigital(6))
+#define TIPPER_SWITCH (!myEIO.GetDigital(10))
+#define COLLECT_BUTTON_OP (!myEIO.GetDigital(12))
+#define SHORT_SHOT_SWITCH (myEIO.GetDigital(8))
 #define RPM_MANUAL_SLIDER
-#define KEY_ALIGN_BUTTON
-#define AUTO_TARGET_BUTTON
-#define FULL_AUTO_SWTICH
+#define KEY_ALIGN_BUTTON (!myEIO.GetDigital(15))
+#define AUTO_TARGET_BUTTON (!myEIO.GetDigital(11))
+#define FULL_AUTO_SWTICH (!myEIO.GetDigital(13))
 
 #endif

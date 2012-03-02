@@ -31,19 +31,42 @@ C1983Collector::C1983Collector(C1983Shooter *sh)
 }
 
 void C1983Collector::update()
-{
-	if (runInReverse)//Manual reverse
+{	
+	if (!automatic && runInReverse && !shooting)//Manual reverse
 	{
+		cout<<"REVERSE"<<endl;
 		collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
 		collectorVicLow->Set(COLLECTOR_BELT_SPEED);
 		collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
-	} else if (!automatic && collecting) //Manual forward
+	} else if (!automatic && collecting && !shooting) //Manual forward
 	{
+		cout<<"COLLECTING"<<endl;
 		collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
 		collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
 		collectorVicTop->Set(COLLECTOR_BELT_SPEED);
-	} else if (automatic && collecting && !shooting)
+	} 
+	 else if (shooting && shooter->getSetpoint() > .15)
 	{
+		if(shooter->isReady())shooterGo = true;
+		cout<<"SHOOTING"<<endl;
+		if(shooterGo)
+		{
+			shooterCount++;
+			collectorVicTop->Set(COLLECTOR_FEED_SPEED);
+			collectorVicLow->Set(-COLLECTOR_FEED_SPEED);
+			collectorVicPickup->Set(COLLECTOR_FEED_SPEED);
+			if (shooterCount > (SHOOTER_TIMEOUT + 60))
+			{
+				shooterGo = false;
+				cout<<"RESETING SHOOTCOUNT"<<endl;
+				collectorVicTop->Set(0.0);
+				shooting = false;
+				shooterCount = 0;
+				collecting = automatic;
+				//If we want to autocollect after shooting we need to be in auto mode
+			}
+		}
+	}else if (automatic && collecting && !shooting)	{
 		if (collectorCount> COLLECTOR_TIMEOUT)
 		{
 			collectorVicPickup->Set(0.0);
@@ -73,18 +96,26 @@ void C1983Collector::update()
 			collectorVicPickup->Set(0.0);
 		}
 		collectorCount++;
-	} else if (shooting && shooter->isReady())
-	{
-		shooterCount++;
-		collectorVicTop->Set(COLLECTOR_FEED_SPEED);
-		if (shooterCount > SHOOTER_TIMEOUT)
+	} else if (shooting && shooter->getSetpoint() > .15){
+		if(shooter->isReady()) shooterGo = true;
+		if(shooterGo)
 		{
-			collectorVicTop->Set(0.0);
-			shooting = false;
-			shooterCount = 0;
-			collecting = automatic;
-			//If we want to autocollect after shooting we need to be in auto mode
+			shooterCount++;
+			collectorVicTop->Set(COLLECTOR_FEED_SPEED);
+			if (shooterCount > SHOOTER_TIMEOUT)
+			{
+				shooterGo = false;
+				collectorVicTop->Set(0.0);
+				shooting = false;
+				shooterCount = 0;
+				collecting = automatic;
+				//If we want to autocollect after shooting we need to be in auto mode
+			}
 		}
+	}else{
+		collectorVicTop->Set(0.0);
+		collectorVicLow->Set(-0.0);
+		collectorVicPickup->Set(0.0);
 	}
 }
 
@@ -136,6 +167,11 @@ bool C1983Collector::getSense(int height)
 	return 0;
 }
 
+void C1983Collector::setAutomatic(bool bleh)
+{
+	automatic = bleh;
+}
+
 void C1983Collector::jankyGo()
 {
 	collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
@@ -143,9 +179,28 @@ void C1983Collector::jankyGo()
 	collectorVicTop->Set(COLLECTOR_BELT_SPEED);
 }
 
+void C1983Collector::jankyReverse()
+{
+	collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
+	collectorVicLow->Set(COLLECTOR_BELT_SPEED);
+	collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
+}
+
 void C1983Collector::jankyStop()
 {
 	collectorVicPickup->Set(0.0);
 	collectorVicLow->Set(0.0);
 	collectorVicTop->Set(0.0);
+}
+
+void C1983Collector::clean()
+{
+	shooting = false;
+	collecting = false;
+	automatic = false;
+	runInReverse = false;
+	beganShotCheck = false;
+	collectorCount = 0;
+	shooterCount = 0;
+	shooterGo = false;
 }

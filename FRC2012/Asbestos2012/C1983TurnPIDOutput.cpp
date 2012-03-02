@@ -8,6 +8,7 @@ C1983TurnPIDOutput::C1983TurnPIDOutput(Victor *lvic1,Victor *lvic2, Victor *rvic
 	vicRight2 = rvic2;
 }
 
+//Gyro increases as you rotate CCW
 void C1983TurnPIDOutput::PIDWrite(float output)
 {
 	vicLeft1->Set(-output);

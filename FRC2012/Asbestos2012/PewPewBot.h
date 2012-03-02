@@ -4,6 +4,7 @@
 #include "C1983Kinect.h"
 #include "C1983Collector.h"
 #include "C1983Shooter.h"
+#include "C1983GlyphCamera.h"
 #include <math.h>
 #include <fstream>
 
@@ -28,10 +29,11 @@ public:
 
 	C1983Collector *collector;
 	C1983Shooter *shooter;
-	//C1983GlyphCamera *camera;
+	C1983GlyphCamera *camera;
 
 	//Controls
 	DriverStation * driverStation;
+	DriverStationLCD * driverStationLCD;
 	Joystick *lStick;
 	Joystick *rStick;
 	ofstream myfile;
@@ -47,6 +49,7 @@ public:
 
 	//Automatic Functions
 	bool lineDepthAlign(); //Aligns the robot based on the key
+	bool camYawAlign();  //Aligns the robot based on the camera data
 	void kinectCode(); //Controls the robot with kinect data
 
 	//Autonomous Functions

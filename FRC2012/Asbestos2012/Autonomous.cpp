@@ -22,18 +22,25 @@ char * PewPewBot::getModeName(AutonomousMode mode)
 }
 void PewPewBot::Autonomous()
 {
+	GetWatchdog().SetEnabled(true);
+	GetWatchdog().SetExpiration(0.2);
 	int count = 0;
-
+	shooter->setEnabled(true);
+	
 	drive->shift(true);
 	drive->resetEncoders();
-	autonomousMode = kDoDepthAlign;
+	autonomousMode = kShoot;
 	stableCount = 0;
 
 	while (IsAutonomous() && !IsDisabled())
 	{
 		count++;
 		if (count % 25 == 0)
-			cout << "Phase: " << getModeName(autonomousMode) << endl;
+		{
+			shooter->debugPrint();
+			cout<<endl;
+			//cout << "Phase: " << getModeName(autonomousMode) << endl;
+		}
 		drive->updateCompressor();
 #if !KINECT
 		switch (autonomousMode)
@@ -46,7 +53,7 @@ void PewPewBot::Autonomous()
 			break;
 		case kShoot:
 			if (shootAllBalls())
-				autonomousMode = kRotate180;
+				autonomousMode = kDone;
 			break;
 		case kRotate180:
 			if (!hasResetItem)
@@ -59,6 +66,7 @@ void PewPewBot::Autonomous()
 			drive->turnPID->SetSetpoint(180);
 			if (fabs(drive->turnPID->GetError()) <= 5)
 			{
+				hasResetItem = false;
 				autonomousMode = kTipBridge;
 				drive->turnPID->Disable();
 			}
@@ -82,11 +90,13 @@ void PewPewBot::Autonomous()
 			break;
 		default:
 			//We are done
+			shooter->setPower(0.0);
 			break;
 		}
 #else	
 		kinectCode();
 #endif
+		GetWatchdog().Feed();
 		Wait(0.02);
 	}
 
@@ -113,18 +123,18 @@ void PewPewBot::kinectCode()
 
 	if(kinect->getShootButton())
 	{
-		collector->jankyGo()
-	} else
-	{
+		collector->jankyGo();
+	} else{
 		collector->jankyStop();
 	}
 
 	lastShooterChange--;
 	if(kinect->getShooterOnButton() && lastShooterChange < 0)
 	{
-		lastShooterChange = 30;
-		shooter->setOn(shooter->isOn());
+		lastShooterChange = 60;
+		shooter->setEnabled(!shooter->getEnabled());
 	}
+	shooter->setShot(C1983Shooter::kFreethrow);
 	/*
 	 //Shift Stuff
 	 if (kinect->getShiftButton())
@@ -137,10 +147,10 @@ void PewPewBot::kinectCode()
 	 */
 #if DRIVE_PID
 	//Check whether we're close enough to the setpoint. If so, reset I.
-	if (drive->getLSetpoint() == 0.0)
-	drive->resetLeftI();
+	if (fabs(drive->getLSetpoint()) < 0.03)
+		drive->resetLeftI();
 
-	if (fabs(drive->getRSetpoint() == 0.0)
+	if (fabs(drive->getRSetpoint()) < 0.03)
 			drive->resetRightI();
 #endif
 		}

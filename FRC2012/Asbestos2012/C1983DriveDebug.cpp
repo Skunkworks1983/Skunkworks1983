@@ -78,5 +78,5 @@ void C1983Drive::dDown()
 #endif
 void C1983Drive::debugPrint()
 {
-	cout<<"Compressor Switch: "<<compressorSwitch->Get();
+	cout<<"P: "<<getP()<<" I: "<<getI()<<" D: "<<getD();
 }

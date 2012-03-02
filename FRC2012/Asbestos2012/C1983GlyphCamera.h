@@ -21,6 +21,7 @@ public:
 	static void callProcessPacket(void * cam, char * data);
 	double getCurrentYaw();
 	double getCurrentDepth();
+	bool hasData();
 };
 #endif
 
