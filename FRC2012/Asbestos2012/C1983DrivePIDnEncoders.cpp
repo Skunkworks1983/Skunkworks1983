@@ -49,4 +49,10 @@ void C1983Drive::enablePID()
 	leftPID->Enable();
 	rightPID->Enable();
 }
+
+void C1983Drive::disablePID()
+{
+	leftPID->Disable();
+	rightPID->Disable();
+}
 #endif

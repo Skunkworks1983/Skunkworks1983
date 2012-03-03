@@ -45,12 +45,11 @@ C1983Drive::C1983Drive()
 	gyro = new Gyro(GYRO_CHANNEL);
 
 	//Turn PID Begin
-	/*
 	turnPIDSource = new C1983TurnPIDSource(gyro);
 	turnPIDOutput = new C1983TurnPIDOutput(leftVic1,leftVic2,rightVic1,rightVic2);
 	turnPID = new PIDController(TURN_P,TURN_I,TURN_D,turnPIDSource,turnPIDOutput);
 	turnPID->SetOutputRange(-1.0,1.0);
-	turnPID->SetInputRange(-360,360);*/
+	turnPID->SetInputRange(-360,360);
 	//Turn PID End
 	
 	//Compressor and compressor switch. compressorSwitch reads 0 when the compressor needs to be running
@@ -79,10 +78,10 @@ void C1983Drive::setSpeedL(float speed)
 {
 #if DRIVE_PID
 	leftPID->SetSetpoint(speed);
-	if(fabs(leftPID->GetSetpoint())/leftPID->GetSetpoint() != fabs(speed)/speed || speed == 0.0)
+	/*if(fabs(leftPID->GetSetpoint())/leftPID->GetSetpoint() != fabs(speed)/speed || speed == 0.0)
 	{
 		resetLeftI();
-	}
+	}*/
 #else
 	leftVic1->Set(speed);
 	leftVic2->Set(speed);
@@ -93,10 +92,10 @@ void C1983Drive::setSpeedL(float speed)
 void C1983Drive::setSpeedR(float speed)
 {
 #if DRIVE_PID
-	if(fabs(rightPID->GetSetpoint())/rightPID->GetSetpoint() != fabs(speed)/speed || speed == 0.0)
+	/*if(fabs(rightPID->GetSetpoint())/rightPID->GetSetpoint() != fabs(speed)/speed || speed == 0.0)
 	{
 		resetRightI();
-	}
+	}*/
 	rightPID->SetSetpoint(speed);
 #else
 	rightVic1->Set(-speed);

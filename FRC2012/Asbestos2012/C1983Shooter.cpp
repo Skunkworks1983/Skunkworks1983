@@ -86,17 +86,15 @@ void C1983Shooter::jankyStop()
 void C1983Shooter::setEnabled(bool enable)
 {
 #if SHOOTER_PID
-	if(enable && !isEnabled)
+	if(enable && !shooterPID->IsEnabled())
 	{
 		shooterPID->Enable();
 		shooterPID->SetSetpoint(power);
 		cout<<"ENABLING SHOOTER PID"<<endl;
-		isEnabled = true;
-	} else if(!enable && isEnabled){
+	} else if(!enable && shooterPID->IsEnabled()){
 		cout<<"DISABLING SHOOTER PID"<<endl;
 		shooterPID->SetSetpoint(0.0);
 		shooterPID->Disable();
-		isEnabled = false;
 	}else{
 		return;
 	}

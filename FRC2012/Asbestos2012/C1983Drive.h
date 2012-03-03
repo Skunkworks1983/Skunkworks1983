@@ -102,6 +102,7 @@ public:
 	void resetRightI();
 	void cleanPID();
 	void enablePID();
+	void disablePID();
 	
 	float getLError();
 	

@@ -25,23 +25,39 @@ bool PewPewBot::lineDepthAlign()
 bool PewPewBot::shootAllBalls()
 {
 	shooter->setShot(C1983Shooter::kKeytop);
+	shooter->setEnabled(true);
 	shooter->update();
 	collector->update();
 	if (!collector->isShooting() && shooter->isReady())
 	{
+		stableCount = 0;
 		collector->requestShot();
+		hasResetItem = true;
 	}
-	if (collector->automatic && !collector->isCollecting()
-			&& !collector->isShooting())
+	if (!collector->isCollecting() && !collector->isShooting())
 	{
-		for (int slot = 0; slot<3; slot++)
+		if (collector->automatic)
 		{
-			if (collector->getSense(slot) == true)
+			for (int slot = 0; slot<3; slot++)
 			{
-				return false;
+				if (collector->getSense(slot))
+				{
+					return false;
+				}
+			}
+			shooter->setEnabled(false);
+			hasResetItem = false;
+			return true;
+		} else if (hasResetItem)
+		{
+			stableCount++;
+			if (stableCount > 250){
+				shooter->setEnabled(false);
+				stableCount = 0;
+				hasResetItem = false;
+				return true;
 			}
 		}
-		return true;
 	}
 	return false;
 }
@@ -50,17 +66,17 @@ bool PewPewBot::camYawAlign()
 {
 	if (camera->hasData())
 	{
-		if (!hasResetItem)  //If not made the reset gyro step
+		if (!hasResetItem) //If not made the reset gyro step
 		{
 			drive->resetGyro();
 			hasResetItem = true;
 		}
-		if (!drive->turnPID->IsEnabled())  //If the turning PID is not enabled
+		if (!drive->turnPID->IsEnabled()) //If the turning PID is not enabled
 			drive->turnPID->Enable();
-		drive->turnPID->SetSetpoint((float)camera->getCurrentYaw());  //Set the turning setpoint
+		drive->turnPID->SetSetpoint((float)camera->getCurrentYaw()); //Set the turning setpoint
 		if (fabs(drive->turnPID->GetError()) <= 5)
 		{
-			drive->turnPID->Disable();  //Disable and return
+			drive->turnPID->Disable(); //Disable and return
 			hasResetItem = false;
 			return true;
 		}

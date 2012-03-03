@@ -4,7 +4,7 @@
 #define PRACTICE_BOT 1
 
 //PewPew Start
-#define KINECT 1	
+#define KINECT 0
 #define DEADBAND 0.03
 
 //PewPew End
@@ -62,7 +62,7 @@
 #define DRIVE_I_LOW 0.05
 #define DRIVE_D_LOW 0.05
 
-#define TURN_P 0.00
+#define TURN_P 1.00
 #define TURN_I 0.00
 #define TURN_D 0.00
 
@@ -154,7 +154,7 @@
 #define SHIFT_BUTTON lStick->GetRawButton(1)
 #define COLLECT_BUTTON rStick->GetRawButton(1)//rStick->GetRawButton(1)
 #define SHOOT_BUTTON (!myEIO.GetDigital(14))
-#define LIGHT_BUTTON rStick->GetRawButton(10)
+#define LIGHT_BUTTON 1//rStick->GetRawButton(10)
 #define ARM_BUTTON (myEIO.GetDigital(16))
 #define FORWARD_SWITCH (!myEIO.GetDigital(4))
 #define REVERSE_SWITCH (!myEIO.GetDigital(6))
@@ -165,5 +165,12 @@
 #define KEY_ALIGN_BUTTON (!myEIO.GetDigital(15))
 #define AUTO_TARGET_BUTTON (!myEIO.GetDigital(11))
 #define FULL_AUTO_SWTICH (!myEIO.GetDigital(13))
+
+//LEDs
+#define FRONT_LINE_LED(s) (myEIO.SetDigitalOutput(7,s))
+#define BACK_LINE_LED(s) (myEIO.SetDigitalOutput(9,s))
+#define AUTO_RANGE_LED(s) (myEIO.SetDigitalOutput(3,s))
+#define AUTO_YAW_LED(s) (myEIO.SetDigitalOutput(5,s))
+#define RPM_LOCK_LED(s) (myEIO.SetDigitalOutput(1,s))
 
 #endif

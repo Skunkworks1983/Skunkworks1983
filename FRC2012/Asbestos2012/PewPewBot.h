@@ -17,7 +17,7 @@ class PewPewBot : public SimpleRobot
 public:
 	enum AutonomousMode
 	{
-		kDoYawAlign, kDoDepthAlign, kShoot, kRotate180, kTipBridge, kDone
+		kDoYawAlign, kDoDepthAlign, kShoot, kRotate180, kMoveToBridge, kTipBridge, kDone
 	};
 	char * getModeName(AutonomousMode mode);
 private:

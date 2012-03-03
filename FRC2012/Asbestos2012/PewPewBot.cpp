@@ -15,7 +15,7 @@ PewPewBot::PewPewBot()
 
 	driverStation = DriverStation::GetInstance();
 	driverStationLCD = DriverStationLCD::GetInstance();
-	
+
 	hasResetItem = false;
 	stableCount = 0;
 	shooter->setEnabled(false);
@@ -25,39 +25,45 @@ PewPewBot::~PewPewBot()
 {
 }
 
+int channel = 0;
 void PewPewBot::OperatorControl()
 {
 	DriverStationEnhancedIO &myEIO = driverStation->GetEnhancedIO();
+
 	int count = 0;//DEBUG (C1983)
 	bool tipperToggle = false;
 	bool shifterToggle = false;
-	shooter->setEnabled(false);	
+	shooter->setEnabled(false);
 	GetWatchdog().SetEnabled(true);
 	GetWatchdog().SetExpiration(0.1);
 #if DRIVE_PID
 	drive->enablePID();
 #endif
+	FRONT_LINE_LED(true);
+	AUTO_RANGE_LED(true);
 	//drive->turnPID->Enable();
 	while (IsOperatorControl() && !IsDisabled())
 	{
 		count++;
-		if(count % 50 == 0)
+		if (count % 50 == 0)
 		{
 #if DRIVE_PID
-			//drive->debugPrint();
+			drive->debugPrint();
+			cout << endl;
 #endif
 			/*cout<<"LSpeed: "<<drive->getL()<<" RSpeed: "<<drive->getR()
 			 <<" Speed/Ideal Max: "<<drive->getL()/MAXSPEEDHIGH
 			 << "Shooter Power: "<<-(rStick->GetThrottle() + 1)/2<<endl;*/
 			//cout<<"Shooter Rate:" << shooter->getRate()<<endl;
-			for(int i = 0;i < 3;i++)
+			for (int i = 0; i < 3; i++)
 			{
 				cout<<collector->getSense(i)<<" ";
 			}
 			//shooter->debugPrint();
 			cout<<endl;
 		}
-		driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line1, "Shooter RPM: ", shooter->getRate());
+		driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line1,
+				"Shooter RPM: ", shooter->getRate());
 
 		//Set the compressor
 		drive->updateCompressor();
@@ -77,58 +83,65 @@ void PewPewBot::OperatorControl()
 		{
 			drive->setSpeedL(0.0);
 		}
+		
 
 		//check for shifting
 		if (!shifterToggle && (shifterToggle = SHIFT_BUTTON))
 		{
 			drive->shift(!(drive->shiftedHigh));
-		}else{
+		} else
+		{
 			shifterToggle = SHIFT_BUTTON;
 		}
 
-//COLLECTOR
+		//COLLECTOR
 		if (COLLECT_BUTTON)
 		{
 			collector->setAutomatic(true);
 			collector->requestCollect();
-		}else if (REVERSE_SWITCH){
+		} else if (REVERSE_SWITCH)
+		{
 			collector->requestReverse();
 			collector->setAutomatic(false);
-		}else if (FORWARD_SWITCH){
+		} else if (FORWARD_SWITCH)
+		{
 			collector->requestCollect();
 			collector->setAutomatic(false);
-		}else{
+		} else
+		{
 			collector->requestStop();
 		}
 		collector->update();
-//END COLLECTOR
-		
-//SHOOTER	
+		//END COLLECTOR
+
+		//SHOOTER	
 		//Updates the average. Maybe some other stuff later.
 #if SHOOTER_PID
 		shooter->update();
-		
-		if(SHORT_SHOT_SWITCH)
+
+		if (SHORT_SHOT_SWITCH)
 		{
 			shooter->setShot(C1983Shooter::kFreethrow);
-		}else{
+		} else
+		{
 			shooter->setShot(C1983Shooter::kKeytop);
 		}
-		
-		if(ARM_BUTTON)
+
+		if (ARM_BUTTON)
 		{
 			shooter->setEnabled(true);
-		}else{
+		} else
+		{
 			shooter->setEnabled(false);
 		}
 		/*
-		if(rStick->GetRawButton(5))
-		{
-			shooter->setPower(2775.0/SHOOTER_MAX_SPEED);
-		}else{
-			shooter->setPower((rStick->GetThrottle() - 1)/(-2.0));
-		}
-		*/
+		 if(rStick->GetRawButton(5))
+		 {
+		 shooter->setPower(2775.0/SHOOTER_MAX_SPEED);
+		 }else{
+		 shooter->setPower((rStick->GetThrottle() - 1)/(-2.0));
+		 }
+		 */
 #else
 		shooter->update();
 		shooter->setJankyPower((rStick->GetThrottle() - 1)/(-2.0));
@@ -138,15 +151,16 @@ void PewPewBot::OperatorControl()
 		{
 			collector->requestShot();
 		}
-//END SHOOTER
-//TIPPER
+		//END SHOOTER
+		//TIPPER
 		if (TIPPER_SWITCH)
 		{
 			drive->tip(true);
-		}else{
+		} else
+		{
 			drive->tip(false);
 		}
-//END TIPPER		
+		//END TIPPER		
 		//check for light
 		if (LIGHT_BUTTON)
 		{
@@ -162,19 +176,19 @@ void PewPewBot::OperatorControl()
 		}
 #if SHOOTER_PID
 		/*if (lStick->GetRawButton(2) && count/5 == (float)count/5)
-		{
-			shooter->iDown();
-		}
-		if (lStick->GetRawButton(3) && count/5 == (float)count/5)
-		{
-			shooter->iUp();
-		}
-		if (rStick->GetRawButton(5))
-		{
-			shooter->cleanPID();
-		}*/
+		 {
+		 shooter->iDown();
+		 }
+		 if (lStick->GetRawButton(3) && count/5 == (float)count/5)
+		 {
+		 shooter->iUp();
+		 }
+		 if (rStick->GetRawButton(5))
+		 {
+		 shooter->cleanPID();
+		 }*/
 #endif
-		
+
 		//Check for PID modification DEBUG
 #if DRIVE_PID
 		if (lStick->GetRawButton(6) && count/5 == (float)count/5)
@@ -185,22 +199,22 @@ void PewPewBot::OperatorControl()
 		{
 			drive->pUp();
 		}
-		
+
 		if (lStick->GetRawButton(2) && count/5 == (float)count/5)
 		{
 			drive->iDown();
 		}
-		
+
 		if (lStick->GetRawButton(3) && count/5 == (float)count/5)
 		{
 			drive->iUp();
 		}
-		
+
 		if (lStick->GetRawButton(10) && count/5 == (float)count/5)
 		{
 			drive->dDown();
 		}
-		
+
 		if (lStick->GetRawButton(11) && count/5 == (float)count/5)
 		{
 			drive->dUp();
@@ -213,10 +227,10 @@ void PewPewBot::OperatorControl()
 		}
 
 		if (fabs(drive->getLSetpoint()- drive->getL()) <= .01)
-		drive->resetLeftI();
+			drive->resetLeftI();
 
 		if (fabs(drive->getRSetpoint()- drive->getR()) <= .01)
-		drive->resetRightI();
+			drive->resetRightI();
 #endif
 		GetWatchdog().Feed();
 		myfile<<count<<","<<drive->getL()<<"\n";
