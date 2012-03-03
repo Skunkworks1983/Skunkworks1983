@@ -96,13 +96,13 @@ public class GlyphConfig extends JFrame {
 	btnStart.addMouseListener(new MouseAdapter() {
 	    @Override
 	    public void mouseClicked(MouseEvent e) {
-		glyphCam.isRunning = !glyphCam.isRunning;
-		btnStart.setSelected(glyphCam.isRunning);
-		btnStart.setText(glyphCam.isRunning ? "Stop" : "Start");
+		glyphCam.pause(!glyphCam.isPaused());
+		btnStart.setSelected(glyphCam.isPaused());
+		btnStart.setText(glyphCam.isPaused() ? "Resume" : "Pause");
 	    }
 	});
-	btnStart.setSelected(glyphCam.isRunning);
-	btnStart.setText(glyphCam.isRunning ? "Stop" : "Start");
+	btnStart.setSelected(!glyphCam.isPaused());
+	btnStart.setText(glyphCam.isPaused() ? "Resume" : "Pause");
 	controlPane.add(btnStart);
 
 	JPanel filterPane = new JPanel();
@@ -401,21 +401,21 @@ public class GlyphConfig extends JFrame {
     }
 
     public void getAutoPose() {
-	boolean prev = glyphCam.isRunning;
-	glyphCam.isRunning = true;
+	boolean prev = glyphCam.isPaused();
+	glyphCam.pause(false);
 	glyphCam.calibrating = true;
 	long startTime = System.currentTimeMillis();
 	while (glyphCam.currentPixelWidth == -1 || glyphCam.currentPixelHeight == -1){
 	    if (System.currentTimeMillis() - startTime >= getAutoPoseTimeout){
 		JOptionPane.showMessageDialog(this, "Auto Glyph Pose Timout!");
-		glyphCam.isRunning = prev;
+		glyphCam.pause(prev);
 		glyphCam.calibrating = false;
 		return;
 	    }
 	}
 	pixelWidth.setText("" + glyphCam.currentPixelWidth);
 	pixelHeight.setText("" + glyphCam.currentPixelHeight);
-	glyphCam.isRunning = prev;
+	glyphCam.pause(prev);
 	glyphCam.calibrating = false;
     }
 

@@ -1,14 +1,10 @@
-package com.pi.glyph;
+package com.pi.glyph.filter;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 public class VerticalLines {
     private static final int broken = 1;
