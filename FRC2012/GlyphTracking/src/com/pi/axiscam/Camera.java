@@ -8,18 +8,45 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-public class Camera {
+public class Camera extends Thread {
     private BufferedImage[] camBuffer = new BufferedImage[2];
     private byte activeBuffer = 0;
     private CameraAuthenticator authenticator;
     private URL cameraURL;
     private int lastRead = 0;
     private boolean ioError = false;
+    private boolean isRunning = true;
+    private boolean isPaused = false;
 
-    public Camera(String url, String username, String password) throws MalformedURLException {
+    public Camera(ThreadGroup tGroup, String url, String username,
+	    String password) throws MalformedURLException {
+	super(tGroup, "Camera Thread");
 	this.authenticator = new CameraAuthenticator(username, password);
 	Authenticator.setDefault(authenticator);
 	cameraURL = new URL(url);
+	start();
+    }
+
+    @Override
+    public void run() {
+	while (isRunning) {
+	    if (!isPaused) {
+		refresh();
+	    } else {
+		try {
+		    Thread.sleep(10L);
+		} catch (InterruptedException e) {
+		}
+	    }
+	}
+    }
+    
+    public boolean isPaused(){
+	return isPaused;
+    }
+    
+    public void pause(boolean state){
+	this.isPaused = state;
     }
 
     public BufferedImage getImage() {
@@ -33,15 +60,28 @@ public class Camera {
 
     public void refresh() {
 	try {
-	    camBuffer[Math.abs(activeBuffer - 1)] = ImageIO.read(cameraURL);
-	    activeBuffer = (byte) Math.abs(activeBuffer - 1);
+	    byte newActive = (byte) Math.abs(activeBuffer - 1);
+	    if (camBuffer[newActive] != null)
+		camBuffer[newActive].flush();
+	    camBuffer[newActive] = ImageIO.read(cameraURL);
+	    activeBuffer = newActive;
 	    ioError = false;
 	} catch (IOException e) {
 	    ioError = true;
 	}
     }
-    
+
     public boolean hasIOError() {
 	return ioError;
+    }
+    
+    @SuppressWarnings("deprecation")
+    public void dispose(){
+	this.isRunning = false;
+	try {
+	    join();
+	} catch (InterruptedException e) {
+	    stop();
+	}
     }
 }

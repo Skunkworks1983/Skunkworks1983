@@ -1,4 +1,4 @@
-package com.pi.glyph;
+package com.pi.glyph.filter;
 
 import java.awt.Point;
 import java.util.List;

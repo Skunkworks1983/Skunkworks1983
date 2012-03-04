@@ -18,56 +18,52 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import com.pi.axiscam.Camera;
+import com.pi.glyph.filter.GlyphPoseEstimation;
+import com.pi.glyph.filter.LineFilter;
+import com.pi.glyph.filter.LinePairFinder;
+import com.pi.glyph.filter.VerticalLines;
+import com.pi.glyph.net.GlyphClient;
 
 public class GlyphCam extends JFrame {
     private static final long serialVersionUID = 1L;
     private static long bufferExpiry = 3000;
+    private final ThreadGroup tGroup;
 
     public int threshold = 200;
     public int minLength = 25;
     public int maxMinorPairDistance = 25;
     public int maxMajorPairDistance = 50;
     public int maxLines = 25;
-    public boolean isRunning = true;
     public GlyphPoseEstimation pose = new GlyphPoseEstimation();
 
     public double currentPixelWidth = -1;
     public double currentPixelHeight = -1;
     public boolean calibrating = false;
 
+    private boolean isPaused = false;
     private Camera camera;
     private GlyphConfig config;
+    private GlyphClient client;
 
     public GlyphCam() throws MalformedURLException, IOException {
 	super("Glyph Camera");
+	tGroup = new ThreadGroup("GlyphCamera");
 	config = new GlyphConfig(this);
 	setSize(640, 480);
 	setLocation(0, 0);
 	setVisible(true);
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	camera = new Camera("http://10.19.83.11/jpg/1/image.jpg", "FRC", "FRC");
 
+	camera = new Camera(tGroup, "http://10.19.83.11/jpg/1/image.jpg",
+		"FRC", "FRC"); // TODO
+
+	client = new GlyphClient(this, "10.19.83.2", 1180);
 	new Thread(new Runnable() {
+
 	    @Override
 	    public void run() {
 		while (isVisible()) {
-		    if (isRunning) {
-			camera.refresh();
-		    } else {
-			try {
-			    Thread.sleep(10L);
-			} catch (InterruptedException e) {
-			}
-		    }
-		}
-	    }
-	}).start();
-
-	new Thread(new Runnable() {
-	    @Override
-	    public void run() {
-		while (isVisible()) {
-		    if (isRunning) {
+		    if (!isPaused) {
 			try {
 			    if (!paintToBuffer())
 				try {
@@ -88,7 +84,6 @@ public class GlyphCam extends JFrame {
 	    }
 	}).start();
 	config.setVisible(true);
-
 	WindowAdapter closer = new WindowAdapter() {
 	    @Override
 	    public void windowClosing(WindowEvent e) {
@@ -150,23 +145,21 @@ public class GlyphCam extends JFrame {
 	    double basketYaw = Math.toDegrees(pose.getBasketYaw(basketDepth,
 		    yaw));
 	    double yawD = Math.toDegrees(yaw);
-	    System.out.println("Depth: " + depth);
-	    System.out.println("Yaw: " + yawD);
-	    System.out.println("Basket Depth: " + basketDepth);
-	    System.out.println("Basket Yaw: " + basketYaw);
-	    g.drawString("Depth: " + (pair != null ? depth + " ft" : "N/A"), 0,
+	    g.drawString("Depth: " + depth + " ft", 0,
 		    height - 100 + charHeight);
-	    g.drawString("Yaw: " + (pair != null ? yawD + "°" : "N/A"), 0,
+	    g.drawString("Yaw: " + yawD + "°", 0,
 		    height - 100 + (charHeight * 2));
 	    g.drawString("Basket Depth: "
-		    + (pair != null ? basketDepth + " ft" : "N/A"), 0, height
+		    + basketDepth + " ft", 0, height
 		    - 100 + (charHeight * 4));
 	    g.drawString("Basket Yaw: "
-		    + (pair != null ? basketYaw + "°" : "N/A"), 0, height - 100
+		    + basketYaw + "°", 0, height - 100
 		    + (charHeight * 5));
 	    backBuffer.getGraphics().drawImage(image, 0, 0, null);
 	    backBufferTime = System.currentTimeMillis();
+	    client.send(basketDepth, basketYaw);
 	} else if (System.currentTimeMillis() - backBufferTime > bufferExpiry) {
+	    client.send(-1,-1);
 	    backBuffer = image;
 	}
 	return true;
@@ -176,27 +169,31 @@ public class GlyphCam extends JFrame {
 
     @Override
     public void paint(Graphics g) {
-	// super.paint(g);
+	super.paint(g);
 	try {
-	    if (camera.hasIOError()) {
-		if (errorBuffer == null) {
-		    errorBuffer = this.createImage(getWidth(), getHeight());
-		    Graphics eG = errorBuffer.getGraphics();
-		    eG.setColor(Color.RED);
-		    eG.fillRect(0, 0, getWidth(), getHeight());
-		    eG.setColor(Color.BLACK);
-		    eG.setFont(errorFont);
-		    if (errorBounds == null)
-			errorBounds = eG.getFontMetrics().getStringBounds(
-				"I/O Error!", eG);
-		    eG.drawString("I/O Error!", (getWidth() / 2)
-			    - ((int) (errorBounds.getWidth() / 2d)),
-			    (getHeight() / 2)
-				    - ((int) (errorBounds.getHeight() / 2d)));
+	    if (camera != null) {
+		if (camera.hasIOError()) {
+		    if (errorBuffer == null) {
+			errorBuffer = this.createImage(getWidth(), getHeight());
+			Graphics eG = errorBuffer.getGraphics();
+			eG.setColor(Color.RED);
+			eG.fillRect(0, 0, getWidth(), getHeight());
+			eG.setColor(Color.BLACK);
+			eG.setFont(errorFont);
+			if (errorBounds == null)
+			    errorBounds = eG.getFontMetrics().getStringBounds(
+				    "I/O Error!", eG);
+			eG.drawString(
+				"I/O Error!",
+				(getWidth() / 2)
+					- ((int) (errorBounds.getWidth() / 2d)),
+				(getHeight() / 2)
+					- ((int) (errorBounds.getHeight() / 2d)));
+		    }
+		    g.drawImage(errorBuffer, 0, 0, null);
+		} else if (backBuffer != null) {
+		    g.drawImage(backBuffer, 0, 0, null);
 		}
-		g.drawImage(errorBuffer, 0, 0, null);
-	    } else if (backBuffer != null) {
-		g.drawImage(backBuffer, 0, 0, null);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -206,5 +203,26 @@ public class GlyphCam extends JFrame {
     public static void main(String[] args) throws MalformedURLException,
 	    IOException {
 	new GlyphCam();
+    }
+
+    @Override
+    public void dispose() {
+	if (camera != null)
+	    camera.dispose();
+	if (client != null)
+	    client.dispose();
+	super.dispose();
+    }
+
+    public void pause(boolean state) {
+	this.isPaused = state;
+    }
+
+    public boolean isPaused() {
+	return isPaused;
+    }
+
+    public ThreadGroup getThreadGroup() {
+	return tGroup;
     }
 }

@@ -10,6 +10,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.pi.glyph.filter.LineFilter;
+import com.pi.glyph.filter.VerticalLines;
+
 public class GlyphTest {
     public static int minLength = 25;
     public static int threshold = 225;
