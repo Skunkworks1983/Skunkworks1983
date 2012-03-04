@@ -5,8 +5,8 @@
 #include "C1983Shooter.h"
 
 //IR Sensor Macros
-#define LOWSLOT (lowSlot->Get() == 1)
-#define MIDSLOT (midSlot->Get() == 1)
+#define LOWSLOT (!(lowSlot->Get() == 1))
+#define MIDSLOT (!(midSlot->Get() == 1))
 #define TOPSLOT (topSlot->Get() == 1)
 
 class C1983Collector
@@ -30,8 +30,6 @@ private:
 	int collectorCount;
 	int shooterCount;
 	bool runInReverse;
-
-	bool beganShotCheck;
 public:
 	bool automatic;
 	C1983Collector(C1983Shooter *sh);
@@ -64,5 +62,7 @@ public:
 	void jankyStop();
 	void jankyReverse();
 	void clean();
+	
+	void debugPrint();
 };
 #endif

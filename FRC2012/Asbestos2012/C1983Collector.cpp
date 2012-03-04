@@ -24,9 +24,8 @@ C1983Collector::C1983Collector(C1983Shooter *sh)
 
 	shooting = false;
 	collecting = false;
-	automatic = false; //TODO if we have sensors, make this true
+	automatic = true; //TODO if we have sensors, make this true
 	runInReverse = false;
-	beganShotCheck = false;
 
 }
 
@@ -34,17 +33,15 @@ void C1983Collector::update()
 {
 	if (!automatic && runInReverse && !shooting)//Manual reverse
 	{
-		cout<<"REVERSE"<<endl;
 		collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
 		collectorVicLow->Set(COLLECTOR_BELT_SPEED);
 		collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
 	} else if (!automatic && collecting && !shooting) //Manual forward
 	{
-		cout<<"COLLECTING"<<endl;
 		collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
 		collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
 		collectorVicTop->Set(COLLECTOR_BELT_SPEED);
-	} else if (shooting)
+	} /*else if (!automatic && shooting)  Don't need this.  In manual mode it should do the same thing
 	{
 		shooterCount++;
 		collectorVicTop->Set(COLLECTOR_FEED_SPEED);
@@ -58,9 +55,21 @@ void C1983Collector::update()
 			collecting = automatic;
 			//If we want to autocollect after shooting we need to be in auto mode
 		}
+	}  */else if (shooting)
+	{
+		shooterCount++;
+		collectorVicTop->Set(COLLECTOR_FEED_SPEED);
+		if (shooterCount > SHOOTER_TIMEOUT)
+		{
+			collectorVicTop->Set(0.0);
+			shooting = false;
+			shooterCount = 0;
+			collecting = automatic;
+			//If we want to autocollect after shooting we need to be in auto mode
+		}
 	} else if (automatic && collecting && !shooting)
 	{
-		if (collectorCount> COLLECTOR_TIMEOUT)
+		if (collectorCount > COLLECTOR_TIMEOUT)
 		{
 			collectorVicPickup->Set(0.0);
 			collectorVicLow->Set(-0.0);
@@ -89,19 +98,7 @@ void C1983Collector::update()
 			collectorVicPickup->Set(0.0);
 		}
 		collectorCount++;
-	} else if (shooting)
-	{
-		shooterCount++;
-		collectorVicTop->Set(COLLECTOR_FEED_SPEED);
-		if (shooterCount > SHOOTER_TIMEOUT)
-		{
-			collectorVicTop->Set(0.0);
-			shooting = false;
-			shooterCount = 0;
-			collecting = automatic;
-			//If we want to autocollect after shooting we need to be in auto mode
-		}
-	} else
+	}else
 	{
 		collectorVicTop->Set(0.0);
 		collectorVicLow->Set(-0.0);
@@ -187,9 +184,15 @@ void C1983Collector::clean()
 {
 	shooting = false;
 	collecting = false;
-	automatic = false;
+	automatic = true;
 	runInReverse = false;
-	beganShotCheck = false;
 	collectorCount = 0;
 	shooterCount = 0;
+}
+
+void C1983Collector::debugPrint(){
+	//if (automatic){
+		cout << "Collector Sensors: " << getSense(0) << " " << getSense(1) << " " << getSense(2) << "\t"<<endl;
+	//}
+	cout << "Automatic: " << automatic << "\tCollecting: " << collecting << "\tShooting: " << shooting << "\tReverse: " << runInReverse;
 }

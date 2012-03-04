@@ -31,9 +31,12 @@ void PewPewBot::Autonomous()
 
 	drive->shift(false);
 	drive->resetEncoders();
-	autonomousMode = kShoot;
+	autonomousMode = kCollect;
 	stableCount = 0;
-
+	
+	//Cleaning
+	collector->clean();
+	
 	while (IsAutonomous() && !IsDisabled())
 	{
 		count++;
@@ -44,6 +47,7 @@ void PewPewBot::Autonomous()
 			cout << "Phase: " << getModeName(autonomousMode) << endl;
 		}
 		drive->updateCompressor();
+		updateDriverStation();
 #if !KINECT
 		switch (autonomousMode)
 		{
@@ -53,9 +57,18 @@ void PewPewBot::Autonomous()
 			if (lineDepthAlign())
 				autonomousMode = kShoot;
 			break;
+		case kCollect:
+			if (!hasResetItem){
+			collector->requestCollect();
+			hasResetItem = true;
+			}
+			if (!collector->isCollecting()){
+				hasResetItem = false;
+				autonomousMode = kShoot;
+			}
 		case kShoot:
 			if (shootAllBalls())
-				autonomousMode = kRotate180;
+				autonomousMode = kDone;//kRotate180;
 			break;
 		case kRotate180:
 			if (!hasResetItem)

@@ -15,8 +15,10 @@ PewPewBot::PewPewBot()
 
 	driverStation = DriverStation::GetInstance();
 	driverStationLCD = DriverStationLCD::GetInstance();
+	myEIO = &driverStation->GetEnhancedIO();
 
 	hasResetItem = false;
+	yawAlignState = false;
 	stableCount = 0;
 	shooter->setEnabled(false);
 }
@@ -25,13 +27,27 @@ PewPewBot::~PewPewBot()
 {
 }
 
+void PewPewBot::updateDriverStation()
+{
+	//Blinken Lights
+	FRONT_LINE_LED(drive->getLightSensorFront());
+	BACK_LINE_LED(drive->getLightSensorBack());
+	RPM_LOCK_LED(shooter->isReady());
+	AUTO_RANGE_LED(false);
+	AUTO_YAW_LED(false);
+
+	//Drive Station LCD
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line1,
+			"Shooter RPM: %lf", shooter->getRate() * SHOOTER_MAX_SPEED);
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line2, "Shot: %s",
+			shooter->getShotName());
+	driverStationLCD->UpdateLCD();
+}
+
 int channel = 0;
 void PewPewBot::OperatorControl()
 {
-	DriverStationEnhancedIO &myEIO = driverStation->GetEnhancedIO();
-
 	int count = 0;//DEBUG (C1983)
-	bool tipperToggle = false;
 	bool shifterToggle = false;
 	shooter->setEnabled(false);
 	GetWatchdog().SetEnabled(true);
@@ -39,51 +55,61 @@ void PewPewBot::OperatorControl()
 #if DRIVE_PID
 	drive->enablePID();
 #endif
-	FRONT_LINE_LED(true);
-	AUTO_RANGE_LED(true);
 	//drive->turnPID->Enable();
+	//Cleaning
+	collector->clean();
+	
 	while (IsOperatorControl() && !IsDisabled())
 	{
 		count++;
 		if (count % 50 == 0)
 		{
 #if DRIVE_PID
-			drive->debugPrint();
-			cout << endl;
+			//drive->debugPrint();
+			//cout << endl;
 #endif
 			/*cout<<"LSpeed: "<<drive->getL()<<" RSpeed: "<<drive->getR()
 			 <<" Speed/Ideal Max: "<<drive->getL()/MAXSPEEDHIGH
 			 << "Shooter Power: "<<-(rStick->GetThrottle() + 1)/2<<endl;*/
 			//cout<<"Shooter Rate:" << shooter->getRate()<<endl;
-			for (int i = 0; i < 3; i++)
-			{
-				cout<<collector->getSense(i)<<" ";
-			}
 			//shooter->debugPrint();
-			cout<<endl;
+			collector->debugPrint();
+			cout << endl;
 		}
-		driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line1,
-				"Shooter RPM: ", shooter->getRate());
+		updateDriverStation();
 
 		//Set the compressor
 		drive->updateCompressor();
 
-		//Set the drive base to the stick speeds (Joysticks are backwards yo!)
-		if (fabs(rStick->GetY()) >= DEADBAND)
+		if (yawAlignState && !KEY_ALIGN_BUTTON)
 		{
-			drive->setSpeedR(-rStick->GetY());
+			drive->turnPID->Disable();
+			drive->enablePID();
+		}
+		if (AUTO_TARGET_BUTTON)
+		{
+			camYawAlign();
+		} else if (KEY_ALIGN_BUTTON)
+		{
+			lineDepthAlign();
 		} else
 		{
-			drive->setSpeedR(0.0);
+			//Set the drive base to the stick speeds (Joysticks are backwards yo!)
+			if (fabs(rStick->GetY()) >= DEADBAND)
+			{
+				drive->setSpeedR(-rStick->GetY());
+			} else
+			{
+				drive->setSpeedR(0.0);
+			}
+			if (fabs(lStick->GetY()) >= DEADBAND)
+			{
+				drive->setSpeedL(-lStick->GetY());
+			} else
+			{
+				drive->setSpeedL(0.0);
+			}
 		}
-		if (fabs(lStick->GetY()) >= DEADBAND)
-		{
-			drive->setSpeedL(-lStick->GetY());
-		} else
-		{
-			drive->setSpeedL(0.0);
-		}
-		
 
 		//check for shifting
 		if (!shifterToggle && (shifterToggle = SHIFT_BUTTON))
@@ -101,12 +127,12 @@ void PewPewBot::OperatorControl()
 			collector->requestCollect();
 		} else if (REVERSE_SWITCH)
 		{
-			collector->requestReverse();
 			collector->setAutomatic(false);
+			collector->requestReverse();
 		} else if (FORWARD_SWITCH)
 		{
-			collector->requestCollect();
 			collector->setAutomatic(false);
+			collector->requestCollect();
 		} else
 		{
 			collector->requestStop();
@@ -225,12 +251,6 @@ void PewPewBot::OperatorControl()
 			drive->resetLeftI();
 			drive->resetRightI();
 		}
-
-		if (fabs(drive->getLSetpoint()- drive->getL()) <= .01)
-			drive->resetLeftI();
-
-		if (fabs(drive->getRSetpoint()- drive->getR()) <= .01)
-			drive->resetRightI();
 #endif
 		GetWatchdog().Feed();
 		myfile<<count<<","<<drive->getL()<<"\n";
@@ -251,6 +271,8 @@ void PewPewBot::Disabled()
 #if DRIVE_PID
 	drive->cleanPID();
 #endif
+	//Cleaning
+	collector->clean();
 	while (IsDisabled())
 	{
 		Wait(0.02);

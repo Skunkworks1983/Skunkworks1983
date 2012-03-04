@@ -17,13 +17,14 @@ class PewPewBot : public SimpleRobot
 public:
 	enum AutonomousMode
 	{
-		kDoYawAlign, kDoDepthAlign, kShoot, kRotate180, kMoveToBridge, kTipBridge, kDone
+		kDoYawAlign, kDoDepthAlign, kCollect, kShoot, kRotate180, kMoveToBridge, kTipBridge, kDone
 	};
 	char * getModeName(AutonomousMode mode);
 private:
 	int stableCount; //This is just used for stablizing things like depth alignment
 	AutonomousMode autonomousMode; //The current autonomous mode
 	bool hasResetItem;
+	bool yawAlignState;
 public:
 	C1983Drive *drive;
 
@@ -34,6 +35,8 @@ public:
 	//Controls
 	DriverStation * driverStation;
 	DriverStationLCD * driverStationLCD;
+	DriverStationEnhancedIO * myEIO;
+	
 	Joystick *lStick;
 	Joystick *rStick;
 	ofstream myfile;
@@ -47,11 +50,15 @@ public:
 	void Disabled();
 	~PewPewBot();
 
+	void updateDriverStation();
+	
 	//Automatic Functions
 	bool lineDepthAlign(); //Aligns the robot based on the key
 	bool camYawAlign();  //Aligns the robot based on the camera data
 	void kinectCode(); //Controls the robot with kinect data
 
+	void cleanPIDs();
+	
 	//Autonomous Functions
 	bool shootAllBalls();
 	bool driveToBridge();

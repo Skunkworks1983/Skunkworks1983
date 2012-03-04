@@ -11,7 +11,7 @@ C1983GlyphCamera::C1983GlyphCamera()
 {
 	currentDepth = -1;
 	currentYaw = -1;
-	server = new Server1180(C1983GlyphCamera::callProcessPacket, this, true);
+	server = new Server1180(C1983GlyphCamera::callProcessPacket, this, false);
 }
 double C1983GlyphCamera::getCurrentDepth()
 {

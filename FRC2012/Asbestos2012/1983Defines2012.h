@@ -70,8 +70,8 @@
 #define TURN_I_LOW 0.0
 #define TURN_D_LOW 0.0
 
-#define LIGHT_SENSOR_CHANNEL_FRONT 1
-#define LIGHT_SENSOR_CHANNEL_BACK 2
+#define LIGHT_SENSOR_CHANNEL_FRONT 2
+#define LIGHT_SENSOR_CHANNEL_BACK 1
 #define LIGHT_SENSOR_CHANNEL_BRIDGE 3
 #define LIGHT_CHANNEL 3 //Last value: 1
 //Gyro Channel	
@@ -81,7 +81,7 @@
 #define MAXSPEEDHIGH 14.7
 #define MAXSPEEDLOW  3.7
 
-#define LINE_STOP_SPEED .25 //The speed at which the robot runs to stop at the key
+#define LINE_STOP_SPEED .5 //The speed at which the robot runs to stop at the key
 //DriveBase End
 
 //Shooter Start
@@ -99,27 +99,26 @@
 #define SHOOTER_WHEEL_ENCODER_B 10
 
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
-#define SHOOTER_VELOCITY_TOLERANCE	10.0	//Tolerance of the velocity
+#define SHOOTER_VELOCITY_TOLERANCE_LOW	0.0	//Tolerance of the velocity
+#define SHOOTER_VELOCITY_TOLERANCE_HIGH 15.0
 //SHooter PIDs
 #define SHOOTER_P 2.0
-#define SHOOTER_I 0.1
+#define SHOOTER_I 0.15
 #define SHOOTER_D 0.0
 
-//Preset shot speeds
-#define SHOT_KEYTOP_SPEED 3200.0 
+#define SHOOTER_READY_STABLITY 10
 
-#define SHOT_FREETHROW_SPEED 2775.0
+//Preset shot speeds
+#define SHOT_KEYTOP_SPEED 3250.0 
+
+#define SHOT_FREETHROW_SPEED 2650.0
 
 #define SHOT_OTHER_SPEED 0.0
 
-#define SHOOTER_MAX_SPEED 3200.0
+#define SHOOTER_MAX_SPEED 3500.0
 
 
 #define BALL_SPEED_TO_RPM(speed) {return speed;}   //TODO Conversion
-#define HOOD_HIGH Relay::kReverse
-#define HOOD_LOW Relay::kForward
-
-#define SHOT_AWAY_SWITCH
 
 #define AVERAGE_LENGTH 10.0
 //Shooter End
@@ -136,41 +135,40 @@
 //Number of sensed ball storage spots
 #define COLLECTOR_SLOT_COUNT 3
 //Belt Vic Speed
-#define COLLECTOR_BELT_SPEED 0.7
+#define COLLECTOR_BELT_SPEED 0.4
 #define COLLECTOR_FEED_SPEED 1.0
 //Collector Vic Speed
-#define COLLECTOR_PICKUP_SPEED 0.8
+#define COLLECTOR_PICKUP_SPEED 0.5
 //Timeout for blind running collectors
-#define COLLECTOR_TIMEOUT 250
+#define COLLECTOR_TIMEOUT 100
 #define SHOOTER_TIMEOUT 30
 
 //Collector IR Sensors
-#define COLLECTOR_IR_LOW_CHANNEL 6
-#define COLLECTOR_IR_MID_CHANNEL 7
+#define COLLECTOR_IR_LOW_CHANNEL 7
+#define COLLECTOR_IR_MID_CHANNEL 6
 #define COLLECTOR_IR_TOP_CHANNEL 8
 //Collector End
 
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1)
-#define COLLECT_BUTTON rStick->GetRawButton(1)//rStick->GetRawButton(1)
-#define SHOOT_BUTTON (!myEIO.GetDigital(14))
+#define COLLECT_BUTTON (rStick->GetRawButton(1) || !myEIO->GetDigital(12))
+#define SHOOT_BUTTON (!myEIO->GetDigital(14))
 #define LIGHT_BUTTON 1//rStick->GetRawButton(10)
-#define ARM_BUTTON (myEIO.GetDigital(16))
-#define FORWARD_SWITCH (!myEIO.GetDigital(4))
-#define REVERSE_SWITCH (!myEIO.GetDigital(6))
-#define TIPPER_SWITCH (!myEIO.GetDigital(10))
-#define COLLECT_BUTTON_OP (!myEIO.GetDigital(12))
-#define SHORT_SHOT_SWITCH (myEIO.GetDigital(8))
+#define ARM_BUTTON (myEIO->GetDigital(16))
+#define FORWARD_SWITCH (!myEIO->GetDigital(4))
+#define REVERSE_SWITCH (!myEIO->GetDigital(6))
+#define TIPPER_SWITCH (!myEIO->GetDigital(10))
+#define SHORT_SHOT_SWITCH (myEIO->GetDigital(8))
 #define RPM_MANUAL_SLIDER
-#define KEY_ALIGN_BUTTON (!myEIO.GetDigital(15))
-#define AUTO_TARGET_BUTTON (!myEIO.GetDigital(11))
-#define FULL_AUTO_SWTICH (!myEIO.GetDigital(13))
+#define KEY_ALIGN_BUTTON (!myEIO->GetDigital(15))
+#define AUTO_TARGET_BUTTON (!myEIO->GetDigital(11))
+#define FULL_AUTO_SWTICH (!myEIO->GetDigital(13))
 
 //LEDs
-#define FRONT_LINE_LED(s) (myEIO.SetDigitalOutput(7,s))
-#define BACK_LINE_LED(s) (myEIO.SetDigitalOutput(9,s))
-#define AUTO_RANGE_LED(s) (myEIO.SetDigitalOutput(3,s))
-#define AUTO_YAW_LED(s) (myEIO.SetDigitalOutput(5,s))
-#define RPM_LOCK_LED(s) (myEIO.SetDigitalOutput(1,s))
+#define FRONT_LINE_LED(s) (myEIO->SetDigitalOutput(7,!s))
+#define BACK_LINE_LED(s) (myEIO->SetDigitalOutput(9,!s))
+#define AUTO_RANGE_LED(s) (myEIO->SetDigitalOutput(3,!s))
+#define AUTO_YAW_LED(s) (myEIO->SetDigitalOutput(5,!s))
+#define RPM_LOCK_LED(s) (myEIO->SetDigitalOutput(1,!s))
 
 #endif

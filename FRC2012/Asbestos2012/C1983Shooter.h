@@ -25,10 +25,13 @@ private:
 	float power;
 	bool manual;
 	bool isEnabled;
+	short currentShot;
 	
+	int stableReady;
 public:
 	C1983Shooter();
 	bool isReady();
+	bool isStableReady();
 	double getRate();
 	bool getEnabled();
 #if SHOOTER_PID
@@ -40,6 +43,7 @@ public:
 	void jankyStop();
 	void debugPrint();
 	void setEnabled(bool enabled);
+	char * getShotName();
 #if SHOOTER_PID
 	void dUp();
 	void dDown();
