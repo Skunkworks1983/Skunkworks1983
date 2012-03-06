@@ -32,12 +32,12 @@ double C1983Shooter::getPercent()
 
 void C1983Shooter::iUp()
 {
-	shooterPID->SetPID(shooterPID->GetP(),shooterPID->GetI() + .01,shooterPID->GetD());
+	shooterPID->SetPID(shooterPID->GetP(),shooterPID->GetI() + .001,shooterPID->GetD());
 }
 	
 void C1983Shooter::iDown()
 {
-	shooterPID->SetPID(shooterPID->GetP(),shooterPID->GetI() - .01,shooterPID->GetD());
+	shooterPID->SetPID(shooterPID->GetP(),shooterPID->GetI() - .001,shooterPID->GetD());
 }
 
 void C1983Shooter::pUp()

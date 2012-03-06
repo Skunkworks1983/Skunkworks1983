@@ -52,7 +52,8 @@ bool PewPewBot::shootAllBalls()
 		} else if (hasResetItem)
 		{
 			stableCount++;
-			if (stableCount > 250){
+			if (stableCount > 250)
+			{
 				shooter->setEnabled(false);
 				stableCount = 0;
 				hasResetItem = false;
@@ -69,15 +70,20 @@ bool PewPewBot::camYawAlign()
 	{
 		if (!hasResetItem) //If not made the reset gyro step
 		{
+			cout << "Beginning turn cycle" << endl;
 			yawAlignState = true;
 			drive->resetGyro();
 			hasResetItem = true;
 			drive->disablePID();
+			drive->turnPID->Reset();
+			drive->turnPID->SetSetpoint((float)-camera->getCurrentYaw()); //Set the turning setpoint
 			drive->turnPID->Enable();
-			drive->turnPID->SetSetpoint((float)camera->getCurrentYaw()); //Set the turning setpoint
 		}
-		if (fabs(drive->turnPID->GetError()) <= 25)
+		cout << "Gyro: " << drive->getGyro() << " Error: "
+				<< drive->turnPID->GetError() << endl;
+		if (fabs(drive->turnPID->GetError()) <= 0.5)
 		{
+			cout << "Ending turn cycle" << endl;
 			yawAlignState = false;
 			drive->turnPID->Disable(); //Disable and return
 			drive->enablePID();

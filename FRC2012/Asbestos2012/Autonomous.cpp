@@ -141,7 +141,7 @@ void PewPewBot::kinectCode()
 	{
 		drive->setSpeedL(0.0);
 	}
-
+/*
 	if(kinect->getShootButton())
 	{
 		collector->jankyGo();
@@ -156,7 +156,7 @@ void PewPewBot::kinectCode()
 		lastShooterChange = 60;
 		shooter->setEnabled(!shooter->getEnabled());
 	}
-	shooter->setShot(C1983Shooter::kFreethrow);
+	shooter->setShot(C1983Shooter::kFreethrow);*/
 	/*
 	 //Shift Stuff
 	 if (kinect->getShiftButton())

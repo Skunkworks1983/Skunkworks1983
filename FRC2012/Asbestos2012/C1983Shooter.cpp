@@ -70,7 +70,7 @@ void C1983Shooter::setPower(float powerRPM)
 		shooterPID->SetSetpoint(0.0);
 	} else
 	{
-		shooterPID->SetSetpoint(power);
+		shooterPID->SetSetpoint(power * (1 + PIDMod));
 	}
 }
 #endif
@@ -127,6 +127,7 @@ void C1983Shooter::setEnabled(bool enable)
 	{
 		cout<<"DISABLING SHOOTER PID"<<endl;
 		shooterPID->SetSetpoint(0.0);
+		shooterPID->Reset();
 		shooterPID->Disable();
 	} else
 	{
@@ -135,6 +136,15 @@ void C1983Shooter::setEnabled(bool enable)
 #endif
 }
 
+void C1983Shooter::setPIDAdjust(double adjust)
+{
+	PIDMod = adjust;
+}
+
+double C1983Shooter::getPIDAdjust()
+{
+	return PIDMod;
+}
 void C1983Shooter::update()
 {
 #if SHOOTER_PID

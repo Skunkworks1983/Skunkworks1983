@@ -26,6 +26,7 @@ private:
 	bool manual;
 	bool isEnabled;
 	short currentShot;
+	double PIDMod;
 	
 	int stableReady;
 public:
@@ -51,6 +52,8 @@ public:
 	void pDown();
 	void iUp();
 	void iDown();
+	void setPIDAdjust(double adjust);
+	double getPIDAdjust();
 	
 	float getError();
 	float getI();

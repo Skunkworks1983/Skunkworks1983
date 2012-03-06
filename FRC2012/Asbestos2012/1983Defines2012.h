@@ -99,19 +99,19 @@
 #define SHOOTER_WHEEL_ENCODER_B 10
 
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
-#define SHOOTER_VELOCITY_TOLERANCE_LOW	0.0	//Tolerance of the velocity
+#define SHOOTER_VELOCITY_TOLERANCE_LOW	15.0	//Tolerance of the velocity
 #define SHOOTER_VELOCITY_TOLERANCE_HIGH 15.0
 //SHooter PIDs
-#define SHOOTER_P 2.0
-#define SHOOTER_I 0.15
-#define SHOOTER_D 0.0
+#define SHOOTER_P 1.10
+#define SHOOTER_I 0.05
+#define SHOOTER_D 0.05
 
 #define SHOOTER_READY_STABLITY 10
 
 //Preset shot speeds
 #define SHOT_KEYTOP_SPEED 3250.0 
 
-#define SHOT_FREETHROW_SPEED 2650.0
+#define SHOT_FREETHROW_SPEED 2525.0
 
 #define SHOT_OTHER_SPEED 0.0
 
@@ -163,7 +163,8 @@
 #define KEY_ALIGN_BUTTON (!myEIO->GetDigital(15))
 #define AUTO_TARGET_BUTTON (!myEIO->GetDigital(11))
 #define FULL_AUTO_SWTICH (!myEIO->GetDigital(13))
-
+//Slider stuff
+#define PID_SLIDER (myEIO->GetAnalogIn(2))
 //LEDs
 #define FRONT_LINE_LED(s) (myEIO->SetDigitalOutput(7,!s))
 #define BACK_LINE_LED(s) (myEIO->SetDigitalOutput(9,!s))

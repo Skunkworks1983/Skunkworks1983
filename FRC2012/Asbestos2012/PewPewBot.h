@@ -25,6 +25,7 @@ private:
 	AutonomousMode autonomousMode; //The current autonomous mode
 	bool hasResetItem;
 	bool yawAlignState;
+	double PIDAdjust;
 public:
 	C1983Drive *drive;
 

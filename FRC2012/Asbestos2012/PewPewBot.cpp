@@ -16,7 +16,9 @@ PewPewBot::PewPewBot()
 	driverStation = DriverStation::GetInstance();
 	driverStationLCD = DriverStationLCD::GetInstance();
 	myEIO = &driverStation->GetEnhancedIO();
-
+	
+	shooter->setPIDAdjust(0.0);
+	
 	hasResetItem = false;
 	yawAlignState = false;
 	stableCount = 0;
@@ -41,6 +43,15 @@ void PewPewBot::updateDriverStation()
 			"Shooter RPM: %lf", shooter->getRate() * SHOOTER_MAX_SPEED);
 	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line2, "Shot: %s",
 			shooter->getShotName());
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line3, "Modification: %f",
+			shooter->getPIDAdjust());
+	/*
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line4, "Yaw: %lf", camera->getCurrentYaw());
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line5, "Depth: %lf", camera->getCurrentDepth());
+	*/
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line4, "P: %f", shooter->getP());
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line5, "I: %f", shooter->getI());
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line6, "D: %f", shooter->getD());
 	driverStationLCD->UpdateLCD();
 }
 
@@ -73,18 +84,20 @@ void PewPewBot::OperatorControl()
 			 << "Shooter Power: "<<-(rStick->GetThrottle() + 1)/2<<endl;*/
 			//cout<<"Shooter Rate:" << shooter->getRate()<<endl;
 			//shooter->debugPrint();
-			collector->debugPrint();
-			cout << endl;
+			//collector->debugPrint();
 		}
 		updateDriverStation();
 
 		//Set the compressor
 		drive->updateCompressor();
 
-		if (yawAlignState && !KEY_ALIGN_BUTTON)
+		if (yawAlignState && !AUTO_TARGET_BUTTON)
 		{
+			cout << "Force ending turn cycle" << endl;
+			yawAlignState = false;
 			drive->turnPID->Disable();
 			drive->enablePID();
+			hasResetItem = false;
 		}
 		if (AUTO_TARGET_BUTTON)
 		{
@@ -213,37 +226,45 @@ void PewPewBot::OperatorControl()
 		 {
 		 shooter->cleanPID();
 		 }*/
+		if(PID_SLIDER > .2095)
+		{
+			shooter->setPIDAdjust(0.0762 * log(PID_SLIDER) + 0.0407);
+		}else{
+			shooter->setPIDAdjust(-0.15);
+		}
+
 #endif
 
 		//Check for PID modification DEBUG
 #if DRIVE_PID
-		if (lStick->GetRawButton(6) && count/5 == (float)count/5)
+		
+		if (lStick->GetRawButton(4) && count/5 == (float)count/5)
 		{
-			drive->pDown();
+			shooter->pDown();
 		}
-		if (lStick->GetRawButton(7) && count/5 == (float)count/5)
+		if (lStick->GetRawButton(5) && count/5 == (float)count/5)
 		{
-			drive->pUp();
+			shooter->pUp();
 		}
 
 		if (lStick->GetRawButton(2) && count/5 == (float)count/5)
 		{
-			drive->iDown();
+			shooter->iDown();
 		}
 
 		if (lStick->GetRawButton(3) && count/5 == (float)count/5)
 		{
-			drive->iUp();
+			shooter->iUp();
 		}
 
-		if (lStick->GetRawButton(10) && count/5 == (float)count/5)
+		if (rStick->GetRawButton(2) && count/5 == (float)count/5)
 		{
-			drive->dDown();
+			shooter->dDown();
 		}
 
-		if (lStick->GetRawButton(11) && count/5 == (float)count/5)
+		if (rStick->GetRawButton(3) && count/5 == (float)count/5)
 		{
-			drive->dUp();
+			shooter->dUp();
 		}
 
 		if (lStick->GetRawButton(5))
@@ -277,6 +298,11 @@ void PewPewBot::Disabled()
 	{
 		Wait(0.02);
 	}
+}
+
+void PewPewBot::cleanPIDs(){
+	drive->cleanPID();
+	shooter->cleanPID();
 }
 
 START_ROBOT_CLASS(PewPewBot)
