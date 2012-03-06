@@ -99,10 +99,10 @@
 #define SHOOTER_WHEEL_ENCODER_B 10
 
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
-#define SHOOTER_VELOCITY_TOLERANCE_LOW	15.0	//Tolerance of the velocity
+#define SHOOTER_VELOCITY_TOLERANCE_LOW	25.0	//Tolerance of the velocity
 #define SHOOTER_VELOCITY_TOLERANCE_HIGH 15.0
 //SHooter PIDs
-#define SHOOTER_P 1.10
+#define SHOOTER_P 1.20
 #define SHOOTER_I 0.05
 #define SHOOTER_D 0.05
 
@@ -121,6 +121,7 @@
 #define BALL_SPEED_TO_RPM(speed) {return speed;}   //TODO Conversion
 
 #define AVERAGE_LENGTH 10.0
+
 //Shooter End
 
 //Tipper Start
@@ -161,7 +162,7 @@
 #define SHORT_SHOT_SWITCH (myEIO->GetDigital(8))
 #define RPM_MANUAL_SLIDER
 #define KEY_ALIGN_BUTTON (!myEIO->GetDigital(15))
-#define AUTO_TARGET_BUTTON (!myEIO->GetDigital(11))
+#define AUTO_TARGET_BUTTON false// TODO (!myEIO->GetDigital(11))
 #define FULL_AUTO_SWTICH (!myEIO->GetDigital(13))
 //Slider stuff
 #define PID_SLIDER (myEIO->GetAnalogIn(2))

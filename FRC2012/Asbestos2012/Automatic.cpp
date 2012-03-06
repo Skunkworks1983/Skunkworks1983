@@ -24,7 +24,7 @@ bool PewPewBot::lineDepthAlign()
 
 bool PewPewBot::shootAllBalls()
 {
-	shooter->setShot(C1983Shooter::kKeytop);
+	shooter->setShot(C1983Shooter::kFreethrow);
 	shooter->setEnabled(true);
 	shooter->update();
 	collector->update();
@@ -66,30 +66,29 @@ bool PewPewBot::shootAllBalls()
 
 bool PewPewBot::camYawAlign()
 {
-	if (camera->hasData())
+	//if (camera->hasData()){
+	cout << "Gyro: " << drive->getGyro() << " Error: "
+			<< drive->turnPID->GetError() << endl;
+	if (drive->turnPID->IsEnabled() && fabs(drive->turnPID->GetError()) <= 0.05)
 	{
-		if (!hasResetItem) //If not made the reset gyro step
-		{
-			cout << "Beginning turn cycle" << endl;
-			yawAlignState = true;
-			drive->resetGyro();
-			hasResetItem = true;
-			drive->disablePID();
-			drive->turnPID->Reset();
-			drive->turnPID->SetSetpoint((float)-camera->getCurrentYaw()); //Set the turning setpoint
-			drive->turnPID->Enable();
-		}
-		cout << "Gyro: " << drive->getGyro() << " Error: "
-				<< drive->turnPID->GetError() << endl;
-		if (fabs(drive->turnPID->GetError()) <= 0.5)
-		{
-			cout << "Ending turn cycle" << endl;
-			yawAlignState = false;
-			drive->turnPID->Disable(); //Disable and return
-			drive->enablePID();
-			hasResetItem = false;
-			return true;
-		}
+		cout << "Ending turn cycle" << endl;
+		yawAlignState = false;
+		drive->turnPID->Disable(); //Disable and return
+		drive->enablePID();
+		hasResetItem = false;
+		return true;
 	}
+	if (!hasResetItem) //If not made the reset gyro step
+	{
+		cout << "Beginning turn cycle" << endl;
+		yawAlignState = true;
+		drive->resetGyro();
+		hasResetItem = true;
+		drive->disablePID();
+		drive->turnPID->Reset();
+		drive->turnPID->SetSetpoint((float)270/*-camera->getCurrentYaw()*/); //Set the turning setpoint
+		drive->turnPID->Enable();
+	}
+	//}
 	return false;
 }
