@@ -19,28 +19,28 @@ void C1983VictorCalibration::OperatorControl()
 			cout << "Current Channel: " << victor->GetChannel()
 					<< "\tSpeed" << victor->Get() << endl;
 		}
-		if (!toggle && (toggle = lStick->GetRawButton(5)))
+		if (!toggle && (toggle = stick->GetRawButton(5)))
 		{
 			int channel = victor->GetChannel();
 			victor->Set(0);
 			delete victor;
-			victor = new Victor(channel+1)
+			victor = new Victor(channel+1);
 		} else
 		{
-			toggle = lStick->GetRawButton(5);
+			toggle = stick->GetRawButton(5);
 		}
-		if (!backToggle && (backToggle = lStick->GetRawButton(4))
+		if (!backToggle && (backToggle = stick->GetRawButton(4))
 				&& victor->GetChannel() > 1)
 		{
 			int channel = victor->GetChannel();
 			victor->Set(0);
 			delete victor;
-			victor = new Victor(channel-1)
+			victor = new Victor(channel-1);
 		} else
 		{
-			backToggle = lStick->GetRawButton(4);
+			backToggle = stick->GetRawButton(4);
 		}
-		victor->Set(lStick->GetY());
+		victor->Set(stick->GetY());
 		Wait(0.02);
 	}
 }

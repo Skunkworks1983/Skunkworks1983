@@ -14,3 +14,4 @@ public:
 	void Disabled();
 	~C1983VictorCalibration();
 };
+#endif
