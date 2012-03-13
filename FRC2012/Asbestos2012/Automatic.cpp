@@ -22,42 +22,54 @@ bool PewPewBot::lineDepthAlign()
 	return false;
 }
 
-bool PewPewBot::shootAllBalls()
+bool PewPewBot::shootAllBalls(double targetTime = -1)
 {
 	shooter->setShot(C1983Shooter::kFreethrow);
+#if SHOOTER_PID
+	if (PID_SLIDER> .2095)
+	{
+		shooter->setPIDAdjust(0.0762 * log(PID_SLIDER) + 0.0407);
+	} else
+	{
+		shooter->setPIDAdjust(-0.15);
+	}
+#endif
 	shooter->setEnabled(true);
 	shooter->update();
 	collector->update();
 	collector->setAutomatic(true);
-	if (!collector->isShooting() && shooter->isStableReady())
+	if (PewPewBot::currentTimeMillis() >= targetTime)
 	{
-		stableCount = 0;
-		collector->requestShot();
-		hasResetItem = true;
-	}
-	if (!collector->isCollecting() && !collector->isShooting())
-	{
-		if (collector->automatic)
+		if (!collector->isShooting() && shooter->isStableReady())
 		{
-			for (int slot = 0; slot<3; slot++)
+			stableCount = 0;
+			collector->requestShot();
+			hasResetItem = true;
+		}
+		if (!collector->isCollecting() && !collector->isShooting())
+		{
+			if (collector->automatic)
 			{
-				if (collector->getSense(slot))
+				for (int slot = 0; slot<3; slot++)
 				{
-					return false;
+					if (collector->getSense(slot))
+					{
+						return false;
+					}
 				}
-			}
-			shooter->setEnabled(false);
-			hasResetItem = false;
-			return true;
-		} else if (hasResetItem)
-		{
-			stableCount++;
-			if (stableCount > 250)
-			{
 				shooter->setEnabled(false);
-				stableCount = 0;
 				hasResetItem = false;
 				return true;
+			} else if (hasResetItem)
+			{
+				stableCount++;
+				if (stableCount > 250)
+				{
+					shooter->setEnabled(false);
+					stableCount = 0;
+					hasResetItem = false;
+					return true;
+				}
 			}
 		}
 	}

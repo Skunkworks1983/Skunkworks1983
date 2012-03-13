@@ -22,7 +22,7 @@ float C1983Shooter::getD()
 
 float C1983Shooter::getSetpoint()
 {
-	return (float)((int)(shooterPID->GetSetpoint() * 100))/100;
+	return shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED;
 }
 
 double C1983Shooter::getPercent()
@@ -65,7 +65,8 @@ void C1983Shooter::debugPrint()
 {
 #if SHOOTER_PID
 	//cout<<"P: "<<getP()<<" Setpoint: "<<getSetpoint()<<" Value: "<<shooterEncoder->GetRate()<<endl;
-	cout<<" Setpoint: "<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<" Rate: "<<shooterPIDSource->PIDGet() * SHOOTER_MAX_SPEED<<" Error: "<<shooterPID->GetError() * SHOOTER_MAX_SPEED<<" I: "<<getI()<<" ShooterReady: "<<isReady();
+	//cout<<" Setpoint: "<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<" Rate: "<<shooterPIDSource->PIDGet() * SHOOTER_MAX_SPEED<<" Error: "<<shooterPID->GetError() * SHOOTER_MAX_SPEED<<" I: "<<getI()<<" ShooterReady: "<<isReady();
+	 
 #else
 	cout<<"Rate: "<<shooterEncoder->GetRate();
 #endif

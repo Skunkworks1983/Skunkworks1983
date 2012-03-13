@@ -4,7 +4,7 @@
 #include "C1983Kinect.h"
 #include "C1983Collector.h"
 #include "C1983Shooter.h"
-#include "C1983GlyphCamera.h"
+//#include "C1983GlyphCamera.h"
 #include <math.h>
 #include <fstream>
 
@@ -26,12 +26,16 @@ private:
 	bool hasResetItem;
 	bool yawAlignState;
 	double PIDAdjust;
+	bool flashState;
+	long nextFlash;
 public:
+	static double currentTimeMillis();
+	
 	C1983Drive *drive;
 
 	C1983Collector *collector;
 	C1983Shooter *shooter;
-	C1983GlyphCamera *camera;
+	//C1983GlyphCamera *camera;
 
 	//Controls
 	DriverStation * driverStation;
@@ -52,6 +56,7 @@ public:
 	~PewPewBot();
 
 	void updateDriverStation();
+	void updateShooter();
 	
 	//Automatic Functions
 	bool lineDepthAlign(); //Aligns the robot based on the key
@@ -61,6 +66,6 @@ public:
 	void cleanPIDs();
 	
 	//Autonomous Functions
-	bool shootAllBalls();
+	bool shootAllBalls(double targetTime);
 	bool driveToBridge();
 };

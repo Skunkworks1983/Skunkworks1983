@@ -44,5 +44,6 @@ public:
 	bool getShiftButton();
 	bool getShootButton();
 	bool getShooterOnButton();
+	bool getDoAutonomous();
 };
 #endif

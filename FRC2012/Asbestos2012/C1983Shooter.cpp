@@ -1,7 +1,4 @@
-#ifndef __C1983Shooter_
-#define __C1983Shooter_
 #include "C1983Shooter.h"
-#if SHOOTER
 
 C1983Shooter::C1983Shooter()
 {
@@ -34,9 +31,11 @@ void C1983Shooter::setShot(short shotNum)
 	{
 	case kKeytop:
 		setPower(SHOT_KEYTOP_SPEED/SHOOTER_MAX_SPEED);
+		shooterPID->SetPID(SHOOTER_P_HIGH,SHOOTER_I_HIGH,SHOOTER_D_HIGH);
 		break;
 	case kFreethrow:
 		setPower(SHOT_FREETHROW_SPEED/SHOOTER_MAX_SPEED);
+		shooterPID->SetPID(SHOOTER_P,SHOOTER_I,SHOOTER_D);
 		break;
 	case kOther:
 		setPower(SHOT_OTHER_SPEED/SHOOTER_MAX_SPEED);
@@ -79,10 +78,14 @@ bool C1983Shooter::isReady()
 {
 	if (manual)
 		return true;
+#if SHOOTER_PID
 	float error = (shooterPIDSource->PIDGet() - shooterPID->GetSetpoint())
 			*SHOOTER_MAX_SPEED;
 	return error > -SHOOTER_VELOCITY_TOLERANCE_LOW && error
 			< SHOOTER_VELOCITY_TOLERANCE_HIGH;
+#else
+	return false;
+#endif
 }
 
 bool C1983Shooter::isStableReady()
@@ -122,10 +125,10 @@ void C1983Shooter::setEnabled(bool enable)
 	{
 		shooterPID->Enable();
 		shooterPID->SetSetpoint(power);
-		cout<<"ENABLING SHOOTER PID"<<endl;
+		//cout<<"ENABLING SHOOTER PID"<<endl;
 	} else if (!enable && shooterPID->IsEnabled())
 	{
-		cout<<"DISABLING SHOOTER PID"<<endl;
+		//cout<<"DISABLING SHOOTER PID"<<endl;
 		shooterPID->SetSetpoint(0.0);
 		shooterPID->Reset();
 		shooterPID->Disable();
@@ -136,6 +139,7 @@ void C1983Shooter::setEnabled(bool enable)
 #endif
 }
 
+#if SHOOTER_PID
 void C1983Shooter::setPIDAdjust(double adjust)
 {
 	PIDMod = adjust;
@@ -145,6 +149,8 @@ double C1983Shooter::getPIDAdjust()
 {
 	return PIDMod;
 }
+#endif
+
 void C1983Shooter::update()
 {
 #if SHOOTER_PID
@@ -167,6 +173,4 @@ void C1983Shooter::cleanPID()
 	else
 		shooterPID->Disable();
 }
-#endif
-#endif
 #endif

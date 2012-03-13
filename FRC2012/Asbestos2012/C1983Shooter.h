@@ -7,7 +7,6 @@
 #include "C1983Encoder.h"
 #include "C1983ShooterPIDSource.h"
 #include <fstream>
-#if SHOOTER
 class C1983Shooter
 {
 private:
@@ -35,17 +34,16 @@ public:
 	bool isStableReady();
 	double getRate();
 	bool getEnabled();
-#if SHOOTER_PID
-	void setPower(float powerRPM);
-	void cleanPID();
-#endif
 	void setShot(short shotNum);
 	void setJankyPower(float power);
 	void jankyStop();
 	void debugPrint();
 	void setEnabled(bool enabled);
 	char * getShotName();
+	
 #if SHOOTER_PID
+	void setPower(float powerRPM);
+	void cleanPID();
 	void dUp();
 	void dDown();
 	void pUp();
@@ -66,5 +64,4 @@ public:
 	void update();
 	enum {kKeytop, kFreethrow, kOther} shot;
 };
-#endif
 #endif

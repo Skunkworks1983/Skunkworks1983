@@ -79,6 +79,8 @@ public:
 	bool getLightSensorBack();
 	
 	bool getLightSensorFront();
+	
+	bool getLightSensorBridge();
 
 	float getGyro();
 	void resetGyro();

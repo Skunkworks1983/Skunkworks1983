@@ -8,6 +8,8 @@ char * PewPewBot::getModeName(AutonomousMode mode)
 		return "DoYawAlign";
 	case kDoDepthAlign:
 		return "DoDepthAlign";
+	case kCollect:
+		return "Collecting";
 	case kShoot:
 		return "ShootAll";
 	case kRotate180:
@@ -26,97 +28,98 @@ void PewPewBot::Autonomous()
 {
 	GetWatchdog().SetEnabled(true);
 	GetWatchdog().SetExpiration(0.2);
-	int count = 0;
 	shooter->setEnabled(true);
 
 	drive->shift(false);
 	drive->resetEncoders();
 	autonomousMode = kCollect;
 	stableCount = 0;
-	
+
 	//Cleaning
 	collector->clean();
-	
+
+	double startTime = PewPewBot::currentTimeMillis();
+
 	while (IsAutonomous() && !IsDisabled())
 	{
-		count++;
-		if (count % 25 == 0)
-		{
-			//shooter->debugPrint();
-			//cout<<endl;
-			cout << "Phase: " << getModeName(autonomousMode) << endl;
-		}
+		//TODO Spinup shooter before collecting.
 		drive->updateCompressor();
 		updateDriverStation();
-#if !KINECT
-		switch (autonomousMode)
+		if (KINECT && !kinect->getDoAutonomous())
 		{
-		case kDoYawAlign:
-			break;
-		case kDoDepthAlign:
-			if (lineDepthAlign())
-				autonomousMode = kShoot;
-			break;
-		case kCollect:
-			if (!hasResetItem){
-			collector->requestCollect();
-			hasResetItem = true;
-			}
-			if (!collector->isCollecting()){
-				hasResetItem = false;
-				autonomousMode = kShoot;
-			}
-		case kShoot:
-			if (shootAllBalls())
-				autonomousMode = kDone;//kRotate180;
-			break;
-		case kRotate180:
-			if (!hasResetItem)
+			kinectCode();
+		} else
+		{
+			switch (autonomousMode)
 			{
-				drive->resetGyro();
-				hasResetItem = true;
-				drive->disablePID();
-				drive->turnPID->Enable();
-				drive->turnPID->SetSetpoint(180);
-			}
-			cout << "Get: " << drive->turnPID->Get() << "\tSetpoint: " << drive->turnPID->GetSetpoint() << endl;
-			cout << "Error: " << drive->turnPID->GetError() << endl;
-			if (fabs(drive->turnPID->GetError()) <= 5)
-			{
-				hasResetItem = false;
-				autonomousMode = kMoveToBridge;
-				drive->turnPID->Disable();
-				drive->enablePID();
-			}
-			break;
-		case kMoveToBridge:
-			if (!hasResetItem)
-			{
-				drive->resetEncoders();
-				hasResetItem = true;
-			}
-			drive->setSpeedL(.25);
-			drive->setSpeedR(.25);
-			double distance = (drive->getLPosition() + drive->getRPosition())
-					/ 2.0;
-			if (fabs(distance - 7.0) < 0.5)
-			{
-				hasResetItem = false;
-				autonomousMode = kTipBridge;
-			}
-			break;
-		case kTipBridge:
-			drive->tip(true);
-			autonomousMode = kDone;
-			break;
-		default:
-			//We are done
-			shooter->setPower(0.0);
-			break;
-		}
-#else	
-		kinectCode();
+			case kDoYawAlign:
+				break;
+			case kDoDepthAlign:
+				if (lineDepthAlign())
+					autonomousMode = kShoot;
+				break;
+			case kCollect:
+				if (!hasResetItem)
+				{
+					collector->requestCollect();
+					hasResetItem = true;
+				}
+				if (!collector->isCollecting())
+				{
+					hasResetItem = false;
+					autonomousMode = kShoot;
+				}
+			case kShoot:
+				if (shootAllBalls(AUTONOMOUS_DELAY_SWITCH?startTime + AUTONOMOUS_DELAY:-1))
+					autonomousMode = kDone;//kRotate180;
+				break;
+			case kRotate180:
+				if (!hasResetItem)
+				{
+					drive->resetGyro();
+					hasResetItem = true;
+					drive->disablePID();
+					drive->turnPID->Enable();
+					drive->turnPID->SetSetpoint(180);
+				}
+				//cout << "Get: " << drive->turnPID->Get() << "\tSetpoint: " << drive->turnPID->GetSetpoint() << endl;
+				//cout << "Error: " << drive->turnPID->GetError() << endl;
+				if (fabs(drive->turnPID->GetError()) <= 5)
+				{
+					hasResetItem = false;
+					autonomousMode = kMoveToBridge;
+					drive->turnPID->Disable();
+					drive->enablePID();
+				}
+				break;
+			case kMoveToBridge:
+				if (!hasResetItem)
+				{
+					drive->resetEncoders();
+					hasResetItem = true;
+				}
+				drive->setSpeedL(.25);
+				drive->setSpeedR(.25);
+				double distance = (drive->getLPosition()
+						+ drive->getRPosition()) / 2.0;
+				if (fabs(distance - 7.0) < 0.5)
+				{
+					hasResetItem = false;
+					autonomousMode = kTipBridge;
+				}
+				break;
+			case kTipBridge:
+				drive->tip(true);
+				autonomousMode = kDone;
+				break;
+			default:
+				//We are done
+#if SHOOTER_PID
+				shooter->setEnabled(false);
 #endif
+				break;
+			}
+		}
 		GetWatchdog().Feed();
 		Wait(0.02);
 	}
@@ -141,22 +144,22 @@ void PewPewBot::kinectCode()
 	{
 		drive->setSpeedL(0.0);
 	}
-/*
-	if(kinect->getShootButton())
-	{
-		collector->jankyGo();
-	} else
-	{
-		collector->jankyStop();
-	}
+	/*
+	 if(kinect->getShootButton())
+	 {
+	 collector->jankyGo();
+	 } else
+	 {
+	 collector->jankyStop();
+	 }
 
-	lastShooterChange--;
-	if(kinect->getShooterOnButton() && lastShooterChange < 0)
-	{
-		lastShooterChange = 60;
-		shooter->setEnabled(!shooter->getEnabled());
-	}
-	shooter->setShot(C1983Shooter::kFreethrow);*/
+	 lastShooterChange--;
+	 if(kinect->getShooterOnButton() && lastShooterChange < 0)
+	 {
+	 lastShooterChange = 60;
+	 shooter->setEnabled(!shooter->getEnabled());
+	 }
+	 shooter->setShot(C1983Shooter::kFreethrow);*/
 	/*
 	 //Shift Stuff
 	 if (kinect->getShiftButton())

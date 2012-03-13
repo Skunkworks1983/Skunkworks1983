@@ -1,12 +1,11 @@
 #ifndef __1983DEFINES_H
 #define __1983DEFINES_H
 
-#define PRACTICE_BOT 1
+#define PRACTICE_BOT 0
 
 //PewPew Start
-#define KINECT 0
+#define KINECT true
 #define DEADBAND 0.03
-
 //PewPew End
 
 //Autonomous Start
@@ -57,7 +56,7 @@
 #define DRIVE_P 1.05
 #define DRIVE_I 0.05//0.1
 #define DRIVE_D 0.05
-
+ 	
 #define DRIVE_P_LOW 0.85
 #define DRIVE_I_LOW 0.05
 #define DRIVE_D_LOW 0.05
@@ -106,10 +105,14 @@
 #define SHOOTER_I 0.05
 #define SHOOTER_D 0.05
 
+#define SHOOTER_P_HIGH 1.20
+#define SHOOTER_I_HIGH 0.087
+#define SHOOTER_D_HIGH 0.05
+
 #define SHOOTER_READY_STABLITY 10
 
 //Preset shot speeds
-#define SHOT_KEYTOP_SPEED 3250.0 
+#define SHOT_KEYTOP_SPEED 2900.0 
 
 #define SHOT_FREETHROW_SPEED 2525.0
 
@@ -126,7 +129,7 @@
 
 //Tipper Start
 #define TIPPER_UP_CHANNEL 4
-#define TIPPER_DOWN_CHANNEL 3 
+#define TIPPER_DOWN_CHANNEL 3
 //Tipper End
 
 //Collector Start
@@ -139,16 +142,20 @@
 #define COLLECTOR_BELT_SPEED 0.4
 #define COLLECTOR_FEED_SPEED 1.0
 //Collector Vic Speed
-#define COLLECTOR_PICKUP_SPEED 0.5
+#define COLLECTOR_PICKUP_SPEED 0.8
 //Timeout for blind running collectors
 #define COLLECTOR_TIMEOUT 100
 #define SHOOTER_TIMEOUT 30
 
 //Collector IR Sensors
-#define COLLECTOR_IR_LOW_CHANNEL 7
-#define COLLECTOR_IR_MID_CHANNEL 6
+#define COLLECTOR_IR_LOW_CHANNEL 6
+#define COLLECTOR_IR_MID_CHANNEL 7
 #define COLLECTOR_IR_TOP_CHANNEL 8
 //Collector End
+
+//Autonomous Stuff
+#define AUTONOMOUS_DELAY 8000.0 //8 seconds
+//End AUtonomous
 
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1)
@@ -162,15 +169,19 @@
 #define SHORT_SHOT_SWITCH (myEIO->GetDigital(8))
 #define RPM_MANUAL_SLIDER
 #define KEY_ALIGN_BUTTON (!myEIO->GetDigital(15))
-#define AUTO_TARGET_BUTTON false// TODO (!myEIO->GetDigital(11))
+#define AUTO_TARGET_BUTTON (!myEIO->GetDigital(11))
 #define FULL_AUTO_SWTICH (!myEIO->GetDigital(13))
+#define SHOOTER_MANUAL_MODE false
+#define AUTONOMOUS_DELAY_SWITCH (!myEIO->GetDigital(2))
+
 //Slider stuff
 #define PID_SLIDER (myEIO->GetAnalogIn(2))
+
 //LEDs
 #define FRONT_LINE_LED(s) (myEIO->SetDigitalOutput(7,!s))
 #define BACK_LINE_LED(s) (myEIO->SetDigitalOutput(9,!s))
 #define AUTO_RANGE_LED(s) (myEIO->SetDigitalOutput(3,!s))
 #define AUTO_YAW_LED(s) (myEIO->SetDigitalOutput(5,!s))
 #define RPM_LOCK_LED(s) (myEIO->SetDigitalOutput(1,!s))
-
+#define LED_FLASH_RATE 1000
 #endif

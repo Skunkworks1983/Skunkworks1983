@@ -25,8 +25,10 @@ float C1983Kinect::getRight()
 
 bool C1983Kinect::getShiftButton()
 {
-	if(rightArm->GetRawButton(0)) shiftedHigh = true;
-	if(rightArm->GetRawButton(1)) shiftedHigh = false;
+	if (rightArm->GetRawButton(0))
+		shiftedHigh = true;
+	if (rightArm->GetRawButton(1))
+		shiftedHigh = false;
 	return shiftedHigh;
 }
 
@@ -38,4 +40,9 @@ bool C1983Kinect::getShootButton()
 bool C1983Kinect::getShooterOnButton()
 {
 	return rightArm->GetRawButton(0);
+}
+
+bool C1983Kinect::getDoAutonomous()
+{
+	return true;
 }
