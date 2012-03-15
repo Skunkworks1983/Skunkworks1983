@@ -4,7 +4,7 @@
 #define PRACTICE_BOT 0
 
 //PewPew Start
-#define KINECT true
+#define KINECT 1
 #define DEADBAND 0.03
 //PewPew End
 
@@ -155,6 +155,7 @@
 
 //Autonomous Stuff
 #define AUTONOMOUS_DELAY 8000.0 //8 seconds
+#define AUTONOMOUS_SHOT C1983Shooter::kFreethrow
 //End AUtonomous
 
 //Controls Begin
@@ -172,7 +173,10 @@
 #define AUTO_TARGET_BUTTON (!myEIO->GetDigital(11))
 #define FULL_AUTO_SWTICH (!myEIO->GetDigital(13))
 #define SHOOTER_MANUAL_MODE false
+
+//Autonomous Controls
 #define AUTONOMOUS_DELAY_SWITCH (!myEIO->GetDigital(2))
+#define AUTONOMOUS_FULL_AUTO_SWITCH (!myEIO->GetDigital(13))
 
 //Slider stuff
 #define PID_SLIDER (myEIO->GetAnalogIn(2))

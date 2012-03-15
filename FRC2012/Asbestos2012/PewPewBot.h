@@ -17,7 +17,7 @@ class PewPewBot : public SimpleRobot
 public:
 	enum AutonomousMode
 	{
-		kDoYawAlign, kDoDepthAlign, kCollect, kShoot, kRotate180, kMoveToBridge, kTipBridge, kDone
+		kDoYawAlign, kDoDepthAlign, kCollect, kShoot, kRotate180, kMoveToBridge, kTipBridge, kKinect, kDone
 	};
 	char * getModeName(AutonomousMode mode);
 private:
@@ -49,6 +49,7 @@ public:
 #if KINECT
 	C1983Kinect *kinect;
 #endif
+	
 	PewPewBot();
 	void Autonomous();
 	void OperatorControl();
@@ -67,5 +68,7 @@ public:
 	
 	//Autonomous Functions
 	bool shootAllBalls(double targetTime);
+	bool collectAllBalls();
+	bool rotateRobot(float angle);
 	bool driveToBridge();
 };

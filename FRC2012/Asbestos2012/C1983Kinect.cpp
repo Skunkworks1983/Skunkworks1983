@@ -12,6 +12,7 @@ C1983Kinect::C1983Kinect()
 	leftArm = new KinectStick(1);
 	rightArm = new KinectStick(2);
 	shiftedHigh = true;
+	kinectMode = false;
 }
 
 float C1983Kinect::getLeft()
@@ -42,7 +43,11 @@ bool C1983Kinect::getShooterOnButton()
 	return rightArm->GetRawButton(0);
 }
 
-bool C1983Kinect::getDoAutonomous()
+bool C1983Kinect::getKinectMode()
 {
-	return true;
+	if (!kinectMode)
+	{
+		kinectMode = rightArm->GetRawButton(2) || rightArm->GetRawButton(3);
+	}
+	return kinectMode;
 }

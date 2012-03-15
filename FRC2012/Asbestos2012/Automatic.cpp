@@ -24,7 +24,7 @@ bool PewPewBot::lineDepthAlign()
 
 bool PewPewBot::shootAllBalls(double targetTime = -1)
 {
-	shooter->setShot(C1983Shooter::kFreethrow);
+	shooter->setShot(AUTONOMOUS_SHOT);
 #if SHOOTER_PID
 	if (PID_SLIDER> .2095)
 	{
@@ -102,5 +102,40 @@ bool PewPewBot::camYawAlign()
 		drive->turnPID->Enable();
 	}
 	//}
+	return false;
+}
+
+bool PewPewBot::collectAllBalls()
+{
+	if (!hasResetItem)
+	{
+		collector->requestCollect();
+		hasResetItem = true;
+	}
+	if (!collector->isCollecting())
+	{
+		hasResetItem = false;
+		return true;
+	}
+	return false;
+}
+
+bool PewPewBot::rotateRobot(float angle)
+{
+	if (!hasResetItem)
+	{
+		drive->resetGyro();
+		hasResetItem = true;
+		drive->disablePID();
+		drive->turnPID->Enable();
+		drive->turnPID->SetSetpoint(angle);
+	}
+	if (fabs(drive->turnPID->GetError()) <= 5)
+	{
+		hasResetItem = false;
+		drive->turnPID->Disable();
+		drive->enablePID();
+		return true;
+	}
 	return false;
 }
