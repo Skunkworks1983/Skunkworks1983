@@ -80,7 +80,7 @@ void PewPewBot::updateDriverStation()
 
 void PewPewBot::updateShooter()
 {
-	if (!SHOOTER_MANUAL_MODE && SHOOTER_PID)
+	if (SHOOTER_PID)
 	{
 		shooter->setEnabled(true);
 		//Updates the average. Maybe some other stuff later.

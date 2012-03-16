@@ -32,6 +32,8 @@ private:
 	KinectStick *rightArm;
 	
 	bool shiftedHigh;
+	bool kinectMode;
+	
 public:
 	C1983Kinect();
 
@@ -44,6 +46,6 @@ public:
 	bool getShiftButton();
 	bool getShootButton();
 	bool getShooterOnButton();
-	bool getDoAutonomous();
+	bool getKinectMode();
 };
 #endif
