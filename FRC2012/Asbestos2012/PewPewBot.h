@@ -27,7 +27,7 @@ private:
 	bool yawAlignState;
 	double PIDAdjust;
 	bool flashState;
-	long nextFlash;
+	double nextFlash;
 public:
 	static double currentTimeMillis();
 	
@@ -44,7 +44,6 @@ public:
 	
 	Joystick *lStick;
 	Joystick *rStick;
-	ofstream myfile;
 	
 #if KINECT
 	C1983Kinect *kinect;

@@ -1,7 +1,7 @@
 #ifndef __1983DEFINES_H
 #define __1983DEFINES_H
 
-#define PRACTICE_BOT 0
+#define PRACTICE_BOT 1
 
 //PewPew Start
 #define KINECT true
@@ -101,13 +101,15 @@
 #define SHOOTER_VELOCITY_TOLERANCE_LOW	25.0	//Tolerance of the velocity
 #define SHOOTER_VELOCITY_TOLERANCE_HIGH 15.0
 //SHooter PIDs
-#define SHOOTER_P 1.20
-#define SHOOTER_I 0.05
-#define SHOOTER_D 0.05
+#define KU 5.85
+#define TU 50.0
+#define SHOOTER_P 3.800//(KU * 0.6)//1.20
+#define SHOOTER_I 0.050//(SHOOTER_P * 2.0/TU)//0.05
+#define SHOOTER_D 0.988//(SHOOTER_P * TU/8.0)//0.05
 
-#define SHOOTER_P_HIGH 1.20
-#define SHOOTER_I_HIGH 0.087
-#define SHOOTER_D_HIGH 0.05
+#define SHOOTER_P_HIGH 3.800//1.20
+#define SHOOTER_I_HIGH 0.050//0.087
+#define SHOOTER_D_HIGH 0.988//0.05
 
 #define SHOOTER_READY_STABLITY 10
 
@@ -123,7 +125,7 @@
 
 #define BALL_SPEED_TO_RPM(speed) {return speed;}   //TODO Conversion
 
-#define AVERAGE_LENGTH 10.0
+#define AVERAGE_LENGTH 20.0
 
 //Shooter End
 
@@ -182,6 +184,7 @@
 #define BACK_LINE_LED(s) (myEIO->SetDigitalOutput(9,!s))
 #define AUTO_RANGE_LED(s) (myEIO->SetDigitalOutput(3,!s))
 #define AUTO_YAW_LED(s) (myEIO->SetDigitalOutput(5,!s))
+#define BRIDGE_LED(s) (myEIO->SetDigitalOutput(7,!s))
 #define RPM_LOCK_LED(s) (myEIO->SetDigitalOutput(1,!s))
 #define LED_FLASH_RATE 1000
 #endif

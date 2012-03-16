@@ -2,12 +2,12 @@
 
 bool PewPewBot::lineDepthAlign()
 {
-	if (drive->getLightSensorBack() && drive->getLightSensorFront()) //We are on the key, backwards
+	if (drive->getLightSensorBack() && drive->getLightSensorFront()) //We are on the key, forwards
 	{
 		drive->setSpeedL(LINE_STOP_SPEED);
 		drive->setSpeedR(LINE_STOP_SPEED);
 		stableCount = 0;
-	} else if (!drive->getLightSensorFront() && !drive->getLightSensorBack())
+	} else if (!drive->getLightSensorFront() && !drive->getLightSensorBack())  //We are off the key, backwards
 	{
 		drive->setSpeedL(-LINE_STOP_SPEED);
 		drive->setSpeedR(-LINE_STOP_SPEED);

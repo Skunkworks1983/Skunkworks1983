@@ -7,6 +7,7 @@
 #include "C1983Encoder.h"
 #include "C1983ShooterPIDSource.h"
 #include <fstream>
+#include <sstream>
 class C1983Shooter
 {
 private:
@@ -19,14 +20,18 @@ private:
 #endif
 	//C1983Encoder *shooterEncoder;
 	Encoder *shooterEncoder;
-	ofstream data;
 	
 	float power;
 	bool manual;
 	bool isEnabled;
 	short currentShot;
 	double PIDMod;
-	
+	//File stuff
+	int fileNumber;
+	ofstream *data;
+	float fileIndex;
+	bool fileOpen;
+	//End file stuff
 	int stableReady;
 public:
 	C1983Shooter();
@@ -60,7 +65,13 @@ public:
 	float getSetpoint();
 	double getPercent();
 #endif
-	
+	//file stuff
+	char* getFileName();
+	void openFile();
+	void closeFile();
+	bool getIsOpen();
+	void writeFile();
+	//end file stuff
 	void update();
 	enum {kKeytop, kFreethrow, kOther} shot;
 };

@@ -79,11 +79,11 @@ C1983Drive::C1983Drive()
 void C1983Drive::setSpeedL(float speed)
 {
 #if DRIVE_PID
-	leftPID->SetSetpoint(speed);
-	if (speed == 0.0)
+	if (fabs(speed) < DEADBAND && fabs(leftPID->GetSetpoint()) > DEADBAND)
 	{
 		resetLeftI();
 	}
+	leftPID->SetSetpoint(speed);
 #else
 	leftVic1->Set(speed);
 	leftVic2->Set(speed);
@@ -94,7 +94,7 @@ void C1983Drive::setSpeedL(float speed)
 void C1983Drive::setSpeedR(float speed)
 {
 #if DRIVE_PID
-	if (speed == 0.0)
+	if (fabs(speed) < DEADBAND && fabs(rightPID->GetSetpoint()) > DEADBAND)
 	{
 		resetRightI();
 	}

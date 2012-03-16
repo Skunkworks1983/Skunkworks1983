@@ -21,6 +21,10 @@ C1983Shooter::C1983Shooter()
 	power = SHOT_FREETHROW_SPEED;
 	currentShot = kFreethrow;
 	stableReady = 0;
+	//File stuff
+	fileNumber = 0;
+	fileIndex = 0;
+	fileOpen = false;
 }
 
 void C1983Shooter::setShot(short shotNum)

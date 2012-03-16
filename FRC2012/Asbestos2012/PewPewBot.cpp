@@ -27,7 +27,7 @@ PewPewBot::PewPewBot()
 #if SHOOTER_PID
 	shooter->setPIDAdjust(0.0);
 #endif
-
+	shooter->setShot(C1983Shooter::kFreethrow);
 	hasResetItem = false;
 	yawAlignState = false;
 	flashState = false;
@@ -42,22 +42,26 @@ PewPewBot::~PewPewBot()
 
 void PewPewBot::updateDriverStation()
 {
-	if (PewPewBot::currentTimeMillis() > nextFlash){
+	/*if (PewPewBot::currentTimeMillis() > nextFlash)
+	{
 		flashState = !flashState;
 		nextFlash = PewPewBot::currentTimeMillis() + LED_FLASH_RATE;
-	}
+	}*/
+	
 	//Blinken Lights
-	FRONT_LINE_LED(drive->getLightSensorFront() || (drive->getLightSensorBridge() && flashState));
-	BACK_LINE_LED(drive->getLightSensorBack() || (drive->getLightSensorBridge() && flashState));
+	//FRONT_LINE_LED(drive->getLightSensorFront() || (drive->getLightSensorBridgeClean() && flashState));
+	//BACK_LINE_LED(drive->getLightSensorBack() || (drive->getLightSensorBridgeClean() && flashState));
+	
+	BRIDGE_LED(drive->getLightSensorBridge());
 	RPM_LOCK_LED(shooter->isReady());
-	AUTO_RANGE_LED(false);
+	AUTO_RANGE_LED(!drive->getLightSensorFront() && drive->getLightSensorBack());
 	AUTO_YAW_LED(false);
 
 	//Drive Station LCD
 	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line1,
 			"Shooter RPM: %lf", shooter->getRate() * SHOOTER_MAX_SPEED);
 	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line2,
-			"Requested RPM: %f", (int)shooter->getSetpoint());
+			"Requested RPM: %d", (int)shooter->getSetpoint());
 #if SHOOTER_PID
 	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line3,
 			"Modification: %f", shooter->getPIDAdjust());
@@ -67,10 +71,8 @@ void PewPewBot::updateDriverStation()
 	 */
 	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line4, "P: %f",
 			shooter->getP());
-	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line5, "I: %f",
-			shooter->getI());
-	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line6, "D: %f",
-			shooter->getD());
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line5,"I: %f",shooter->getI());
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line6, "D: %f", shooter->getD());
 #endif
 	//driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line4, "Bridge: %s", (drive->getLightSensorBridge()?"True":"False"));
 	driverStationLCD->UpdateLCD();
@@ -208,13 +210,14 @@ void PewPewBot::OperatorControl()
 		//Updates the average. Maybe some other stuff later.
 #if SHOOTER_PID
 		shooter->update();
+		/*
 		if (SHORT_SHOT_SWITCH)
 		{
 			shooter->setShot(C1983Shooter::kFreethrow);
 		} else
 		{
 			shooter->setShot(C1983Shooter::kKeytop);
-		}
+		}*/
 		shooter->setEnabled(ARM_BUTTON);
 #else
 		shooter->update();
@@ -243,34 +246,34 @@ void PewPewBot::OperatorControl()
 		//Check for PID modification DEBUG
 #if DRIVE_PID
 #if SHOOTER_PID
-		/*if (lStick->GetRawButton(4) && count/5 == (float)count/5)
+		if (lStick->GetRawButton(4) && count == 0)
 		 {
-		 shooter->pDown();
+			shooter->pDown();
 		 }
-		 if (lStick->GetRawButton(5) && count/5 == (float)count/5)
+		 if (lStick->GetRawButton(5) && count == 0)
 		 {
-		 shooter->pUp();
-		 }
-
-		 if (lStick->GetRawButton(2) && count/5 == (float)count/5)
-		 {
-		 shooter->iDown();
+			 shooter->pUp();
 		 }
 
-		 if (lStick->GetRawButton(3) && count/5 == (float)count/5)
+		 if (lStick->GetRawButton(2) && count == 0)
 		 {
-		 shooter->iUp();
+			 shooter->iDown();
 		 }
 
-		 if (rStick->GetRawButton(2) && count/5 == (float)count/5)
+		 if (lStick->GetRawButton(3) && count == 0)
 		 {
-		 shooter->dDown();
+			 shooter->iUp();
 		 }
 
-		 if (rStick->GetRawButton(3) && count/5 == (float)count/5)
+		 if (rStick->GetRawButton(2) && count == 0)
 		 {
-		 shooter->dUp();
-		 }*/
+			 shooter->dDown();
+		 }
+
+		 if (rStick->GetRawButton(3) && count == 0)
+		 {
+			 shooter->dUp();
+		 }
 #endif
 
 		if (lStick->GetRawButton(5))
@@ -280,7 +283,21 @@ void PewPewBot::OperatorControl()
 		}
 #endif
 		GetWatchdog().Feed();
-		myfile<<count<<","<<drive->getL()<<"\n";
+	//shooterfilestuff
+		if(rStick->GetRawButton(4) && !shooter->getIsOpen())
+		{
+			shooter->openFile();
+		}
+		if(rStick->GetRawButton(5) && shooter->getIsOpen())
+		{
+			shooter->closeFile();
+		}
+		if(shooter->getIsOpen())
+		{
+			cout<<"Writing";
+			shooter->writeFile();
+		}
+	//endshooterfilestuff
 		Wait(0.02);
 	}
 }

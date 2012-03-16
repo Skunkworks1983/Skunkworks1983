@@ -42,7 +42,9 @@ void PewPewBot::Autonomous()
 
 	while (IsAutonomous() && !IsDisabled())
 	{
-		//TODO Spinup shooter before collecting.
+#if SHOOTER_PID
+		shooter->setEnabled(true);  //Spinup the shooter before running the collecting cycle.
+#endif
 		drive->updateCompressor();
 		updateDriverStation();
 		if (KINECT && !kinect->getDoAutonomous())

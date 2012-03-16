@@ -80,3 +80,50 @@ double C1983Shooter::getRate()
 	return shooterEncoder->GetRate();
 #endif
 }
+
+
+void C1983Shooter::openFile()
+{
+	data = new ofstream();
+	cout<<"File Open"<<endl;
+	data->open(getFileName());
+	(*data)<<"Index,Rate,Setpoint,P: "<<shooterPID->GetP()<<",I: "<<shooterPID->GetI()<<",D: "<<shooterPID->GetD()<<"\n";
+	fileOpen = true;
+}
+
+void C1983Shooter::closeFile()
+{
+	cout<<"File Close"<<endl;
+	fileNumber++;
+	fileIndex = 0;
+	data->close();
+	delete data;
+	fileOpen = false;
+}
+
+bool C1983Shooter::getIsOpen()
+{
+	return fileOpen;
+}
+
+void C1983Shooter::writeFile()
+{
+	(*data)<<fileIndex<<","<<shooterPIDSource->PIDGet() * SHOOTER_MAX_SPEED<<","<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<",\n";
+	fileIndex++;
+}
+
+char* C1983Shooter::getFileName()
+{
+	stringstream ss;
+	ss << fileNumber;
+	string bleh = "shooterData" + ss.str() + ".csv";
+	char* output = new char[bleh.size()];
+	for(int i = 0;i < (int)bleh.size();i++)
+	{
+		output[i] = bleh[i];
+		cout<<output[i];
+	}
+	cout<<endl;
+	return output;
+}
+
