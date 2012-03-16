@@ -35,8 +35,6 @@ bool PewPewBot::shootAllBalls(double targetTime = -1)
 	}
 #endif
 	shooter->setEnabled(true);
-	shooter->update();
-	collector->update();
 	collector->setAutomatic(true);
 	if (PewPewBot::currentTimeMillis() >= targetTime)
 	{

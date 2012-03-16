@@ -51,8 +51,12 @@ void PewPewBot::Autonomous()
 		{
 			autonomousMode = kKinect;
 		}
+		
 		drive->updateCompressor();
+		shooter->update();
+		collector->update();
 		updateDriverStation();
+		
 		switch (autonomousMode)
 		{
 		case kDoYawAlign:

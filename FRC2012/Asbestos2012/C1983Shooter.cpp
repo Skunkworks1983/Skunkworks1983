@@ -79,25 +79,19 @@ bool C1983Shooter::isReady()
 	if (manual)
 		return true;
 #if SHOOTER_PID
+	if (shooterPID->GetSetpoint() == 0 || !shooterPID->IsEnabled())
+		return false;
 	float error = (shooterPIDSource->PIDGet() - shooterPID->GetSetpoint())
 			*SHOOTER_MAX_SPEED;
 	return error > -SHOOTER_VELOCITY_TOLERANCE_LOW && error
 			< SHOOTER_VELOCITY_TOLERANCE_HIGH;
-#else
-	return false;
 #endif
+	return true;
 }
 
 bool C1983Shooter::isStableReady()
 {
-	if (isReady())
-	{
-		return stableReady++ > SHOOTER_READY_STABLITY;
-	} else
-	{
-		stableReady = 0;
-		return false;
-	}
+	return stableReady > SHOOTER_READY_STABLITY;
 }
 
 void C1983Shooter::setJankyPower(float power)
@@ -156,6 +150,15 @@ void C1983Shooter::update()
 #if SHOOTER_PID
 	shooterPIDSource->updateAverage();
 #endif
+
+	//Update stability
+	if (isReady())
+	{
+		stableReady++;
+	} else
+	{
+		stableReady = 0;
+	}
 }
 
 bool C1983Shooter::getEnabled()
