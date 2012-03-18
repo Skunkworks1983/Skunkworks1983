@@ -1,12 +1,15 @@
+#ifndef __PEWPEWBOT_H
+#define __PEWPEWBOT_H
 #include "WPILib.h"
+#include <math.h>
+#include <fstream>
+#include "Utility.h"
 #include "1983Defines2012.h"
 #include "C1983Drive.h"
 #include "C1983Kinect.h"
 #include "C1983Collector.h"
 #include "C1983Shooter.h"
-//#include "C1983GlyphCamera.h"
-#include <math.h>
-#include <fstream>
+#include "C1983GlyphCamera.h"
 
 /**
  * @author:
@@ -29,8 +32,6 @@ private:
 	bool flashState;
 	double nextFlash;
 public:
-	static double currentTimeMillis();
-	
 	C1983Drive *drive;
 
 	C1983Collector *collector;
@@ -41,14 +42,14 @@ public:
 	DriverStation * driverStation;
 	DriverStationLCD * driverStationLCD;
 	DriverStationEnhancedIO * myEIO;
-	
+
 	Joystick *lStick;
 	Joystick *rStick;
-	
+
 #if KINECT
 	C1983Kinect *kinect;
 #endif
-	
+
 	PewPewBot();
 	void Autonomous();
 	void OperatorControl();
@@ -56,18 +57,18 @@ public:
 	~PewPewBot();
 
 	void updateDriverStation();
-	void updateShooter();
-	
+
 	//Automatic Functions
 	bool lineDepthAlign(); //Aligns the robot based on the key
-	bool camYawAlign();  //Aligns the robot based on the camera data
+	bool camYawAlign(); //Aligns the robot based on the camera data
 	void kinectCode(); //Controls the robot with kinect data
 
 	void cleanPIDs();
-	
+
 	//Autonomous Functions
 	bool shootAllBalls(double targetTime);
 	bool collectAllBalls();
-	bool rotateRobot(float angle);
+	bool rotateRobot(float angle, float tolerance);
 	bool driveToBridge();
 };
+#endif

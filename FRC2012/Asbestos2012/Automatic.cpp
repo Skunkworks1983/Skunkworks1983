@@ -36,7 +36,7 @@ bool PewPewBot::shootAllBalls(double targetTime = -1)
 #endif
 	shooter->setEnabled(true);
 	collector->setAutomatic(true);
-	if (PewPewBot::currentTimeMillis() >= targetTime)
+	if (System::currentTimeMillis() >= targetTime)
 	{
 		if (!collector->isShooting() && shooter->isStableReady())
 		{
@@ -79,27 +79,11 @@ bool PewPewBot::camYawAlign()
 	//if (camera->hasData()){
 	cout << "Gyro: " << drive->getGyro() << " Error: "
 			<< drive->turnPID->GetError() << endl;
-	if (drive->turnPID->IsEnabled() && fabs(drive->turnPID->GetError()) <= 0.05)
-	{
-		cout << "Ending turn cycle" << endl;
+	yawAlignState = true;
+	if (rotateRobot(270,5)){
 		yawAlignState = false;
-		drive->turnPID->Disable(); //Disable and return
-		drive->enablePID();
-		hasResetItem = false;
 		return true;
 	}
-	if (!hasResetItem) //If not made the reset gyro step
-	{
-		cout << "Beginning turn cycle" << endl;
-		yawAlignState = true;
-		drive->resetGyro();
-		hasResetItem = true;
-		drive->disablePID();
-		drive->turnPID->Reset();
-		drive->turnPID->SetSetpoint((float)270/*-camera->getCurrentYaw()*/); //Set the turning setpoint
-		drive->turnPID->Enable();
-	}
-	//}
 	return false;
 }
 
@@ -118,7 +102,7 @@ bool PewPewBot::collectAllBalls()
 	return false;
 }
 
-bool PewPewBot::rotateRobot(float angle)
+bool PewPewBot::rotateRobot(float angle, float tolerance)
 {
 	if (!hasResetItem)
 	{
@@ -128,7 +112,7 @@ bool PewPewBot::rotateRobot(float angle)
 		drive->turnPID->Enable();
 		drive->turnPID->SetSetpoint(angle);
 	}
-	if (fabs(drive->turnPID->GetError()) <= 5)
+	if (fabs(drive->turnPID->GetError()) <= tolerance)
 	{
 		hasResetItem = false;
 		drive->turnPID->Disable();

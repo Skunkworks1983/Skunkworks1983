@@ -11,8 +11,11 @@ C1983Kinect::C1983Kinect()
 {
 	leftArm = new KinectStick(1);
 	rightArm = new KinectStick(2);
+	kinect = Kinect::GetInstance();
+	hipPositionCache = -1;
 	shiftedHigh = true;
 	kinectMode = false;
+	tip = false;
 }
 
 float C1983Kinect::getLeft()
@@ -50,4 +53,33 @@ bool C1983Kinect::getKinectMode()
 		kinectMode = rightArm->GetRawButton(2) || rightArm->GetRawButton(3);
 	}
 	return kinectMode;
+}
+
+void C1983Kinect::update()
+{
+	Skeleton skele = kinect->GetSkeleton(1);
+	Skeleton::Joint hipCenter = skele.GetHipCenter();
+	if (hipCenter.trackingState == Skeleton::kTracked)
+	{
+		if (hipPositionCache == -1)
+		{
+			hipPositionCache = hipCenter.y;
+			cout << "Set default depth at: " << hipCenter.y << endl;
+		}
+		float diff = hipCenter.y - hipPositionCache;
+		if (diff < -KINECT_HIP_DIFF)
+		{
+			cout << "TIP UP\t";
+		} else if (diff > KINECT_HIP_DIFF)
+		{
+			cout << "TIP DOWN\t";
+		}
+		cout << "Diff: " << diff << endl;
+	}
+	tip = false;
+}
+
+bool C1983Kinect::getTipper()
+{
+	return tip;
 }

@@ -1,0 +1,563 @@
+<head><version>2.44.15</version></head>
+<Joystick>
+  <button_2_map>RRfunction</button_2_map>
+</Joystick>
+<If_Statement>
+  <comparison_type_1>3</comparison_type_1>
+  <comparison_1>1</comparison_1>
+  <join_1>-1</join_1>
+  <value_1>0</value_1>
+  <variable_1>RRfunction</variable_1>
+  <comparison_4>-1</comparison_4>
+  <comparison_type_4>-1</comparison_type_4>
+  <join_2>-1</join_2>
+  <comparison_type_3>-1</comparison_type_3>
+  <comparison_3>-1</comparison_3>
+  <join_3>-1</join_3>
+  <comparison_type_2>-1</comparison_type_2>
+  <comparison_2>-1</comparison_2>
+  <has_else>FALSE</has_else>
+</If_Statement>
+<Axis_Internet_Camera disabled>
+  <auto_exposure>FALSE</auto_exposure>
+  <auto_back_light>TRUE</auto_back_light>
+  <color_level_value>50</color_level_value>
+  <exposure_value>50</exposure_value>
+  <auto_white_balance>TRUE</auto_white_balance>
+  <compression_index>5</compression_index>
+  <refresh_index>1</refresh_index>
+  <sharpness_value>50</sharpness_value>
+  <ip_address>10.19.83.14</ip_address>
+  <password>1983</password>
+  <username>root</username>
+  <port>80</port>
+  <contrast_value>50</contrast_value>
+  <is_active>TRUE</is_active>
+  <brightness_value>50</brightness_value>
+</Axis_Internet_Camera>
+<Adaptive_Threshold>
+  <mean_offset>-10</mean_offset>
+  <filter_size>25</filter_size>
+  <min_threshold>180</min_threshold>
+  <channel_type>2</channel_type>
+  <max_threshold>255</max_threshold>
+</Adaptive_Threshold>
+<Blob_Filter>
+  <filters>
+    <tab:5/>
+    <tab:2/>
+    <tab:4/>
+    <tab>
+      <filter:2>
+        <create_array>0</create_array>
+        <count_threshold>0</count_threshold>
+        <weight_threshold>1</weight_threshold>
+        <image>Current</image>
+        <filter_id>77</filter_id>
+        <invert_threshold>0</invert_threshold>
+      </filter:2>
+      <filter:3>
+        <create_array>0</create_array>
+        <weight_threshold>0</weight_threshold>
+        <count_threshold>1</count_threshold>
+        <filter_id>38</filter_id>
+        <invert_threshold>0</invert_threshold>
+      </filter:3>
+      <filter>
+        <create_array>0</create_array>
+        <count_threshold>0</count_threshold>
+        <weight_threshold>0</weight_threshold>
+        <filter_id>8</filter_id>
+        <invert_threshold>0</invert_threshold>
+        <minimum_size>500</minimum_size>
+      </filter>
+    </tab>
+    <tab:6/>
+    <tab:3/>
+  </filters>
+  <show_mode>2</show_mode>
+  <sort_array_on_y>FALSE</sort_array_on_y>
+  <largest_is_background>FALSE</largest_is_background>
+  <sort_array_on_x>FALSE</sort_array_on_x>
+  <show_weights>FALSE</show_weights>
+  <create_blob_array_variable>FALSE</create_blob_array_variable>
+</Blob_Filter>
+<Ring_Corner>
+  <color_index>8</color_index>
+  <use_non_maximal>TRUE</use_non_maximal>
+  <isolation>5</isolation>
+  <size_index>3</size_index>
+  <use_color_or_gray>1</use_color_or_gray>
+  <ring_corner_array>TRUE</ring_corner_array>
+  <shape_index>3</shape_index>
+  <ring_size>7</ring_size>
+  <threshold>50</threshold>
+</Ring_Corner>
+<Math>
+  <image2>Source</image2>
+  <function>6</function>
+  <divisor>1</divisor>
+  <image1>Current</image1>
+  <all_channels>TRUE</all_channels>
+  <bias>0</bias>
+</Math>
+<VBScript_Program>
+  <tab_size_index>1</tab_size_index>
+  <script>rrfunct = 1
+list = GetArrayVariable("RING_CORNER")
+Setup0Pxl = 80  'Y Pixel that is at the same height as the camera
+SetupCamHght = 48 'Camera Lens Height above the floor in inches
+SetupZ = 150 'Horizontal Distance from Camera to Target
+SetupTargPixelH = 403 'Y Pixel Height of the top of the top target
+SetupTargPixelW = 129.4 'X Pixel Width of the top of the top target
+TargetHgtI = 115 'Height of the top of the top target in inches
+TargWdth = 24   'Width of top of the top Target in inches
+CameraFOV = 54 'Axis camera Field Of View, degrees
+KeyDispL = 230 'pixels
+KeyDispW = 80  'pixels
+BumperD = 50  'Pixels
+BkBdOffSetR = 0.2	'Back Board Target Offset (Inches Per Degree of Field Angle)
+
+
+Y1max = 0
+Y2max = 0
+X1max = 0
+X2max = 0
+I1=0
+I2=0
+FieldSide = 1
+A_length = ubound(list)
+If A_length &gt; 0 then
+	For i = 0 to A_length Step 2
+		if list(i+1) &gt; Y1max then
+			Y1max = list(i+1)
+			X1max = list(i)
+			I1=i
+		end if				
+	Next
+	For i = 0 to A_length Step 2
+		if i &lt;&gt; I1 then
+			if list(i+1) &gt; Y2max AND (list(i) &lt; X1max -40) OR (list(i) &gt; X1max +40) then
+				Y2max = list(i+1)
+				X2max = list(i)
+				I2=i
+			end if
+		end if				
+	Next
+end if
+z = -1
+If X1max &gt;0 then
+	targpxlwdth = abs(x1max - x2max)
+	TargX = (X1max+X2max)/2
+	TargY = (Y1max+Y2max)/2
+	z = SetupZ*(SetupTargPixelH-Setup0Pxl)/(TargY-Setup0Pxl)
+	
+	
+	TwRatio = (targpxlwdth*z)/(SetupTargPixelW*SetupZ)
+	if TwRatio &gt; 1 then
+		TwRatio = 1
+	end if
+	if X1max &lt; X2max then
+		if Y1max &lt; Y2max then
+			FieldSide = -1
+		end if
+	else
+		if Y2max &lt; Y1max then
+			FieldSide = -1
+		end if
+	end if
+	FangleRad = acos(TwRatio)*FieldSide
+	Fangle = FangleRad*180/3.142
+	BkBdOffSetIn = Fangle*BkBdOffSetR
+	BkBdOffSetPxls = BkBdOffSetIn*targpxlwdth/24
+	tbbPx = TargX - BkBdOffSetPxls
+	azmuth = CameraFOV*(tbbPx-320)/640 
+	tapx = Targx + KeyDispL*sin(FangleRad)
+	tapy = Targy - KeyDispL*cos(FangleRad)
+	k1x = tapx - KeyDispW*cos(FangleRad)
+	k1y = tapy - KeyDispW*sin(FangleRad) 
+	k2x = tapx + KeyDispW*cos(FangleRad)
+	k2y =  tapy + KeyDispW*sin(FangleRad)
+	k3x = k1x - (KeyDispL-BumperD)*sin(FangleRad)
+	k3y = k1y + (KeyDispL-BumperD)*cos(FangleRad) 
+	k4x = k2x - (KeyDispL-BumperD)*sin(FangleRad)
+	k4y = k2y + (KeyDispL-BumperD)*cos(FangleRad)
+	
+
+	RX = TargX + z*cos(FangleRad)
+	RY = TargY - z*sin(FangleRad)
+
+		SetVariable "TARGX", Cint(TargX)
+		SetVariable "TARGY", Cint(TargY)
+		SetVariable "Tz", Cint(z)
+		SetVariable "Zp0", Setup0Pxl
+		SetVariable "Ta", Cint(azmuth)
+		SetVariable "Fa", Cint(FAngle)
+		SetVariable "RX", RX
+		SetVariable "RY", RY
+		SetVariable "TPW", targpxlwdth
+		SetVariable "Tapx", Cint(tapx)
+		SetVariable "Tapy", Cint(tapy)
+		SetVariable "K1x", Cint(k1x)		
+		SetVariable "K1y", Cint(k1y)
+		SetVariable "K2x", Cint(k2x)
+		SetVariable "K2y", Cint(k2y)
+		SetVariable "K3x", Cint(k3x)		
+		SetVariable "K3y", Cint(k3y)
+		SetVariable "K4x", Cint(k4x)
+		SetVariable "K4y", Cint(k4y)
+		SetVariable "Tbbx", Cint(tbbPx)
+		SetVariable "RRfunction", rrfunct		
+end if
+</script>
+  <source_mode>gui</source_mode>
+</VBScript_Program>
+<Display_Point>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <thickness>8</thickness>
+  <color_index>6</color_index>
+  <y_coord>240</y_coord>
+  <size_index>7</size_index>
+  <y_variable>TARGY</y_variable>
+  <x_variable>TARGX</x_variable>
+  <clear_image>FALSE</clear_image>
+  <shape_index>3</shape_index>
+  <x_coord>320</x_coord>
+</Display_Point>
+<Display_Point>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <thickness>6</thickness>
+  <color_index>8</color_index>
+  <y_coord>240</y_coord>
+  <size_index>11</size_index>
+  <y_variable>TARGY</y_variable>
+  <x_variable>Tbbx</x_variable>
+  <clear_image>FALSE</clear_image>
+  <shape_index>6</shape_index>
+  <x_coord>320</x_coord>
+</Display_Point>
+<Display_Line disabled>
+  <x_end_map>640</x_end_map>
+  <x_start>0</x_start>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y_start_map>Zp0</y_start_map>
+  <y_end>0</y_end>
+  <y_end_map>Zp0</y_end_map>
+  <x_end>0</x_end>
+  <thickness>2</thickness>
+  <x_start_map>0</x_start_map>
+  <clear_image>FALSE</clear_image>
+  <display_mode>1</display_mode>
+  <y_start>0</y_start>
+  <color_index>2</color_index>
+</Display_Line>
+<Display_Variables>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <font_size_index>4</font_size_index>
+  <display_value_only>FALSE</display_value_only>
+  <northeast>Ta
+Tz
+</northeast>
+  <dim_background>TRUE</dim_background>
+  <border_color_index>5</border_color_index>
+  <northwest>Fa
+</northwest>
+</Display_Variables>
+<Display_Line disabled>
+  <x_end_map>320</x_end_map>
+  <x_start>1</x_start>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y_start_map>TARGY - 2*Tz</y_start_map>
+  <y_end>0</y_end>
+  <y_end_map>TARGY - 2*Tz + 230</y_end_map>
+  <x_end>0</x_end>
+  <thickness>5</thickness>
+  <x_start_map>320</x_start_map>
+  <clear_image>FALSE</clear_image>
+  <display_mode>1</display_mode>
+  <y_start>0</y_start>
+  <color_index>7</color_index>
+</Display_Line>
+<Display_Circle>
+  <end_angle>360.0</end_angle>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y>0</y>
+  <start_angle>0.0</start_angle>
+  <thickness>6</thickness>
+  <clear_image>FALSE</clear_image>
+  <y_map>TARGY - 2*Tz + 230</y_map>
+  <x_map>320</x_map>
+  <radius_map>30</radius_map>
+  <display_mode>1</display_mode>
+  <fill_shape>FALSE</fill_shape>
+  <color_index>7</color_index>
+  <x>0</x>
+  <radius>60</radius>
+</Display_Circle>
+<Display_Line disabled>
+  <x_end_map>Tapx</x_end_map>
+  <x_start>0</x_start>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y_start_map>TARGY</y_start_map>
+  <y_end>0</y_end>
+  <y_end_map>Tapy</y_end_map>
+  <x_end>0</x_end>
+  <thickness>4</thickness>
+  <x_start_map>TARGX</x_start_map>
+  <clear_image>FALSE</clear_image>
+  <display_mode>1</display_mode>
+  <y_start>0</y_start>
+  <color_index>5</color_index>
+</Display_Line>
+<Display_Line disabled>
+  <x_end_map>K2x</x_end_map>
+  <x_start>0</x_start>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y_start_map>K1y</y_start_map>
+  <y_end>0</y_end>
+  <y_end_map>K2y</y_end_map>
+  <x_end>0</x_end>
+  <thickness>3</thickness>
+  <x_start_map>K1x</x_start_map>
+  <clear_image>FALSE</clear_image>
+  <display_mode>1</display_mode>
+  <y_start>0</y_start>
+  <color_index>5</color_index>
+</Display_Line>
+<Display_Line disabled>
+  <x_end_map>K3x</x_end_map>
+  <x_start>0</x_start>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y_start_map>K1y</y_start_map>
+  <y_end>0</y_end>
+  <y_end_map>K3y</y_end_map>
+  <x_end>0</x_end>
+  <thickness>3</thickness>
+  <x_start_map>K1x</x_start_map>
+  <clear_image>FALSE</clear_image>
+  <display_mode>1</display_mode>
+  <y_start>0</y_start>
+  <color_index>5</color_index>
+</Display_Line>
+<Display_Line disabled>
+  <x_end_map>K4x</x_end_map>
+  <x_start>0</x_start>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y_start_map>K2y</y_start_map>
+  <y_end>0</y_end>
+  <y_end_map>K4y</y_end_map>
+  <x_end>0</x_end>
+  <thickness>3</thickness>
+  <x_start_map>K2x</x_start_map>
+  <clear_image>FALSE</clear_image>
+  <display_mode>1</display_mode>
+  <y_start>0</y_start>
+  <color_index>5</color_index>
+</Display_Line>
+<Display_Circle disabled>
+  <end_angle>350</end_angle>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y>0</y>
+  <start_angle>190</start_angle>
+  <thickness>3</thickness>
+  <clear_image>FALSE</clear_image>
+  <y_map>TARGY</y_map>
+  <x_map>Tbbx</x_map>
+  <radius_map>230</radius_map>
+  <display_mode>1</display_mode>
+  <fill_shape>FALSE</fill_shape>
+  <color_index>2</color_index>
+  <x>0</x>
+  <radius>0</radius>
+</Display_Circle>
+<Display_Circle disabled>
+  <end_angle>360.0</end_angle>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y>0</y>
+  <start_angle>0.0</start_angle>
+  <thickness>1</thickness>
+  <clear_image>FALSE</clear_image>
+  <y_map>TARGY - 2*Tz -15</y_map>
+  <x_map>320</x_map>
+  <radius_map>35</radius_map>
+  <display_mode>1</display_mode>
+  <fill_shape>TRUE</fill_shape>
+  <color_index>7</color_index>
+  <x>0</x>
+  <radius>0</radius>
+</Display_Circle>
+<Socket_Communication>
+  <remember_as_default>TRUE</remember_as_default>
+  <enable_send_sequence>TRUE</enable_send_sequence>
+  <port>6060</port>
+  <send>0,[Tz],[Ta]</send>
+  <hostname>localhost</hostname>
+  <send_only_on_change>TRUE</send_only_on_change>
+  <send_frequency_index>-1</send_frequency_index>
+</Socket_Communication>
+<end_if/>
+<If_Statement>
+  <comparison_type_1>3</comparison_type_1>
+  <comparison_1>1</comparison_1>
+  <join_1>-1</join_1>
+  <value_1>1</value_1>
+  <variable_1>RRfunction</variable_1>
+  <comparison_4>-1</comparison_4>
+  <comparison_type_4>-1</comparison_type_4>
+  <join_2>-1</join_2>
+  <comparison_type_3>-1</comparison_type_3>
+  <comparison_3>-1</comparison_3>
+  <join_3>-1</join_3>
+  <comparison_type_2>-1</comparison_type_2>
+  <comparison_2>-1</comparison_2>
+  <has_else>FALSE</has_else>
+</If_Statement>
+<Axis_Internet_Camera disabled>
+  <auto_exposure>FALSE</auto_exposure>
+  <auto_back_light>TRUE</auto_back_light>
+  <color_level_value>50</color_level_value>
+  <exposure_value>50</exposure_value>
+  <auto_white_balance>TRUE</auto_white_balance>
+  <compression_index>5</compression_index>
+  <refresh_index>2</refresh_index>
+  <sharpness_value>50</sharpness_value>
+  <ip_address>10.19.83.12</ip_address>
+  <port>80</port>
+  <contrast_value>50</contrast_value>
+  <is_active>FALSE</is_active>
+  <brightness_value>50</brightness_value>
+</Axis_Internet_Camera>
+<RGB_Filter>
+  <hue_value>20</hue_value>
+  <hysteresis>0</hysteresis>
+  <min_value>20</min_value>
+  <channel>1</channel>
+</RGB_Filter>
+<Canny>
+  <high_threshold>30</high_threshold>
+  <low_threshold>0</low_threshold>
+  <theta>1.2</theta>
+</Canny>
+<Dilate>
+  <count>5</count>
+  <avoid_connection>FALSE</avoid_connection>
+  <dilate_borders>FALSE</dilate_borders>
+  <kernal_shape>4</kernal_shape>
+</Dilate>
+<Circles>
+  <max_radius>105</max_radius>
+  <min_radius>15</min_radius>
+  <isolation>14</isolation>
+  <fill_circles>TRUE</fill_circles>
+  <threshold>6</threshold>
+</Circles>
+<VBScript_Program>
+  <tab_size_index>1</tab_size_index>
+  <script>FOV = 47.5
+' detect the largest circle
+x=-1
+y=-1
+r=0
+
+circles = GetArrayVariable("CIRCLES")
+if isArray(circles) then
+  if ubound(circles) &gt; 0 then
+    for i = 0 to ubound(circles)-1 step 13
+      if circles(i+2) &gt; r then
+        x = circles(i)
+        y = circles(i+1)
+      	r = circles(i+2)
+      end if
+    next
+  end if
+end if
+dist = ((x-320)^2 + y^2)^0.5
+angle = (x-320)*FOV/640
+if x&gt;0 then
+  SetVariable "CIRCLE_X", x
+  SetVariable "CIRCLE_Y", y
+  SetVariable "CIRCLE_RADIUS", r
+	SetVariable "Dist", Cint(dist)
+	SetVariable "Angle", Cint(angle)
+	
+else
+  RemoveVariable "CIRCLE_X"
+  RemoveVariable "CIRCLE_Y"
+end if
+</script>
+  <source_mode>gui</source_mode>
+</VBScript_Program>
+<Display_Circle>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <start_angle>0.0</start_angle>
+  <y>[CIRCLE_Y]</y>
+  <color_index>6</color_index>
+  <fill_shape>TRUE</fill_shape>
+  <end_angle>360.0</end_angle>
+  <thickness>1</thickness>
+  <x>[CIRCLE_X]</x>
+  <radius>[CIRCLE_RADIUS]</radius>
+  <clear_image>FALSE</clear_image>
+</Display_Circle>
+<Math>
+  <image2>Current</image2>
+  <function>4</function>
+  <divisor>1</divisor>
+  <image1>Source</image1>
+  <all_channels>TRUE</all_channels>
+  <bias>0</bias>
+</Math>
+<Marker>
+  <include_graphics>FALSE</include_graphics>
+  <name>mask</name>
+  <revert_to>Current</revert_to>
+</Marker>
+<Combine_RGB>
+  <red_source>Current</red_source>
+  <blue_source_channel>1</blue_source_channel>
+  <blue_source>Current</blue_source>
+  <green_source>Current</green_source>
+  <red_source_channel>2</red_source_channel>
+</Combine_RGB>
+<Mask>
+  <mask>mask</mask>
+  <image1>Source</image1>
+  <image2>Current</image2>
+</Mask>
+<Display_Line>
+  <x_end_map>CIRCLE_X</x_end_map>
+  <x_start>0</x_start>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <y_start_map>0</y_start_map>
+  <y_end>0</y_end>
+  <y_end_map>CIRCLE_Y</y_end_map>
+  <x_end>0</x_end>
+  <thickness>8</thickness>
+  <x_start_map>320</x_start_map>
+  <clear_image>FALSE</clear_image>
+  <display_mode>1</display_mode>
+  <y_start>0</y_start>
+  <color_index>7</color_index>
+</Display_Line>
+<Display_Variables>
+  <display_as_annotation>FALSE</display_as_annotation>
+  <font_size_index>2</font_size_index>
+  <display_value_only>FALSE</display_value_only>
+  <dim_background>TRUE</dim_background>
+  <border_color_index>5</border_color_index>
+  <southwest>Angle
+CIRCLE_RADIUS
+Dist
+</southwest>
+</Display_Variables>
+<Socket_Communication>
+  <remember_as_default>TRUE</remember_as_default>
+  <enable_send_sequence>TRUE</enable_send_sequence>
+  <port>6060</port>
+  <receive>[Fa]</receive>
+  <send>1,[Angle],[Dist]</send>
+  <hostname>localhost</hostname>
+  <send_only_on_change>TRUE</send_only_on_change>
+  <send_frequency_index>-1</send_frequency_index>
+</Socket_Communication>
+<end_if/>

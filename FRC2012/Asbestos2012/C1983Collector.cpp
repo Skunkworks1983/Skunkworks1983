@@ -1,11 +1,18 @@
 #include "C1983Collector.h"
 
-C1983Collector::C1983Collector(C1983Shooter *sh)
+C1983Collector::C1983Collector(C1983Shooter * sh, C1983Tipper * tip)
 {
 	shooter = sh;
+	tipper = tip;
+	
 	//Victor used for feeding
 	collectorVicPickup = new Victor (COLLECTOR_VIC_PICKUP);
 
+	//Ye old tipper victor
+#ifdef COLLECTOR_VIC_TIPPER
+	collectorVicTipper = new Victor(COLLECTOR_VIC_TIPPER);
+#endif
+	
 	//First victor used for collector
 	collectorVicLow = new Victor (COLLECTOR_VIC_LOW);
 
@@ -24,7 +31,7 @@ C1983Collector::C1983Collector(C1983Shooter *sh)
 
 	shooting = false;
 	collecting = false;
-	automatic = true; //TODO if we have sensors, make this true
+	automatic = true;  //We haz light sensors
 	runInReverse = false;
 
 }
@@ -36,27 +43,28 @@ void C1983Collector::update()
 		collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
 		collectorVicLow->Set(COLLECTOR_BELT_SPEED);
 		collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
+			{
+				collectorVicTipper->Set(-COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
+			}
+#endif
 	} else if (!automatic && collecting && !shooting) //Manual forward
 	{
 		collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
 		collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
 		collectorVicTop->Set(COLLECTOR_BELT_SPEED);
-	} /*else if (!automatic && shooting)  Don't need this.  In manual mode it should do the same thing
-	{
-		shooterCount++;
-		collectorVicTop->Set(COLLECTOR_FEED_SPEED);
-		collectorVicLow->Set(-COLLECTOR_FEED_SPEED);
-		collectorVicPickup->Set(COLLECTOR_FEED_SPEED);
-		if (shooterCount > (SHOOTER_TIMEOUT + 60))
-		{
-			collectorVicTop->Set(0.0);
-			shooting = false;
-			shooterCount = 0;
-			collecting = automatic;
-			//If we want to autocollect after shooting we need to be in auto mode
-		}
-	}  */else if (shooting)
-	{
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
+			{
+				collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
+			}
+#endif
+	}else if (shooting)	{
 		shooterCount++;
 		collectorVicTop->Set(COLLECTOR_FEED_SPEED);
 		if (shooterCount > SHOOTER_TIMEOUT)
@@ -74,6 +82,9 @@ void C1983Collector::update()
 			collectorVicPickup->Set(0.0);
 			collectorVicLow->Set(-0.0);
 			collectorVicTop->Set(0.0);
+#ifdef COLLECTOR_VIC_TIPPER
+			collectorVicTipper->Set(0.0);
+#endif
 			collecting = false;
 			collectorCount = 0;
 		} else if (!TOPSLOT)
@@ -81,34 +92,64 @@ void C1983Collector::update()
 			collectorVicTop->Set(COLLECTOR_BELT_SPEED);
 			collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
 			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
+			{
+				collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
+			}
+#endif
 		} else if (!MIDSLOT)
 		{
 			collectorVicTop->Set(0.0);
 			collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
 			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
+			{
+				collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
+			}
+#endif
 		} else if (!LOWSLOT)
 		{
 			collectorVicTop->Set(0.0);
 			collectorVicLow->Set(-0.0);
 			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
+			{
+				collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
+			}
+#endif
 		} else
 		{
 			collectorVicTop->Set(0.0);
 			collectorVicLow->Set(-0.0);
 			collectorVicPickup->Set(0.0);
+#ifdef COLLECTOR_VIC_TIPPER
+			collectorVicTipper->Set(0.0);
+#endif
 		}
 		collectorCount++;
-	}else
+	} else
 	{
 		collectorVicTop->Set(0.0);
 		collectorVicLow->Set(-0.0);
 		collectorVicPickup->Set(0.0);
+#ifdef COLLECTOR_VIC_TIPPER
+		collectorVicTipper->Set(0.0);
+#endif
 	}
 }
 
 void C1983Collector::requestShot()
 {
-	shooting = shooter->isReady();
+	shooting = shooting || shooter->isStableReady();
 }
 
 void C1983Collector::requestCollect()
@@ -161,6 +202,14 @@ void C1983Collector::setAutomatic(bool bleh)
 
 void C1983Collector::jankyGo()
 {
+#ifdef COLLECTOR_VIC_TIPPER
+	if(tipper->getState())
+	{
+		collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+	}else{
+		collectorVicTipper->Set(0.0);
+	}
+#endif
 	collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
 	collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
 	collectorVicTop->Set(COLLECTOR_BELT_SPEED);
@@ -168,6 +217,14 @@ void C1983Collector::jankyGo()
 
 void C1983Collector::jankyReverse()
 {
+#ifdef COLLECTOR_VIC_TIPPER
+	if(tipper->getState())
+	{
+		collectorVicTipper->Set(-COLLECTOR_TIPPER_SPEED);
+	}else{
+		collectorVicTipper->Set(0.0);
+	}
+#endif
 	collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
 	collectorVicLow->Set(COLLECTOR_BELT_SPEED);
 	collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
@@ -175,6 +232,7 @@ void C1983Collector::jankyReverse()
 
 void C1983Collector::jankyStop()
 {
+	collectorVicTipper->Set(0.0);
 	collectorVicPickup->Set(0.0);
 	collectorVicLow->Set(0.0);
 	collectorVicTop->Set(0.0);
@@ -190,9 +248,11 @@ void C1983Collector::clean()
 	shooterCount = 0;
 }
 
-void C1983Collector::debugPrint(){
+void C1983Collector::debugPrint()
+{
 	//if (automatic){
-		cout << "Collector Sensors: " << getSense(0) << " " << getSense(1) << " " << getSense(2) << "\t"<<endl;
+	cout << "Collector Sensors: " << getSense(0) << " " << getSense(1) << " "
+			<< getSense(2) << "\t";
 	//}
-	cout << "Automatic: " << automatic << "\tCollecting: " << collecting << "\tShooting: " << shooting << "\tReverse: " << runInReverse;
+	//cout << "Automatic: " << automatic << "\tCollecting: " << collecting << "\tShooting: " << shooting << "\tReverse: " << runInReverse;
 }

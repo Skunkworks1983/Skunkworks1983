@@ -108,7 +108,8 @@ bool C1983Shooter::getIsOpen()
 
 void C1983Shooter::writeFile()
 {
-	(*data)<<fileIndex<<","<<shooterPIDSource->PIDGet() * SHOOTER_MAX_SPEED<<","<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<",\n";
+	(*data)<<(float)fileIndex/50.0<<","<<shooterPIDSource->PIDGet() * SHOOTER_MAX_SPEED<<","<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<",\n";
+	//(*data)<<(float)fileIndex/50.0<<","<<shooterVic1->Get()<<","<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<",\n";
 	fileIndex++;
 }
 
@@ -117,12 +118,13 @@ char* C1983Shooter::getFileName()
 	stringstream ss;
 	ss << fileNumber;
 	string bleh = "shooterData" + ss.str() + ".csv";
-	char* output = new char[bleh.size()];
+	char* output = new char[bleh.size() + 1];
 	for(int i = 0;i < (int)bleh.size();i++)
 	{
 		output[i] = bleh[i];
 		cout<<output[i];
 	}
+	output[bleh.size()] = NULL;
 	cout<<endl;
 	return output;
 }

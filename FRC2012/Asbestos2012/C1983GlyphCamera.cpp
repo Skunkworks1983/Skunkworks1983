@@ -6,20 +6,20 @@
  */
 
 #include "C1983GlyphCamera.h"
-#include "1983Defines2012.h"
+
 C1983GlyphCamera::C1983GlyphCamera()
 {
-	currentDepth = -1;
-	currentYaw = -1;
+	currentBasketDepth = -1;
+	currentBasketYaw = -1;
+	basketDataUpdate = -1;
+
+	currentBallYaw = -1;
+	currentBallDepth = -1;
+	ballDataUpdate = -1;
+
+	currentCamera = kShooter;
+
 	server = new Server1180(C1983GlyphCamera::callProcessPacket, this, false);
-}
-double C1983GlyphCamera::getCurrentDepth()
-{
-	return currentDepth;
-}
-double C1983GlyphCamera::getCurrentYaw()
-{
-	return currentYaw;
 }
 
 void C1983GlyphCamera::callProcessPacket(void *obj, char * data)
@@ -28,9 +28,60 @@ void C1983GlyphCamera::callProcessPacket(void *obj, char * data)
 }
 void C1983GlyphCamera::processPacket(char * data)
 {
-	sscanf(data, "%lf,%lf", &currentDepth, &currentYaw);
+	double d1, d2;
+	unsigned int key;
+	sscanf(data, "%u,%lf,%lf", &key, &d1, &d2);
+	if (key == 0)
+	{
+		currentBasketDepth = d1;
+		currentBasketYaw = d2;
+		basketDataUpdate = System::currentTimeMillis();
+	} else if (key == 1)
+	{
+		currentBallDepth = d1;
+		currentBallYaw = d2;
+		ballDataUpdate = System::currentTimeMillis();
+	} else
+	{
+		cout << "Bad packet key: " << key << endl;
+	}
 }
 
-bool C1983GlyphCamera::hasData(){
-	return currentDepth != -1;  //TODO  Check the current time against the last update time
+double C1983GlyphCamera::getCurrentBasketDepth()
+{
+	return currentBasketDepth;
+}
+double C1983GlyphCamera::getCurrentBasketYaw()
+{
+	return currentBasketYaw;
+}
+
+double C1983GlyphCamera::getBasketDataAge()
+{
+	return System::currentTimeMillis() - basketDataUpdate;
+}
+
+double C1983GlyphCamera::getCurrentBallDepth()
+{
+	return currentBasketDepth;
+}
+double C1983GlyphCamera::getCurrentBallYaw()
+{
+	return currentBasketYaw;
+}
+
+double C1983GlyphCamera::getBallDataAge()
+{
+	return System::currentTimeMillis() - ballDataUpdate;
+}
+
+void C1983GlyphCamera::sendCameraChange(Camera cam)
+{
+	if (server->Connected())
+	{
+		char * data = new char[2];
+		data[0] = cam;
+		data[1] = 0;
+		server->SendData(data);
+	}
 }

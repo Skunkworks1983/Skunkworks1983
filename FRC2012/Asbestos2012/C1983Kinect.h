@@ -30,9 +30,12 @@ class C1983Kinect
 private:
 	KinectStick *leftArm;
 	KinectStick *rightArm;
+	Kinect * kinect;
+	float hipPositionCache;
 	
 	bool shiftedHigh;
 	bool kinectMode;
+	bool tip;
 	
 public:
 	C1983Kinect();
@@ -47,5 +50,8 @@ public:
 	bool getShootButton();
 	bool getShooterOnButton();
 	bool getKinectMode();
+	bool getTipper();
+	
+	void update();
 };
 #endif

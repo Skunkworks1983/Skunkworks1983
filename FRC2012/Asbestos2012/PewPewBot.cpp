@@ -1,19 +1,11 @@
 #include "PewPewBot.h"
 #include <iostream>
 
-double PewPewBot::currentTimeMillis()
-{
-	struct timespec tt;
-	clock_gettime(CLOCK_REALTIME, &tt);
-	double diff = (tt.tv_sec*1000.0) + (double)(tt.tv_nsec /1000000.0);
-	return diff;
-}
-
 PewPewBot::PewPewBot()
 {
 	drive = new C1983Drive();
 	shooter = new C1983Shooter();
-	collector = new C1983Collector(shooter);
+	collector = new C1983Collector(shooter, drive->tipper);
 	//camera = new C1983GlyphCamera();
 #if KINECT
 	kinect = new C1983Kinect();
@@ -42,20 +34,10 @@ PewPewBot::~PewPewBot()
 
 void PewPewBot::updateDriverStation()
 {
-	/*if (PewPewBot::currentTimeMillis() > nextFlash)
-	{
-		flashState = !flashState;
-		nextFlash = PewPewBot::currentTimeMillis() + LED_FLASH_RATE;
-	}*/
-	
-	//Blinken Lights
-	//FRONT_LINE_LED(drive->getLightSensorFront() || (drive->getLightSensorBridgeClean() && flashState));
-	//BACK_LINE_LED(drive->getLightSensorBack() || (drive->getLightSensorBridgeClean() && flashState));
-	
 	BRIDGE_LED(drive->getLightSensorBridge());
-	RPM_LOCK_LED(shooter->isReady());
+	RPM_LOCK_LED(shooter->isStableReady());
 	AUTO_RANGE_LED(!drive->getLightSensorFront() && drive->getLightSensorBack());
-	AUTO_YAW_LED(false);
+	AUTO_YAW_LED(true);
 
 	//Drive Station LCD
 	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line1,
@@ -71,42 +53,13 @@ void PewPewBot::updateDriverStation()
 	 */
 	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line4, "P: %f",
 			shooter->getP());
-	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line5,"I: %f",shooter->getI());
-	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line6, "D: %f", shooter->getD());
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line5, "I: %f",
+			shooter->getI());
+	driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line6, "D: %f",
+			shooter->getD());
 #endif
 	//driverStationLCD->PrintfLine(DriverStationLCD::kUser_Line4, "Bridge: %s", (drive->getLightSensorBridge()?"True":"False"));
 	driverStationLCD->UpdateLCD();
-}
-
-void PewPewBot::updateShooter()
-{
-	if (SHOOTER_PID)
-	{
-		shooter->setEnabled(true);
-		//Updates the average. Maybe some other stuff later.
-		shooter->update();
-		//Shot select
-		if (SHORT_SHOT_SWITCH)
-		{
-			shooter->setShot(C1983Shooter::kFreethrow);
-		} else
-		{
-			shooter->setShot(C1983Shooter::kKeytop);
-		}
-		//PID Adjust
-		if (PID_SLIDER> .2095)
-		{
-			shooter->setPIDAdjust(0.0762 * log(PID_SLIDER) + 0.0407);
-		} else
-		{
-			shooter->setPIDAdjust(-0.15);
-			shooter->setEnabled(ARM_BUTTON);
-		}
-	} else
-	{
-		shooter->setEnabled(false);
-		shooter->setJankyPower((0.0762 * log(PID_SLIDER) + 0.1907) /0.30);
-	}
 }
 
 void PewPewBot::OperatorControl()
@@ -138,24 +91,23 @@ void PewPewBot::OperatorControl()
 			 << "Shooter Power: "<<-(rStick->GetThrottle() + 1)/2<<endl;*/
 			//cout<<"Shooter Rate:" << shooter->getRate()<<endl;
 			//shooter->debugPrint();
-			//collector->debugPrint();
 		}
 
 		//Set the compressor
 		drive->updateCompressor();
 
-		/*if (yawAlignState && !AUTO_TARGET_BUTTON)
-		 {
-		 cout << "Force ending turn cycle" << endl;
-		 yawAlignState = false;
-		 drive->turnPID->Disable();
-		 drive->enablePID();
-		 hasResetItem = false;
-		 }
-		 if (AUTO_TARGET_BUTTON)
-		 {
-		 camYawAlign();
-		 } else */if (KEY_ALIGN_BUTTON)
+		if (yawAlignState && !AUTO_TARGET_BUTTON)
+		{
+			cout << "Force ending turn cycle" << endl;
+			yawAlignState = false;
+			drive->turnPID->Disable();
+			drive->enablePID();
+			hasResetItem = false;
+		}
+		if (AUTO_TARGET_BUTTON)
+		{
+			camYawAlign();
+		} else if (KEY_ALIGN_BUTTON)
 		{
 			lineDepthAlign();
 		} else
@@ -210,14 +162,14 @@ void PewPewBot::OperatorControl()
 		//Updates the average. Maybe some other stuff later.
 #if SHOOTER_PID
 		shooter->update();
-		/*
+
 		if (SHORT_SHOT_SWITCH)
 		{
 			shooter->setShot(C1983Shooter::kFreethrow);
 		} else
 		{
 			shooter->setShot(C1983Shooter::kKeytop);
-		}*/
+		}
 		shooter->setEnabled(ARM_BUTTON);
 #else
 		shooter->update();
@@ -233,6 +185,7 @@ void PewPewBot::OperatorControl()
 		drive->tip(TIPPER_SWITCH);
 		//END TIPPER
 #if SHOOTER_PID
+
 		if (PID_SLIDER> .2095)
 		{
 			shooter->setPIDAdjust(0.0762 * log(PID_SLIDER) + 0.0407);
@@ -246,34 +199,35 @@ void PewPewBot::OperatorControl()
 		//Check for PID modification DEBUG
 #if DRIVE_PID
 #if SHOOTER_PID
-		if (lStick->GetRawButton(4) && count == 0)
+		/*
+		 if (lStick->GetRawButton(4) && count == 0)
 		 {
-			shooter->pDown();
+		 shooter->pDown();
 		 }
 		 if (lStick->GetRawButton(5) && count == 0)
 		 {
-			 shooter->pUp();
+		 shooter->pUp();
 		 }
 
 		 if (lStick->GetRawButton(2) && count == 0)
 		 {
-			 shooter->iDown();
+		 shooter->iDown();
 		 }
 
 		 if (lStick->GetRawButton(3) && count == 0)
 		 {
-			 shooter->iUp();
+		 shooter->iUp();
 		 }
 
 		 if (rStick->GetRawButton(2) && count == 0)
 		 {
-			 shooter->dDown();
+		 shooter->dDown();
 		 }
 
 		 if (rStick->GetRawButton(3) && count == 0)
 		 {
-			 shooter->dUp();
-		 }
+		 shooter->dUp();
+		 }*/
 #endif
 
 		if (lStick->GetRawButton(5))
@@ -283,21 +237,21 @@ void PewPewBot::OperatorControl()
 		}
 #endif
 		GetWatchdog().Feed();
-	//shooterfilestuff
-		if(rStick->GetRawButton(4) && !shooter->getIsOpen())
+		//shooterfilestuff
+		if (rStick->GetRawButton(4) && !shooter->getIsOpen())
 		{
 			shooter->openFile();
 		}
-		if(rStick->GetRawButton(5) && shooter->getIsOpen())
+		if (rStick->GetRawButton(5) && shooter->getIsOpen())
 		{
 			shooter->closeFile();
 		}
-		if(shooter->getIsOpen())
+		if (shooter->getIsOpen())
 		{
 			cout<<"Writing";
 			shooter->writeFile();
 		}
-	//endshooterfilestuff
+		//endshooterfilestuff
 		Wait(0.02);
 	}
 }

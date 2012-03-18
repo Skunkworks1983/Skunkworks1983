@@ -83,7 +83,7 @@ bool C1983Shooter::isReady()
 	if (manual)
 		return true;
 #if SHOOTER_PID
-	if (shooterPID->GetSetpoint() == 0 || !shooterPID->IsEnabled())
+	if (!shooterPID->IsEnabled() || shooterPID->GetSetpoint() == 0)
 		return false;
 	float error = (shooterPIDSource->PIDGet() - shooterPID->GetSetpoint())
 			*SHOOTER_MAX_SPEED;

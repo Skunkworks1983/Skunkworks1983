@@ -38,27 +38,32 @@ void PewPewBot::Autonomous()
 
 	//Cleaning
 	collector->clean();
-	
-	double startTime = PewPewBot::currentTimeMillis();
-	
+
+	double startTime = System::currentTimeMillis();
+
 	//Spinup shooter
 	shooter->setEnabled(true);
 	shooter->setShot(AUTONOMOUS_SHOT);
+	hasResetItem = false;
 	
 	while (IsAutonomous() && !IsDisabled())
 	{
 #if KINECT
 		if (kinect->getKinectMode())
 		{
+			cout << "TO KINECT MODE" << endl;
 			autonomousMode = kKinect;
 		}
 #endif
-		
+
 		drive->updateCompressor();
 		shooter->update();
 		collector->update();
+#if KINECT
+		kinect->update();
+#endif
 		updateDriverStation();
-		
+
 		switch (autonomousMode)
 		{
 		case kDoYawAlign:
@@ -74,10 +79,10 @@ void PewPewBot::Autonomous()
 		case kShoot:
 			if (shootAllBalls(AUTONOMOUS_DELAY_SWITCH?startTime + AUTONOMOUS_DELAY:-1))
 				autonomousMode = AUTONOMOUS_FULL_AUTO_SWITCH ? kRotate180
-						: kKinect;
+				: kKinect;
 			break;
 		case kRotate180:
-			if (rotateRobot(180))
+			if (rotateRobot(180,5))
 				autonomousMode = kMoveToBridge;
 			break;
 		case kMoveToBridge:
@@ -138,7 +143,7 @@ void PewPewBot::kinectCode()
 		drive->setSpeedL(0.0);
 	}
 	/*
-	static int lastShooterChange = 30;
+	 static int lastShooterChange = 30;
 	 if(kinect->getShootButton())
 	 {
 	 collector->jankyGo();

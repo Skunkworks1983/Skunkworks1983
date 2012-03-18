@@ -4,12 +4,16 @@
 #define PRACTICE_BOT 1
 
 //PewPew Start
-#define KINECT 1
 #define DEADBAND 0.03
 //PewPew End
 
+//Kinect Start
+#define KINECT 0
+#define KINECT_HIP_DIFF 0.15
+//Kinect End
+
 //Autonomous Start
-#define LOOP_STABILITY 10 //This define represents the amount of loops a readout must be consistently true to for the autonomous stuff to read it
+#define LOOP_STABILITY 5 //This define represents the amount of loops a readout must be consistently true to for the autonomous stuff to read it
 //Autonomous Stop
 
 //DriveBase Start
@@ -56,7 +60,7 @@
 #define DRIVE_P 1.05
 #define DRIVE_I 0.05//0.1
 #define DRIVE_D 0.05
- 	
+
 #define DRIVE_P_LOW 0.85
 #define DRIVE_I_LOW 0.05
 #define DRIVE_D_LOW 0.05
@@ -89,7 +93,6 @@
 
 //Conversion stuff
 #define SHOOTER_UNITS_PER_TICK ((double)0.234375) //(60.0/256.0) Last bit is janky hack 
-
 #define SHOOTER_VIC_CHANNEL1 8				//Channel for shooter wheel
 #define SHOOTER_VIC_CHANNEL2 9
 #define SHOOTER_HOOD_CHANNEL 0
@@ -98,33 +101,29 @@
 #define SHOOTER_WHEEL_ENCODER_B 10
 
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
-#define SHOOTER_VELOCITY_TOLERANCE_LOW	25.0	//Tolerance of the velocity
-#define SHOOTER_VELOCITY_TOLERANCE_HIGH 15.0
+#define SHOOTER_VELOCITY_TOLERANCE_LOW	40.0	//Tolerance of the velocity
+#define SHOOTER_VELOCITY_TOLERANCE_HIGH 0.0
 //SHooter PIDs
 #define KU 5.85
 #define TU 50.0
 #define SHOOTER_P 3.800//(KU * 0.6)//1.20
 #define SHOOTER_I 0.050//(SHOOTER_P * 2.0/TU)//0.05
 #define SHOOTER_D 0.988//(SHOOTER_P * TU/8.0)//0.05
-
 #define SHOOTER_P_HIGH 3.800//1.20
 #define SHOOTER_I_HIGH 0.050//0.087
 #define SHOOTER_D_HIGH 0.988//0.05
-
 #define SHOOTER_READY_STABLITY 10
 
 //Preset shot speeds
-#define SHOT_KEYTOP_SPEED 2900.0 
+#define SHOT_KEYTOP_SPEED 2950.0 
 
-#define SHOT_FREETHROW_SPEED 2525.0
+#define SHOT_FREETHROW_SPEED 2560.0
 
 #define SHOT_OTHER_SPEED 0.0
 
 #define SHOOTER_MAX_SPEED 3500.0
 
-
 #define BALL_SPEED_TO_RPM(speed) {return speed;}   //TODO Conversion
-
 #define AVERAGE_LENGTH 20.0
 
 //Shooter End
@@ -135,6 +134,7 @@
 //Tipper End
 
 //Collector Start
+#define COLLECTOR_VIC_TIPPER 10
 #define COLLECTOR_VIC_PICKUP 5
 #define COLLECTOR_VIC_LOW 6
 #define COLLECTOR_VIC_TOP 7
@@ -145,14 +145,21 @@
 #define COLLECTOR_FEED_SPEED 1.0
 //Collector Vic Speed
 #define COLLECTOR_PICKUP_SPEED 0.8
+#define COLLECTOR_TIPPER_SPEED 1.0
 //Timeout for blind running collectors
 #define COLLECTOR_TIMEOUT 100
 #define SHOOTER_TIMEOUT 30
 
 //Collector IR Sensors
+#if PRACTICE_BOT
+#define COLLECTOR_IR_LOW_CHANNEL 7
+#define COLLECTOR_IR_MID_CHANNEL 6
+#define COLLECTOR_IR_TOP_CHANNEL 8
+#else
 #define COLLECTOR_IR_LOW_CHANNEL 6
 #define COLLECTOR_IR_MID_CHANNEL 7
 #define COLLECTOR_IR_TOP_CHANNEL 8
+#endif
 //Collector End
 
 //Autonomous Stuff
@@ -163,7 +170,7 @@
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1)
 #define COLLECT_BUTTON (rStick->GetRawButton(1) || !myEIO->GetDigital(12))
-#define SHOOT_BUTTON (!myEIO->GetDigital(14))
+#define SHOOT_BUTTON  (myEIO->GetDigital(14))
 #define LIGHT_BUTTON 1//rStick->GetRawButton(10)
 #define ARM_BUTTON (myEIO->GetDigital(16))
 #define FORWARD_SWITCH (!myEIO->GetDigital(4))
