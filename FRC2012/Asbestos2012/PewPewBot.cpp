@@ -162,7 +162,7 @@ void PewPewBot::OperatorControl()
 		//Updates the average. Maybe some other stuff later.
 #if SHOOTER_PID
 		shooter->update();
-
+/*
 		if (SHORT_SHOT_SWITCH)
 		{
 			shooter->setShot(C1983Shooter::kFreethrow);
@@ -170,6 +170,7 @@ void PewPewBot::OperatorControl()
 		{
 			shooter->setShot(C1983Shooter::kKeytop);
 		}
+		*/
 		shooter->setEnabled(ARM_BUTTON);
 #else
 		shooter->update();
@@ -199,7 +200,7 @@ void PewPewBot::OperatorControl()
 		//Check for PID modification DEBUG
 #if DRIVE_PID
 #if SHOOTER_PID
-		/*
+		
 		 if (lStick->GetRawButton(4) && count == 0)
 		 {
 		 shooter->pDown();
@@ -227,7 +228,7 @@ void PewPewBot::OperatorControl()
 		 if (rStick->GetRawButton(3) && count == 0)
 		 {
 		 shooter->dUp();
-		 }*/
+		 }
 #endif
 
 		if (lStick->GetRawButton(5))
@@ -248,7 +249,6 @@ void PewPewBot::OperatorControl()
 		}
 		if (shooter->getIsOpen())
 		{
-			cout<<"Writing";
 			shooter->writeFile();
 		}
 		//endshooterfilestuff

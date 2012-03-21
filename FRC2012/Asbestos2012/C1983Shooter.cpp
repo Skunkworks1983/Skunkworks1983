@@ -83,7 +83,7 @@ bool C1983Shooter::isReady()
 	if (manual)
 		return true;
 #if SHOOTER_PID
-	if (!shooterPID->IsEnabled() || shooterPID->GetSetpoint() == 0)
+	if (!isEnabled || shooterPID->GetSetpoint() == 0)
 		return false;
 	float error = (shooterPIDSource->PIDGet() - shooterPID->GetSetpoint())
 			*SHOOTER_MAX_SPEED;
@@ -119,17 +119,19 @@ void C1983Shooter::jankyStop()
 void C1983Shooter::setEnabled(bool enable)
 {
 #if SHOOTER_PID
-	if (enable && !shooterPID->IsEnabled())
+	if (enable && !isEnabled)
 	{
 		shooterPID->Enable();
 		shooterPID->SetSetpoint(power);
+		isEnabled = true; //This is for the PID thing where the PID will technically be disabled but we're still piding
 		//cout<<"ENABLING SHOOTER PID"<<endl;
-	} else if (!enable && shooterPID->IsEnabled())
+	} else if (!enable && isEnabled)
 	{
 		//cout<<"DISABLING SHOOTER PID"<<endl;
 		shooterPID->SetSetpoint(0.0);
 		shooterPID->Reset();
 		shooterPID->Disable();
+		isEnabled = false;
 	} else
 	{
 		return;
@@ -154,13 +156,37 @@ void C1983Shooter::update()
 #if SHOOTER_PID
 	shooterPIDSource->updateAverage();
 #endif
-
+	/*float error;
+	switch(currentShot)
+	{
+	case kKeytop:
+		error = shooterPIDSource->PIDGet() - SHOT_KEYTOP_SPEED/SHOOTER_MAX_SPEED;
+		break;
+	case kFreethrow:
+		error = shooterPIDSource->PIDGet() - SHOT_FREETHROW_SPEED/SHOOTER_MAX_SPEED;
+		break;
+	}
+	if(isEnabled)
+	{
+		if(error < -SHOOTER_PID_RANGE)
+		{
+			shooterPID->Disable();
+			shooterVic1->Set(-1.0);
+			shooterVic2->Set(-1.0);
+		}else if(error > SHOOTER_PID_RANGE){
+			shooterPID->Disable();
+			shooterVic1->Set(1.0);
+			shooterVic2->Set(1.0);
+		}else{
+			shooterPID->Enable();
+		}
+	}*/
+	
 	//Update stability
 	if (isReady())
 	{
 		stableReady++;
-	} else
-	{
+	} else{
 		stableReady = 0;
 	}
 }

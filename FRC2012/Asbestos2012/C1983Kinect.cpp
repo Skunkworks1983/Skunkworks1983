@@ -55,26 +55,34 @@ bool C1983Kinect::getKinectMode()
 	return kinectMode;
 }
 
+int i = 0;
 void C1983Kinect::update()
 {
 	Skeleton skele = kinect->GetSkeleton(1);
 	Skeleton::Joint hipCenter = skele.GetHipCenter();
 	if (hipCenter.trackingState == Skeleton::kTracked)
 	{
+		i++;
+		if (i>5)
+			i=0;
 		if (hipPositionCache == -1)
 		{
 			hipPositionCache = hipCenter.y;
-			cout << "Set default depth at: " << hipCenter.y << endl;
+			if (i==5)
+				cout << "Set default depth at: " << hipCenter.y << endl;
 		}
 		float diff = hipCenter.y - hipPositionCache;
 		if (diff < -KINECT_HIP_DIFF)
 		{
-			cout << "TIP UP\t";
+			if (i==5)
+				cout << "TIP UP\t";
 		} else if (diff > KINECT_HIP_DIFF)
 		{
-			cout << "TIP DOWN\t";
+			if (i==5)
+				cout << "TIP DOWN\t";
 		}
-		cout << "Diff: " << diff << endl;
+		if (i==5)
+			cout << "Diff: " << diff << endl;
 	}
 	tip = false;
 }

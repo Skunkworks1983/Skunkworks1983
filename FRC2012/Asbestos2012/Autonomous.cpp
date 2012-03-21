@@ -45,13 +45,12 @@ void PewPewBot::Autonomous()
 	shooter->setEnabled(true);
 	shooter->setShot(AUTONOMOUS_SHOT);
 	hasResetItem = false;
-	
+
 	while (IsAutonomous() && !IsDisabled())
 	{
 #if KINECT
 		if (kinect->getKinectMode())
 		{
-			cout << "TO KINECT MODE" << endl;
 			autonomousMode = kKinect;
 		}
 #endif
@@ -78,11 +77,23 @@ void PewPewBot::Autonomous()
 			break;
 		case kShoot:
 			if (shootAllBalls(AUTONOMOUS_DELAY_SWITCH?startTime + AUTONOMOUS_DELAY:-1))
-				autonomousMode = AUTONOMOUS_FULL_AUTO_SWITCH ? kRotate180
-				: kKinect;
+			{
+				//If there are balls left, cycle back to the collect stage
+				if (collector->getSense(0) || collector->getSense(1)
+						|| collector->getSense(2))
+				{
+					autonomousMode = kCollect;
+				} else if (AUTONOMOUS_FULL_AUTO_SWITCH)
+				{
+					autonomousMode = kRotate180;
+				} else
+				{
+					autonomousMode = kKinect;
+				}
+			}
 			break;
 		case kRotate180:
-			if (rotateRobot(180,5))
+			if (rotateRobot(180, 5))
 				autonomousMode = kMoveToBridge;
 			break;
 		case kMoveToBridge:
@@ -128,16 +139,16 @@ void PewPewBot::Autonomous()
 #if KINECT
 void PewPewBot::kinectCode()
 {
-	if (fabs(kinect->getRight())> 0.05)
+	if (fabs(kinect->getRight())> KINECT_DEADBAND)
 	{
-		drive->setSpeedR(kinect->getRight());
+		drive->setSpeedR(-kinect->getRight());
 	} else
 	{
 		drive->setSpeedR(0.0);
 	}
-	if (fabs(kinect->getLeft())> 0.05)
+	if (fabs(kinect->getLeft())> KINECT_DEADBAND)
 	{
-		drive->setSpeedL(kinect->getLeft());
+		drive->setSpeedL(-kinect->getLeft());
 	} else
 	{
 		drive->setSpeedL(0.0);

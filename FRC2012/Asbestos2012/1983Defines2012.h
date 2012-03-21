@@ -8,8 +8,9 @@
 //PewPew End
 
 //Kinect Start
-#define KINECT 0
+#define KINECT 1
 #define KINECT_HIP_DIFF 0.15
+#define KINECT_DEADBAND 0.05
 //Kinect End
 
 //Autonomous Start
@@ -101,14 +102,16 @@
 #define SHOOTER_WHEEL_ENCODER_B 10
 
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
-#define SHOOTER_VELOCITY_TOLERANCE_LOW	40.0	//Tolerance of the velocity
-#define SHOOTER_VELOCITY_TOLERANCE_HIGH 0.0
+#define SHOOTER_VELOCITY_TOLERANCE_LOW	20.0	//Tolerance of the velocity
+#define SHOOTER_VELOCITY_TOLERANCE_HIGH 30.0
+//PID Tolerance. How close does the speed have to be to the setpoint for us to engage pid mode?
+#define SHOOTER_PID_RANGE 400.0/SHOOTER_MAX_SPEED
 //SHooter PIDs
 #define KU 5.85
 #define TU 50.0
 #define SHOOTER_P 3.800//(KU * 0.6)//1.20
-#define SHOOTER_I 0.050//(SHOOTER_P * 2.0/TU)//0.05
-#define SHOOTER_D 0.988//(SHOOTER_P * TU/8.0)//0.05
+#define SHOOTER_I 0.055//(SHOOTER_P * 2.0/TU)//0.05
+#define SHOOTER_D 1.00//(SHOOTER_P * TU/8.0)//0.05
 #define SHOOTER_P_HIGH 3.800//1.20
 #define SHOOTER_I_HIGH 0.050//0.087
 #define SHOOTER_D_HIGH 0.988//0.05
@@ -117,7 +120,7 @@
 //Preset shot speeds
 #define SHOT_KEYTOP_SPEED 2950.0 
 
-#define SHOT_FREETHROW_SPEED 2560.0
+#define SHOT_FREETHROW_SPEED 2575.0//2560.0
 
 #define SHOT_OTHER_SPEED 0.0
 
