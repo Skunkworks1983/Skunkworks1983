@@ -8,6 +8,8 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import com.pi.glyph.filter.FastMath;
+
 public class Camera extends Thread {
     private BufferedImage[] camBuffer = new BufferedImage[2];
     private byte activeBuffer = 0;
@@ -60,7 +62,7 @@ public class Camera extends Thread {
 
     public void refresh() {
 	try {
-	    byte newActive = (byte) Math.abs(activeBuffer - 1);
+	    byte newActive = (byte) FastMath.abs(activeBuffer - 1);
 	    if (camBuffer[newActive] != null)
 		camBuffer[newActive].flush();
 	    camBuffer[newActive] = ImageIO.read(cameraURL);

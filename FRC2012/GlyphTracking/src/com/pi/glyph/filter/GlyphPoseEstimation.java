@@ -31,6 +31,11 @@ public class GlyphPoseEstimation {
      */
     private double basketDepthSQ = basketDepth * basketDepth;
 
+    /**
+     * The camera's field of view horizontally
+     */
+    private double cameraFOV = 47D;
+
     public double getBasketDepth() {
 	return basketDepth;
     }
@@ -63,7 +68,7 @@ public class GlyphPoseEstimation {
      * @param depth
      * @return
      */
-    public double getYaw(Point[] topLine, double depth) {
+    public double getRobotYaw(Point[] topLine, double depth) {
 	double myWidth = getDistance(topLine[0], topLine[1]);
 	double expectedWidth = pixelWidthAtDistance1 * depth;
 	if (myWidth >= expectedWidth)
@@ -91,18 +96,29 @@ public class GlyphPoseEstimation {
     }
 
     /**
+     * Gets the basket yaw
+     * 
+     * @param p
+     * @return
+     */
+    public double getBasketYaw(Point[] p) {
+	int avgX = (p[0].x + p[1].x) / 2;
+	avgX -= 320; // Distance from center
+	double normalX = ((double) avgX) / 320D; // Scale to 0-1
+	return normalX * (cameraFOV / 2D);
+    }
+
+    /**
      * Gets the yaw of the basket
      * 
      * @param calcBasketDepth
      * @param originalYaw
      * @return radians
      */
-    public double getBasketYaw(double calcBasketDepth, double originalYaw) {
-	if (originalYaw == 0)
-	    return originalYaw;
-	// Law of sines
-	return originalYaw
-		+ Math.asin((Math.sin(originalYaw) / basketDepth)
-			* calcBasketDepth);
-    }
+    /*
+     * public double getBasketYaw(double calcBasketDepth, double originalYaw) {
+     * if (originalYaw == 0) return originalYaw; // Law of sines return
+     * originalYaw + Math.asin((Math.sin(originalYaw) / basketDepth)
+     * calcBasketDepth); }
+     */
 }

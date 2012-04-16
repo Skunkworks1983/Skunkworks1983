@@ -10,7 +10,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.pi.glyph.filter.FastMath;
 import com.pi.glyph.filter.LineFilter;
+import com.pi.glyph.filter.LinePairFinder;
 import com.pi.glyph.filter.VerticalLines;
 
 public class GlyphTest {
@@ -20,30 +22,43 @@ public class GlyphTest {
 
     public static void main(String[] args) throws IOException {
 	BufferedImage image = ImageIO.read(new File(
-		"/home/westin/Documents/IR sensor.bmp"));
+		"/home/westin/java-workspace/GlyphTracking/IR sensor.png"));
 	BufferedImage outI = new BufferedImage(image.getWidth(),
 		image.getHeight(), BufferedImage.TYPE_INT_RGB);
-	List<Point[]> lines = VerticalLines.getVerticalLines(image, threshold,
+	long start = System.nanoTime();
+	Point[] lines = VerticalLines.getVerticalLines(image, threshold,
 		maxLines);
-	lines = LineFilter.filterLines(lines, minLength, minLength);
+	System.out.println((System.nanoTime() - start) / 1000000d);
+	start = System.nanoTime();
+	List<Point[]> lines2 = LineFilter.filterLines(lines, minLength,
+		minLength);
+	System.out.println((System.nanoTime() - start) / 1000000d);
+	start = System.nanoTime();
+	Point[] topPair = LinePairFinder.getTopPair(lines2, 50);
+	System.out.println((System.nanoTime() - start) / 1000000d);
+	start = System.nanoTime();
 	Graphics g = outI.getGraphics();
 	g.setColor(Color.WHITE);
-	System.out.println(lines.size());
-	for (int i = 0; i < lines.size(); i++) {
-	    Point[] p = lines.get(i);
-	    g.drawString(i + "", p[0].x, p[0].y);
-	    g.drawLine(p[0].x, p[0].y, p[1].x, p[1].y);
+	for (int i = 0; i < lines2.size(); i++) {
+	    Point[] line = lines2.get(i);
+	    g.drawString(i + "", line[0].x, line[0].y);
+	    g.drawLine(line[0].x, line[0].y, line[1].x, line[1].y);
 	}
+	g.setColor(Color.GREEN);
+	if (topPair != null) {
+	    g.drawLine(topPair[0].x, topPair[0].y, topPair[1].x, topPair[1].y);
+	}
+
 	g.dispose();
 	ImageIO.write(outI, "PNG", new File(
-		"/home/westin/Documents/IR sensor_edge.png"));
+		"/home/westin/java-workspace/GlyphTracking/IR sensor_edge.png"));
     }
 
     public static int distanceX(Point a, Point b) {
-	return Math.abs(a.x - b.x);
+	return FastMath.abs(a.x - b.x);
     }
 
     public static int distanceY(Point a, Point b) {
-	return Math.abs(a.y - b.y);
+	return FastMath.abs(a.y - b.y);
     }
 }

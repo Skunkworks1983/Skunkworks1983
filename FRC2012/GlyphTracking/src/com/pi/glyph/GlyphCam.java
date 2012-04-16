@@ -10,6 +10,7 @@ import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -28,6 +29,7 @@ public class GlyphCam extends JFrame {
     private static final long serialVersionUID = 1L;
     private static long bufferExpiry = 3000;
     private final ThreadGroup tGroup;
+    private Thread procThread;
 
     public int threshold = 200;
     public int minLength = 25;
@@ -44,21 +46,23 @@ public class GlyphCam extends JFrame {
     private Camera camera;
     private GlyphConfig config;
     private GlyphClient client;
+    private BufferStrategy buffer;
 
     public GlyphCam() throws MalformedURLException, IOException {
 	super("Glyph Camera");
 	tGroup = new ThreadGroup("GlyphCamera");
 	config = new GlyphConfig(this);
-	setSize(640, 480);
+	setSize(660, 500);
 	setLocation(0, 0);
 	setVisible(true);
 	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
+	createBufferStrategy(2);
+	buffer = getBufferStrategy();
 	camera = new Camera(tGroup, "http://10.19.83.11/jpg/1/image.jpg",
-		"FRC", "FRC"); // TODO
+		"FRC", "FRC");
 
 	client = new GlyphClient(this, "10.19.83.2", 1180);
-	new Thread(new Runnable() {
+	(procThread = new Thread(new Runnable() {
 
 	    @Override
 	    public void run() {
@@ -82,7 +86,7 @@ public class GlyphCam extends JFrame {
 		    }
 		}
 	    }
-	}).start();
+	})).start();
 	config.setVisible(true);
 	WindowAdapter closer = new WindowAdapter() {
 	    @Override
@@ -95,7 +99,6 @@ public class GlyphCam extends JFrame {
 	addWindowListener(closer);
     }
 
-    BufferedImage backBuffer;
     Image errorBuffer = null;
     long backBufferTime = 0;
     BasicStroke lineStroke = new BasicStroke(3f);
@@ -107,8 +110,7 @@ public class GlyphCam extends JFrame {
     public boolean paintToBuffer() throws MalformedURLException, IOException {
 	if (!camera.hasFreshImage())
 	    return false;
-	BufferedImage image = camera.getImage();// ImageIO.read(new
-	// URL("http://10.19.83.11/jpg/1/image.jpg"));
+	BufferedImage image = camera.getImage();
 	if (image == null)
 	    return false;
 
@@ -116,16 +118,16 @@ public class GlyphCam extends JFrame {
 	int width = image.getWidth();
 	Graphics2D g = (Graphics2D) image.getGraphics();
 	g.setFont(normalFont);
-	List<Point[]> lines = VerticalLines.getVerticalLines(image, threshold,
+	Point[] lines = VerticalLines.getVerticalLines(image, threshold,
 		maxLines);
-	lines = LineFilter.filterLines(lines, minLength, maxMinorPairDistance);
+	List<Point[]> linesR = LineFilter.filterLines(lines, minLength, maxMinorPairDistance);
 	g.setColor(Color.RED);
-	for (Point[] p : lines) {
+	for (Point[] p : linesR) {
 	    g.drawLine(p[0].x, p[0].y, p[1].x, p[1].y);
 	}
 	g.setStroke(lineStroke);
 	g.setColor(Color.GREEN);
-	Point[] pair = LinePairFinder.getTopPair(lines, maxMajorPairDistance);
+	Point[] pair = LinePairFinder.getTopPair(linesR, maxMajorPairDistance);
 	if (pair != null)
 	    g.drawLine(pair[0].x, pair[0].y, pair[1].x, pair[1].y);
 	g.setColor(new Color(0f, 0f, 0f, 0.5f));
@@ -140,27 +142,29 @@ public class GlyphCam extends JFrame {
 		currentPixelHeight = (pose.parallaxY - ((double) (pair[0].y + pair[1].y)) / 2d);
 	    }
 	    double depth = pose.getDepth(pair);
-	    double yaw = pose.getYaw(pair, depth);
+	    double yaw = pose.getRobotYaw(pair, depth);
 	    double basketDepth = pose.getBasketDepth(depth, yaw);
-	    double basketYaw = Math.toDegrees(pose.getBasketYaw(basketDepth,
-		    yaw));
-	    double yawD = Math.toDegrees(yaw);
-	    g.drawString("Depth: " + depth + " ft", 0,
-		    height - 100 + charHeight);
-	    g.drawString("Yaw: " + yawD + "°", 0,
-		    height - 100 + (charHeight * 2));
-	    g.drawString("Basket Depth: "
-		    + basketDepth + " ft", 0, height
+	    double basketYaw = pose.getBasketYaw(pair);
+	    g.drawString("Depth: " + depth + " ft", 0, height - 100
+		    + charHeight);
+	    g.drawString("Robot Yaw: " + Math.toDegrees(yaw) + "°", 0, height
+		    - 100 + (charHeight * 2));
+	    g.drawString("Basket Depth: " + basketDepth + " ft", 0, height
 		    - 100 + (charHeight * 4));
-	    g.drawString("Basket Yaw: "
-		    + basketYaw + "°", 0, height - 100
+	    g.drawString("Basket Yaw: " + basketYaw + "°", 0, height - 100
 		    + (charHeight * 5));
-	    backBuffer.getGraphics().drawImage(image, 0, 0, null);
+	    Graphics bb = buffer.getDrawGraphics();
+	    bb.drawImage(image, 20, 20, null);
+	    g.dispose();
+	    bb.dispose();
 	    backBufferTime = System.currentTimeMillis();
 	    client.send(basketDepth, basketYaw);
 	} else if (System.currentTimeMillis() - backBufferTime > bufferExpiry) {
-	    client.send(-1,-1);
-	    backBuffer = image;
+	    client.send(-1, -1);
+	    Graphics bb = buffer.getDrawGraphics();
+	    bb.drawImage(image, 20, 20, null);
+	    g.dispose();
+	    bb.dispose();
 	}
 	return true;
     }
@@ -190,10 +194,11 @@ public class GlyphCam extends JFrame {
 				(getHeight() / 2)
 					- ((int) (errorBounds.getHeight() / 2d)));
 		    }
-		    g.drawImage(errorBuffer, 0, 0, null);
-		} else if (backBuffer != null) {
-		    g.drawImage(backBuffer, 0, 0, null);
+		    Graphics draw = buffer.getDrawGraphics();
+		    draw.drawImage(errorBuffer, 20, 20, null);
+		    draw.dispose();
 		}
+		buffer.show();
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -207,6 +212,11 @@ public class GlyphCam extends JFrame {
 
     @Override
     public void dispose() {
+	setVisible(false);
+	try {
+	    procThread.join();
+	} catch (InterruptedException e) {
+	}
 	if (camera != null)
 	    camera.dispose();
 	if (client != null)
