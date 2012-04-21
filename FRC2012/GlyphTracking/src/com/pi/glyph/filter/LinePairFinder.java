@@ -46,9 +46,9 @@ public class LinePairFinder {
     private static double compare(Point[] lineA, Point[] lineB,
 	    int yDistanceLimit) {
 	double parallaxCompare = parallelCompare(lineA, lineB) * 5;
-	int dist = Math.abs(lineA[0].x - lineB[0].x)
-		- Math.abs(lineA[1].x - lineB[1].x);
-	int yDist = Math.abs(lineA[0].y - lineB[0].y);
+	int dist = FastMath.abs(lineA[0].x - lineB[0].x)
+		- FastMath.abs(lineA[1].x - lineB[1].x);
+	int yDist = FastMath.abs(lineA[0].y - lineB[0].y);
 	if (yDist > yDistanceLimit)
 	    return Double.MAX_VALUE;
 	return parallaxCompare + dist;

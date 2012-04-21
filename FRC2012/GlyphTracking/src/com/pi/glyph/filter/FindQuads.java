@@ -19,8 +19,8 @@ public class FindQuads {
 		if (i == iP || exclude[iP])
 		    continue;
 		Point[] oL = lines.get(iP);
-		double dSum = Math.abs(line[0].x - oL[0].x)
-			+ Math.abs(line[1].x - oL[1].x);
+		double dSum = FastMath.abs(line[0].x - oL[0].x)
+			+ FastMath.abs(line[1].x - oL[1].x);
 		if (dSum < bDSum) {
 		    bDSum = dSum;
 		    bPair = iP;

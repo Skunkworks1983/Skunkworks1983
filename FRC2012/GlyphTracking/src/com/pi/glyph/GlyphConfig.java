@@ -346,6 +346,9 @@ public class GlyphConfig extends JFrame {
 	    }
 	});
 	autoPosePane.add(btnApply_autopose);
+	
+	resetFilter();
+	resetPose();
     }
 
     public void resetPose() {
