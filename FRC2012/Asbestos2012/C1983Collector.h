@@ -21,7 +21,6 @@ private:
 	Victor *collectorVicLow; //Victors for the collection belts
 	Victor *collectorVicTop;
 	Victor *collectorVicPickup;
-	Victor *collectorVicTipper;
 
 	DigitalInput * lowSlot;
 	DigitalInput * midSlot;
@@ -40,6 +39,7 @@ private:
 
 	void setCollectSpeed(float speed);
 public:
+	Victor *collectorVicTipper;
 	bool automatic;
 	C1983Collector(C1983Shooter *sh, C1983Tipper * tip);
 

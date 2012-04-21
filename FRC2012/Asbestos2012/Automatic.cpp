@@ -7,7 +7,7 @@ bool PewPewBot::lineDepthAlign()
 		drive->setSpeedL(LINE_STOP_SPEED);
 		drive->setSpeedR(LINE_STOP_SPEED);
 		stableCount = 0;
-	} else if (!drive->getLightSensorFront() && !drive->getLightSensorBack())  //We are off the key, backwards
+	} else if (!drive->getLightSensorFront() && !drive->getLightSensorBack()) //We are off the key, backwards
 	{
 		drive->setSpeedL(-LINE_STOP_SPEED);
 		drive->setSpeedR(-LINE_STOP_SPEED);
@@ -24,17 +24,8 @@ bool PewPewBot::lineDepthAlign()
 
 bool PewPewBot::shootAllBalls(double targetTime = -1)
 {
-	shooter->setShot(AUTONOMOUS_SHOT);
-#if SHOOTER_PID
-	if (PID_SLIDER> .2095)
-	{
-		shooter->setPIDAdjust(0.0762 * log(PID_SLIDER) + 0.0407);
-	} else
-	{
-		shooter->setPIDAdjust(-0.15);
-	}
-#endif
-	shooter->setEnabled(true);
+	updateShooter(true);
+
 	collector->setAutomatic(true);
 	if (System::currentTimeMillis() >= targetTime)
 	{
@@ -55,7 +46,7 @@ bool PewPewBot::shootAllBalls(double targetTime = -1)
 						return false;
 					}
 				}
-				shooter->setEnabled(false);
+				updateShooter(false);
 				hasResetItem = false;
 				return true;
 			} else if (hasResetItem)
@@ -63,7 +54,7 @@ bool PewPewBot::shootAllBalls(double targetTime = -1)
 				stableCount++;
 				if (stableCount > 250)
 				{
-					shooter->setEnabled(false);
+					updateShooter(false);
 					stableCount = 0;
 					hasResetItem = false;
 					return true;
@@ -74,18 +65,21 @@ bool PewPewBot::shootAllBalls(double targetTime = -1)
 	return false;
 }
 
+#if TRACKING_CAMERA
 bool PewPewBot::camYawAlign()
 {
 	//if (camera->hasData()){
 	cout << "Gyro: " << drive->getGyro() << " Error: "
-			<< drive->turnPID->GetError() << endl;
+	<< drive->turnPID->GetError() << endl;
 	yawAlignState = true;
-	if (rotateRobot(270,5)){
+	if (rotateRobot(270,5))
+	{
 		yawAlignState = false;
 		return true;
 	}
 	return false;
 }
+#endif
 
 bool PewPewBot::collectAllBalls()
 {
@@ -112,6 +106,7 @@ bool PewPewBot::rotateRobot(float angle, float tolerance)
 		drive->turnPID->Enable();
 		drive->turnPID->SetSetpoint(angle);
 	}
+	cout << drive->turnPID->GetError() << endl;
 	if (fabs(drive->turnPID->GetError()) <= tolerance)
 	{
 		hasResetItem = false;

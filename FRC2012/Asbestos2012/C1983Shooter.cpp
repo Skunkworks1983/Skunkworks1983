@@ -1,5 +1,30 @@
 #include "C1983Shooter.h"
 
+/*
+ * 
+ if (enabled)
+ {
+ float speed = shooterPIDSource->PIDGet();
+ float curr = shooterVic1->Get();
+ if (speed < power)
+ {
+ curr+=SHOOTER_CHANGE_LIMIT;
+ if (curr > 1)
+ {
+ curr = 1;
+ }
+ } else if (speed >= power)
+ {
+ curr = 0;
+ }
+ cout << speed << "," << curr << "," << power << endl;
+ setJankyPower(curr);
+ } else
+ {
+ jankyStop();
+ }
+ */
+
 C1983Shooter::C1983Shooter()
 {
 	shooterEncoder = new Encoder(SHOOTER_WHEEL_ENCODER_A,SHOOTER_WHEEL_ENCODER_B,false,Encoder::k1X);
@@ -9,14 +34,18 @@ C1983Shooter::C1983Shooter()
 	shooterEncoder->SetDistancePerPulse(SHOOTER_UNITS_PER_TICK);
 	shooterEncoder->Start();
 #if SHOOTER_PID
-	shooterPIDOutput = new C1983PIDOutput(shooterVic1,shooterVic2,true);
 	shooterPIDSource = new C1983ShooterPIDSource(shooterEncoder,SHOOTER_MAX_SPEED,true);
-	shooterPID = new PIDController(SHOOTER_P,SHOOTER_I,SHOOTER_D,shooterPIDSource,shooterPIDOutput);
+	shooterPIDOutput = new C1983ShooterPIDOutput(shooterVic1,shooterVic2,true,shooterPIDSource);
+	shooterPID
+			= new PIDController(SHOOTER_P,SHOOTER_I,SHOOTER_D,shooterPIDSource,shooterPIDOutput, 0.01);
 	shooterPID->SetInputRange(-1.0, 1.0);
 	shooterPID->SetOutputRange(-1.0, 1.0);
 	shooterPID->Disable();
+#if SHOOTER_BANGBANG
+	m_semaphore = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+	m_controlLoop = new Notifier(C1983Shooter::callBangBang, this);
 #endif
-	isEnabled = false;
+#endif
 	manual = false;
 	power = SHOT_FREETHROW_SPEED;
 	currentShot = kFreethrow;
@@ -25,8 +54,33 @@ C1983Shooter::C1983Shooter()
 	fileNumber = 0;
 	fileIndex = 0;
 	fileOpen = false;
+
+	pLow = SHOOTER_P;
+	iLow = SHOOTER_I;
+	dLow = SHOOTER_D;
+
+	pHigh = SHOOTER_P_HIGH;
+	iHigh = SHOOTER_I_HIGH;
+	dHigh = SHOOTER_D_HIGH;
+
+	enabled = false;
+#if SHOOTER_PID
+	readPIDFromFile();
+#endif
+#if SHOOTER_BANGBANG
+	m_controlLoop->StartPeriodic(0.01);
+#endif
 }
 
+void C1983Shooter::callBangBang(void * inst)
+{
+	((C1983Shooter*)inst)->bangBang();
+}
+
+void C1983Shooter::bangBang()
+{
+	shooterPIDOutput->PIDWrite(enabled);
+}
 void C1983Shooter::setShot(short shotNum)
 {
 #if SHOOTER_PID
@@ -35,11 +89,11 @@ void C1983Shooter::setShot(short shotNum)
 	{
 	case kKeytop:
 		setPower(SHOT_KEYTOP_SPEED/SHOOTER_MAX_SPEED);
-		shooterPID->SetPID(SHOOTER_P_HIGH,SHOOTER_I_HIGH,SHOOTER_D_HIGH);
+		shooterPID->SetPID(pHigh, iHigh, dHigh);
 		break;
 	case kFreethrow:
 		setPower(SHOT_FREETHROW_SPEED/SHOOTER_MAX_SPEED);
-		shooterPID->SetPID(SHOOTER_P,SHOOTER_I,SHOOTER_D);
+		shooterPID->SetPID(pLow, iLow, dLow);
 		break;
 	case kOther:
 		setPower(SHOT_OTHER_SPEED/SHOOTER_MAX_SPEED);
@@ -69,7 +123,10 @@ void C1983Shooter::setPower(float powerRPM)
 	if (power == 0.0)
 	{
 		shooterPID->Reset();
+#if !SHOOTER_BANGBANG
 		shooterPID->Enable();
+#endif
+		enabled = true;
 		shooterPID->SetSetpoint(0.0);
 	} else
 	{
@@ -83,9 +140,10 @@ bool C1983Shooter::isReady()
 	if (manual)
 		return true;
 #if SHOOTER_PID
-	if (!isEnabled || shooterPID->GetSetpoint() == 0)
+	if (power != 0 && (!shooterPID->IsEnabled() || shooterPID->GetSetpoint()
+			== 0))
 		return false;
-	float error = (shooterPIDSource->PIDGet() - shooterPID->GetSetpoint())
+	float error = (shooterPIDSource->getRealAverage() - shooterPID->GetSetpoint())
 			*SHOOTER_MAX_SPEED;
 	return error > -SHOOTER_VELOCITY_TOLERANCE_LOW && error
 			< SHOOTER_VELOCITY_TOLERANCE_HIGH;
@@ -100,14 +158,8 @@ bool C1983Shooter::isStableReady()
 
 void C1983Shooter::setJankyPower(float power)
 {
-	if (isEnabled)
-	{
-		shooterVic1->Set(-power);
-		shooterVic2->Set(-power);
-	} else
-	{
-		jankyStop();
-	}
+	shooterVic1->Set(-power);
+	shooterVic2->Set(-power);
 }
 
 void C1983Shooter::jankyStop()
@@ -119,19 +171,23 @@ void C1983Shooter::jankyStop()
 void C1983Shooter::setEnabled(bool enable)
 {
 #if SHOOTER_PID
-	if (enable && !isEnabled)
+	if (enable && !shooterPID->IsEnabled())
 	{
+#if !SHOOTER_BANGBANG
 		shooterPID->Enable();
+#endif
 		shooterPID->SetSetpoint(power);
-		isEnabled = true; //This is for the PID thing where the PID will technically be disabled but we're still piding
+		enabled = true;
 		//cout<<"ENABLING SHOOTER PID"<<endl;
-	} else if (!enable && isEnabled)
+	} else if (!enable && shooterPID->IsEnabled())
 	{
 		//cout<<"DISABLING SHOOTER PID"<<endl;
 		shooterPID->SetSetpoint(0.0);
+#if !SHOOTER_BANGBANG
 		shooterPID->Reset();
 		shooterPID->Disable();
-		isEnabled = false;
+#endif
+		enabled = false;
 	} else
 	{
 		return;
@@ -142,7 +198,8 @@ void C1983Shooter::setEnabled(bool enable)
 #if SHOOTER_PID
 void C1983Shooter::setPIDAdjust(double adjust)
 {
-	PIDMod = adjust;
+	PIDMod = 0.0;//adjust;
+	setShot(currentShot);
 }
 
 double C1983Shooter::getPIDAdjust()
@@ -154,49 +211,64 @@ double C1983Shooter::getPIDAdjust()
 void C1983Shooter::update()
 {
 #if SHOOTER_PID
-	shooterPIDSource->updateAverage();
+	shooterPIDOutput->setSetpoint(shooterPID->GetSetpoint());
 #endif
-	/*float error;
-	switch(currentShot)
-	{
-	case kKeytop:
-		error = shooterPIDSource->PIDGet() - SHOT_KEYTOP_SPEED/SHOOTER_MAX_SPEED;
-		break;
-	case kFreethrow:
-		error = shooterPIDSource->PIDGet() - SHOT_FREETHROW_SPEED/SHOOTER_MAX_SPEED;
-		break;
-	}
-	if(isEnabled)
-	{
-		if(error < -SHOOTER_PID_RANGE)
-		{
-			shooterPID->Disable();
-			shooterVic1->Set(-1.0);
-			shooterVic2->Set(-1.0);
-		}else if(error > SHOOTER_PID_RANGE){
-			shooterPID->Disable();
-			shooterVic1->Set(1.0);
-			shooterVic2->Set(1.0);
-		}else{
-			shooterPID->Enable();
-		}
-	}*/
-	
+
 	//Update stability
 	if (isReady())
 	{
 		stableReady++;
-	} else{
+	} else
+	{
 		stableReady = 0;
 	}
 }
 
 bool C1983Shooter::getEnabled()
 {
-	return isEnabled;
+	return shooterPID->IsEnabled();
 }
 
 #if SHOOTER_PID
+void C1983Shooter::readPIDFromFile()
+{
+	string line;
+	ifstream myfile("/PID.txt");
+	if (myfile.is_open())
+	{
+		for (int i = 0; i<=1 && myfile.good(); i++)
+		{
+			getline(myfile, line);
+			float P = -1, I = -1, D = -1;
+			sscanf(&(line[0]), "%f,%f,%f", &P, &I, &D);
+			switch (i)
+			{
+			case 0:
+				pLow = P != -1 ? P : pLow;
+				iLow = I != -1 ? I : iLow;
+				dLow = D != -1 ? D : dLow;
+				break;
+			case 1:
+				pHigh = P != -1 ? P : pHigh;
+				iHigh = I != -1 ? I : iHigh;
+				dHigh = D != -1 ? D : dHigh;
+				break;
+			}
+		}
+		myfile.close();
+	} else
+	{
+		cout << "Unable to read PID values from file!  Creating!" << endl;
+		ofstream out("/PID.txt");
+		if (out.is_open())
+		{
+			out << pLow << "," << iLow << "," << dLow << " #LOW PID" << endl;
+			out << pHigh << "," << iHigh << "," << dHigh << " #HIGH PID"
+					<< endl;
+			out.close();
+		}
+	}
+}
 void C1983Shooter::cleanPID()
 {
 	bool enabled = shooterPID->IsEnabled();

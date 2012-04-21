@@ -11,10 +11,14 @@ void C1983PIDOutput::PIDWrite(float output)
 {
 	if(reverse)
 	{
+#if !(GOGO)
 		vic1->Set(-output);
+#endif
 		vic2->Set(-output);
 	}else{
+#if !(GOGO)
 		vic1->Set(output);
+#endif
 		vic2->Set(output);
 	}
 }

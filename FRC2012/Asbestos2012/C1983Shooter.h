@@ -3,7 +3,7 @@
 #include "WPILib.h"
 #include "math.h"
 #include "1983Defines2012.h"
-#include "C1983PIDOutput.h"
+#include "C1983ShooterPIDOutput.h"
 #include "C1983Encoder.h"
 #include "C1983ShooterPIDSource.h"
 #include <fstream>
@@ -14,16 +14,20 @@ private:
 	Victor *shooterVic1;
 	Victor *shooterVic2;
 #if SHOOTER_PID
-	C1983PIDOutput *shooterPIDOutput;
+	C1983ShooterPIDOutput *shooterPIDOutput;
 	C1983ShooterPIDSource *shooterPIDSource;
 	PIDController *shooterPID;
 #endif
+#if SHOOTER_BANGBANG
+	SEM_ID m_semaphore;
+	Notifier *m_controlLoop;
+#endif
 	//C1983Encoder *shooterEncoder;
 	Encoder *shooterEncoder;
-	
+
+	bool enabled;
 	float power;
 	bool manual;
-	bool isEnabled;
 	short currentShot;
 	double PIDMod;
 	//File stuff
@@ -33,6 +37,8 @@ private:
 	bool fileOpen;
 	//End file stuff
 	int stableReady;
+	float pLow, iLow, dLow, pHigh, iHigh, dHigh;
+
 public:
 	C1983Shooter();
 	bool isReady();
@@ -45,7 +51,9 @@ public:
 	void debugPrint();
 	void setEnabled(bool enabled);
 	char * getShotName();
-	
+	static void callBangBang(void * inst);
+	void bangBang();
+
 #if SHOOTER_PID
 	void setPower(float powerRPM);
 	void cleanPID();
@@ -57,7 +65,7 @@ public:
 	void iDown();
 	void setPIDAdjust(double adjust);
 	double getPIDAdjust();
-	
+
 	float getError();
 	float getI();
 	float getP();
@@ -71,8 +79,10 @@ public:
 	void closeFile();
 	bool getIsOpen();
 	void writeFile();
+	void readPIDFromFile();
 	//end file stuff
 	void update();
-	enum {kKeytop, kFreethrow, kOther} shot;
+	enum
+	{	kKeytop, kFreethrow, kOther} shot;
 };
 #endif

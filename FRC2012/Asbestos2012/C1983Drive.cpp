@@ -3,7 +3,9 @@
 
 C1983Drive::C1983Drive()
 {
+#if !(GOGO)
 	leftVic1 = new Victor(VIC_PORT_LEFT_1);
+#endif
 	leftVic2 = new Victor(VIC_PORT_LEFT_2);
 	rightVic1 = new Victor(VIC_PORT_RIGHT_1);
 	rightVic2 = new Victor(VIC_PORT_RIGHT_2);
@@ -32,7 +34,11 @@ C1983Drive::C1983Drive()
 	rightPIDSource = new C1983PIDSource(rightEncoder,MAXSPEEDHIGH,false);
 
 	//right is reversed, left isn't
+#if GOGO
+	leftPIDOutput = new C1983PIDOutput(leftVic2,leftVic2,false);
+#else
 	leftPIDOutput = new C1983PIDOutput(leftVic1,leftVic2,false);
+#endif
 	rightPIDOutput = new C1983PIDOutput(rightVic1,rightVic2,true);
 
 	leftPID = new PIDController(DRIVE_P,DRIVE_I,DRIVE_D,leftPIDSource,leftPIDOutput);
@@ -48,7 +54,11 @@ C1983Drive::C1983Drive()
 
 	//Turn PID Begin
 	turnPIDSource = new C1983TurnPIDSource(gyro);
+#if !(GOGO)
 	turnPIDOutput = new C1983TurnPIDOutput(leftVic1,leftVic2,rightVic1,rightVic2);
+#else
+	turnPIDOutput = new C1983TurnPIDOutput(leftVic2,leftVic2,rightVic1,rightVic2);
+#endif
 	turnPID = new PIDController(TURN_P,TURN_I,TURN_D,turnPIDSource,turnPIDOutput);
 	turnPID->SetOutputRange(-1.0, 1.0);
 	turnPID->SetInputRange(-360, 360);
@@ -72,6 +82,8 @@ C1983Drive::C1983Drive()
 
 	//We start shifted high
 	shiftedHigh = false;
+	lightState = false;
+	setLight(false);
 	shift(true);
 }
 
@@ -161,6 +173,11 @@ void C1983Drive::shift(bool high)
 	}
 }
 
+bool C1983Drive::isShiftedHigh()
+{
+	return shiftedHigh;
+}
+
 void C1983Drive::tip(bool down)
 {
 	tipper->tip(down);
@@ -168,13 +185,19 @@ void C1983Drive::tip(bool down)
 
 void C1983Drive::setLight(bool on)
 {
-	if (on)
+	/*
+	lightState = on;
+	if (on) //TODO Enable the light
 	{
 		light->Set(Relay::kForward);
 	} else
 	{
 		light->Set(Relay::kOff);
-	}
+	}*/
+}
+
+bool C1983Drive::getLight(){
+	return lightState;
 }
 
 bool C1983Drive::getLightSensorBack()

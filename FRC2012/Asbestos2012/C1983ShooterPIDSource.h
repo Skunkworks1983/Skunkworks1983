@@ -10,15 +10,18 @@ private:
 	Encoder *theEncoder;
 	double maxSpeed;
 	double average;
+	double realAverage;
 	double *values;
 	double *times;
 	bool reverse;
 	double divisonNumber;
+	double lastPos;
 	
 public:
 	C1983ShooterPIDSource(Encoder * e, double topSpeed,bool reversed);
 	double PIDGet();
 	void setMaxSpeed(double newSpeed);
+	double getRealAverage();
 	void updateAverage();
 };
 #endif

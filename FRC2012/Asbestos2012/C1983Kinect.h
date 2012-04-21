@@ -51,6 +51,7 @@ public:
 	bool getShooterOnButton();
 	bool getKinectMode();
 	bool getTipper();
+	bool hasKinect();
 	
 	void update();
 };

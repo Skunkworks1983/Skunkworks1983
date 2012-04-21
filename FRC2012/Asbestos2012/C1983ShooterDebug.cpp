@@ -19,12 +19,11 @@ float C1983Shooter::getD()
 {
 	return shooterPID->GetD();
 }
-
+#endif
 float C1983Shooter::getSetpoint()
 {
 	return shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED;
 }
-
 double C1983Shooter::getPercent()
 {
 	return shooterPIDSource->PIDGet();
@@ -32,52 +31,94 @@ double C1983Shooter::getPercent()
 
 void C1983Shooter::iUp()
 {
-	shooterPID->SetPID(shooterPID->GetP(), shooterPID->GetI() + .001,
-			shooterPID->GetD());
+	switch (currentShot)
+	{
+	case kFreethrow:
+		iLow += .001;
+		break;
+	case kKeytop:
+		iHigh += .001;
+		break;
+	}
 }
 
 void C1983Shooter::iDown()
 {
-	shooterPID->SetPID(shooterPID->GetP(), shooterPID->GetI() - .001,
-			shooterPID->GetD());
+	switch (currentShot)
+	{
+	case kFreethrow:
+		iLow -= .001;
+		break;
+	case kKeytop:
+		iHigh -= .001;
+		break;
+	}
 }
 
 void C1983Shooter::pUp()
 {
-	shooterPID->SetPID(shooterPID->GetP() + .1, shooterPID->GetI(),
-			shooterPID->GetD());
+	cout<<"P up"<<endl;
+	switch (currentShot)
+	{
+	case kFreethrow:
+		pLow += .05;
+		break;
+	case kKeytop:
+		pHigh += .05;
+		break;
+	}
 }
 
 void C1983Shooter::pDown()
 {
-	shooterPID->SetPID(shooterPID->GetP() - .1, shooterPID->GetI(),
-			shooterPID->GetD());
+	switch (currentShot)
+	{
+	case kFreethrow:
+		pLow -= .05;
+		break;
+	case kKeytop:
+		pHigh -= .05;
+		break;
+	}
 }
 
 void C1983Shooter::dUp()
 {
-	shooterPID->SetPID(shooterPID->GetP(), shooterPID->GetI(),
-			shooterPID->GetD() + .05);
+	switch (currentShot)
+	{
+	case kFreethrow:
+		dLow += .05;
+		break;
+	case kKeytop:
+		dHigh += .05;
+		break;
+	}
 }
 
 void C1983Shooter::dDown()
 {
-	shooterPID->SetPID(shooterPID->GetP(), shooterPID->GetI(),
-			shooterPID->GetD() - .05);
+	switch (currentShot)
+	{
+	case kFreethrow:
+		dLow -= .05;
+		break;
+	case kKeytop:
+		dHigh -= .05;
+		break;
+	}
 }
-#endif
+/*
+ void C1983Shooter::debugPrint()
+ {
+ #if SHOOTER_PID
+ //cout<<"P: "<<getP()<<" Setpoint: "<<getSetpoint()<<" Value: "<<shooterEncoder->GetRate()<<endl;
+ //cout<<" Setpoint: "<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<" Rate: "<<shooterPIDSource->PIDGet() * SHOOTER_MAX_SPEED<<" Error: "<<shooterPID->GetError() * SHOOTER_MAX_SPEED<<" I: "<<getI()<<" ShooterReady: "<<isReady();
 
-void C1983Shooter::debugPrint()
-{
-#if SHOOTER_PID
-	//cout<<"P: "<<getP()<<" Setpoint: "<<getSetpoint()<<" Value: "<<shooterEncoder->GetRate()<<endl;
-	//cout<<" Setpoint: "<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<" Rate: "<<shooterPIDSource->PIDGet() * SHOOTER_MAX_SPEED<<" Error: "<<shooterPID->GetError() * SHOOTER_MAX_SPEED<<" I: "<<getI()<<" ShooterReady: "<<isReady();
-
-#else
-	cout<<"Rate: "<<shooterEncoder->GetRate();
-#endif
-}
-
+ #else
+ cout<<"Rate: "<<shooterEncoder->GetRate();
+ #endif
+ }
+ */
 double C1983Shooter::getRate()
 {
 #if SHOOTER_PID
@@ -92,8 +133,8 @@ void C1983Shooter::openFile()
 	data = new ofstream();
 	cout<<"File Open"<<endl;
 	data->open(getFileName());
-	(*data)<<"Index,VICTOR,Rate,Setpoint,P: "<<shooterPID->GetP()<<",I: "
-			<<shooterPID->GetI()<<",D: "<<shooterPID->GetD()<<"\n";
+	(*data)<<"Index,VICTOR,Rate,Setpoint,P: \n";//<<shooterPID->GetP()<<",I: "
+	//<<shooterPID->GetI()<<",D: "<<shooterPID->GetD()<<"\n";
 	fileOpen = true;
 }
 
@@ -115,7 +156,7 @@ bool C1983Shooter::getIsOpen()
 void C1983Shooter::writeFile()
 {
 	(*data)<<(float)fileIndex/50.0<<","<<shooterVic1->Get() << ","
-			<< shooterPIDSource->PIDGet() * SHOOTER_MAX_SPEED<<","
+			<< shooterPIDSource->getRealAverage() * SHOOTER_MAX_SPEED<<","
 			<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<",\n";
 	//(*data)<<(float)fileIndex/50.0<<","<<shooterVic1->Get()<<","<<shooterPID->GetSetpoint() * SHOOTER_MAX_SPEED<<",\n";
 	fileIndex++;
@@ -132,8 +173,7 @@ char* C1983Shooter::getFileName()
 		output[i] = bleh[i];
 		cout<<output[i];
 	}
-	output[bleh.size()] = NULL;
+	output[bleh.size()] = 0;
 	cout<<endl;
 	return output;
 }
-

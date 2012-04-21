@@ -1,5 +1,4 @@
 #include "PewPewBot.h"
-#define GYROTEST 1
 char * PewPewBot::getModeName(AutonomousMode mode)
 {
 	switch (mode)
@@ -42,12 +41,21 @@ void PewPewBot::Autonomous()
 	double startTime = System::currentTimeMillis();
 
 	//Spinup shooter
-	shooter->setEnabled(true);
-	shooter->setShot(AUTONOMOUS_SHOT);
+	updateShooter(true);
+
+	drive->setLight(true);
 	hasResetItem = false;
 
 	while (IsAutonomous() && !IsDisabled())
 	{
+		if (PID_SLIDER> .2095)
+		{
+			shooter->setPIDAdjust(0.0762 * log(PID_SLIDER) + 0.0407);
+		} else
+		{
+			shooter->setPIDAdjust(-0.15);
+		}
+		shooter->update();
 #if KINECT
 		if (kinect->getKinectMode())
 		{
@@ -56,7 +64,6 @@ void PewPewBot::Autonomous()
 #endif
 
 		drive->updateCompressor();
-		shooter->update();
 		collector->update();
 #if KINECT
 		kinect->update();
@@ -86,9 +93,16 @@ void PewPewBot::Autonomous()
 				} else if (AUTONOMOUS_FULL_AUTO_SWITCH)
 				{
 					autonomousMode = kRotate180;
-				} else
+				} 
+#if KINECT
+				else if (kinect->hasKinect())
 				{
 					autonomousMode = kKinect;
+				}
+#endif
+				else
+				{
+					autonomousMode = kDone;
 				}
 			}
 			break;
@@ -125,11 +139,10 @@ void PewPewBot::Autonomous()
 			break;
 		default:
 			//We are done
-#if SHOOTER_PID
-			shooter->setEnabled(false);
-#endif
+			updateShooter(false);
 			break;
 		}
+		drive->setLight(false);
 		GetWatchdog().Feed();
 		Wait(0.02);
 	}

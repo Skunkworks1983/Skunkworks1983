@@ -4,8 +4,8 @@
  *  Created on: Jan 25, 2012
  *      Author: Westin
  */
-
 #include "C1983GlyphCamera.h"
+#if TRACKING_CAMERA
 
 C1983GlyphCamera::C1983GlyphCamera()
 {
@@ -43,7 +43,7 @@ void C1983GlyphCamera::processPacket(char * data)
 		ballDataUpdate = System::currentTimeMillis();
 	} else
 	{
-		cout << "Bad packet key: " << key << endl;
+		//cout << "Bad packet key: " << key << endl;
 	}
 }
 
@@ -85,3 +85,4 @@ void C1983GlyphCamera::sendCameraChange(Camera cam)
 		server->SendData(data);
 	}
 }
+#endif

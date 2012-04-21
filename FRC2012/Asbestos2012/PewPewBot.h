@@ -9,8 +9,9 @@
 #include "C1983Kinect.h"
 #include "C1983Collector.h"
 #include "C1983Shooter.h"
+#if TRACKING_CAMERA
 #include "C1983GlyphCamera.h"
-
+#endif
 /**
  * @author:
  * 
@@ -36,8 +37,9 @@ public:
 
 	C1983Collector *collector;
 	C1983Shooter *shooter;
-	//C1983GlyphCamera *camera;
-
+#if TRACKING_CAMERA
+	C1983GlyphCamera *camera;
+#endif
 	//Controls
 	DriverStation * driverStation;
 	DriverStationLCD * driverStationLCD;
@@ -57,10 +59,13 @@ public:
 	~PewPewBot();
 
 	void updateDriverStation();
+	void updateShooter(bool enabled);
 
 	//Automatic Functions
 	bool lineDepthAlign(); //Aligns the robot based on the key
+#if TRACKING_CAMERA
 	bool camYawAlign(); //Aligns the robot based on the camera data
+#endif
 	void kinectCode(); //Controls the robot with kinect data
 
 	void cleanPIDs();

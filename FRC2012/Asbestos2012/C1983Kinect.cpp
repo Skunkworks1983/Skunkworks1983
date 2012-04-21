@@ -27,6 +27,11 @@ float C1983Kinect::getRight()
 	return rightArm->GetY();
 }
 
+bool C1983Kinect::hasKinect()
+{
+	return rightArm->GetY() != 0 || leftArm->GetY() != 0;
+}
+
 bool C1983Kinect::getShiftButton()
 {
 	if (rightArm->GetRawButton(0))
@@ -58,33 +63,36 @@ bool C1983Kinect::getKinectMode()
 int i = 0;
 void C1983Kinect::update()
 {
-	Skeleton skele = kinect->GetSkeleton(1);
-	Skeleton::Joint hipCenter = skele.GetHipCenter();
-	if (hipCenter.trackingState == Skeleton::kTracked)
+	if (hasKinect())
 	{
-		i++;
-		if (i>5)
-			i=0;
-		if (hipPositionCache == -1)
+		Skeleton skele = kinect->GetSkeleton(1);
+		Skeleton::Joint hipCenter = skele.GetHipCenter();
+		if (hipCenter.trackingState == Skeleton::kTracked)
 		{
-			hipPositionCache = hipCenter.y;
+			i++;
+			if (i>5)
+				i=0;
+			if (hipPositionCache == -1)
+			{
+				hipPositionCache = hipCenter.y;
+				if (i==5)
+					cout << "Set default depth at: " << hipCenter.y << endl;
+			}
+			float diff = hipCenter.y - hipPositionCache;
+			if (diff < -KINECT_HIP_DIFF)
+			{
+				if (i==5)
+					cout << "TIP UP\t";
+			} else if (diff > KINECT_HIP_DIFF)
+			{
+				if (i==5)
+					cout << "TIP DOWN\t";
+			}
 			if (i==5)
-				cout << "Set default depth at: " << hipCenter.y << endl;
+				cout << "Diff: " << diff << endl;
 		}
-		float diff = hipCenter.y - hipPositionCache;
-		if (diff < -KINECT_HIP_DIFF)
-		{
-			if (i==5)
-				cout << "TIP UP\t";
-		} else if (diff > KINECT_HIP_DIFF)
-		{
-			if (i==5)
-				cout << "TIP DOWN\t";
-		}
-		if (i==5)
-			cout << "Diff: " << diff << endl;
+		tip = false;
 	}
-	tip = false;
 }
 
 bool C1983Kinect::getTipper()

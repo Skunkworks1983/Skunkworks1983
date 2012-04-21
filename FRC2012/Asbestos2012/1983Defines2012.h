@@ -4,17 +4,20 @@
 #define PRACTICE_BOT 1
 
 //PewPew Start
-#define DEADBAND 0.03
+#define DEADBAND 0.04
 //PewPew End
 
+//Camera
+#define TRACKING_CAMERA 0
+
 //Kinect Start
-#define KINECT 1
+#define KINECT 0
 #define KINECT_HIP_DIFF 0.15
 #define KINECT_DEADBAND 0.05
 //Kinect End
 
 //Autonomous Start
-#define LOOP_STABILITY 5 //This define represents the amount of loops a readout must be consistently true to for the autonomous stuff to read it
+#define LOOP_STABILITY 1//5 //This define represents the amount of loops a readout must be consistently true to for the autonomous stuff to read it
 //Autonomous Stop
 
 //DriveBase Start
@@ -32,7 +35,12 @@
 #define SHIFTER_LOW_CHANNEL 2
 
 //Drive Victors
+#define GOGO 0
+#if GOGO
+#define VIC_PORT_LEFT_1 8
+#else
 #define VIC_PORT_LEFT_1 1
+#endif
 #define VIC_PORT_LEFT_2 2
 #define VIC_PORT_RIGHT_1 3
 #define VIC_PORT_RIGHT_2 4
@@ -77,7 +85,7 @@
 #define LIGHT_SENSOR_CHANNEL_FRONT 2
 #define LIGHT_SENSOR_CHANNEL_BACK 1
 #define LIGHT_SENSOR_CHANNEL_BRIDGE 3
-#define LIGHT_CHANNEL 3 //Last value: 1
+#define LIGHT_CHANNEL 2 //Last value: 1
 //Gyro Channel	
 #define GYRO_CHANNEL 1
 
@@ -85,12 +93,19 @@
 #define MAXSPEEDHIGH 14.7
 #define MAXSPEEDLOW  3.7
 
-#define LINE_STOP_SPEED .5 //The speed at which the robot runs to stop at the key
+#define LINE_STOP_SPEED .75 //The speed at which the robot runs to stop at the key
 //DriveBase End
 
 //Shooter Start
+#define SHOOTER_CHANGE_LIMIT 1.0
+#define SHOOTER_CHANGE_LIMIT_IS_ONE 0
+#define GO_POINT .5 //this is about 1600 rpm
+#define GO_SPEED .55
+#define SPINUP_SPEED 0.8
+#define SPINDOWN_SPEED 0.15
 #define SHOOTER 1
 #define SHOOTER_PID 1
+#define SHOOTER_BANGBANG 0
 
 //Conversion stuff
 #define SHOOTER_UNITS_PER_TICK ((double)0.234375) //(60.0/256.0) Last bit is janky hack 
@@ -102,32 +117,31 @@
 #define SHOOTER_WHEEL_ENCODER_B 10
 
 //Accuracy tolerance.  How close	 the speed/position has to get to be accurate
-#define SHOOTER_VELOCITY_TOLERANCE_LOW	20.0	//Tolerance of the velocity
-#define SHOOTER_VELOCITY_TOLERANCE_HIGH 30.0
+#define SHOOTER_VELOCITY_TOLERANCE_LOW	10.0	//Tolerance of the velocity
+#define SHOOTER_VELOCITY_TOLERANCE_HIGH 20.0
 //PID Tolerance. How close does the speed have to be to the setpoint for us to engage pid mode?
 #define SHOOTER_PID_RANGE 400.0/SHOOTER_MAX_SPEED
 //SHooter PIDs
 #define KU 5.85
 #define TU 50.0
 #define SHOOTER_P 3.800//(KU * 0.6)//1.20
-#define SHOOTER_I 0.055//(SHOOTER_P * 2.0/TU)//0.05
-#define SHOOTER_D 1.00//(SHOOTER_P * TU/8.0)//0.05
+#define SHOOTER_I 0.068//(SHOOTER_P * 2.0/TU)//0.05
+#define SHOOTER_D 0.75//(SHOOTER_P * TU/8.0)//0.05
 #define SHOOTER_P_HIGH 3.800//1.20
-#define SHOOTER_I_HIGH 0.050//0.087
-#define SHOOTER_D_HIGH 0.988//0.05
+#define SHOOTER_I_HIGH 0.068//.065//0.620//0.087
+#define SHOOTER_D_HIGH 0.75//0.05
 #define SHOOTER_READY_STABLITY 10
 
 //Preset shot speeds
-#define SHOT_KEYTOP_SPEED 2950.0 
+#define SHOT_KEYTOP_SPEED 500.0 
 
-#define SHOT_FREETHROW_SPEED 2575.0//2560.0
-
+#define SHOT_FREETHROW_SPEED 2525.0//2560.0
 #define SHOT_OTHER_SPEED 0.0
 
 #define SHOOTER_MAX_SPEED 3500.0
 
 #define BALL_SPEED_TO_RPM(speed) {return speed;}   //TODO Conversion
-#define AVERAGE_LENGTH 20.0
+#define AVERAGE_LENGTH 10.0
 
 //Shooter End
 
@@ -151,7 +165,7 @@
 #define COLLECTOR_TIPPER_SPEED 1.0
 //Timeout for blind running collectors
 #define COLLECTOR_TIMEOUT 100
-#define SHOOTER_TIMEOUT 30
+#define SHOOTER_TIMEOUT 10//last working value:30
 
 //Collector IR Sensors
 #if PRACTICE_BOT
@@ -166,15 +180,18 @@
 //Collector End
 
 //Autonomous Stuff
-#define AUTONOMOUS_DELAY 8000.0 //8 seconds
+#define AUTONOMOUS_DELAY 5000.0 //8 seconds
 #define AUTONOMOUS_SHOT C1983Shooter::kFreethrow
 //End AUtonomous
 
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1)
 #define COLLECT_BUTTON (rStick->GetRawButton(1) || !myEIO->GetDigital(12))
+#if PRACTICE_BOT
+#define SHOOT_BUTTON  (!myEIO->GetDigital(14))
+#else
 #define SHOOT_BUTTON  (myEIO->GetDigital(14))
-#define LIGHT_BUTTON 1//rStick->GetRawButton(10)
+#endif
 #define ARM_BUTTON (myEIO->GetDigital(16))
 #define FORWARD_SWITCH (!myEIO->GetDigital(4))
 #define REVERSE_SWITCH (!myEIO->GetDigital(6))
@@ -184,7 +201,9 @@
 #define KEY_ALIGN_BUTTON (!myEIO->GetDigital(15))
 #define AUTO_TARGET_BUTTON (!myEIO->GetDigital(11))
 #define FULL_AUTO_SWTICH (!myEIO->GetDigital(13))
+#define LIGHT_BUTTON (lStick->GetRawButton(3))
 #define SHOOTER_MANUAL_MODE false
+#define KINECT_OVERRIDE (!myEIO->GetDigital(13))
 
 //Autonomous Controls
 #define AUTONOMOUS_DELAY_SWITCH (!myEIO->GetDigital(2))

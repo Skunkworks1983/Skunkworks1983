@@ -12,7 +12,9 @@
 class C1983Drive
 {
 private:
+#if !(GOGO)
 	Victor *leftVic1;
+#endif
 	Victor *leftVic2;
 	Victor *rightVic1;
 	Victor *rightVic2;
@@ -59,6 +61,7 @@ private:
 public:
 	C1983Tipper *tipper;
 	bool shiftedHigh;
+	bool lightState;
 	
 	C1983Drive();
 	//Set the speed of the left side -1 to 1
@@ -76,12 +79,16 @@ public:
 	
 	void setLight(bool on);
 	
+	bool getLight();
+	
 	bool getLightSensorBack();
 	
 	bool getLightSensorFront();
 	
 	bool getLightSensorBridge();
 
+	bool isShiftedHigh();
+	
 	float getGyro();
 	void resetGyro();
 	

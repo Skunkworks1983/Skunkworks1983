@@ -1,6 +1,6 @@
 #include "C1983ShooterPIDSource.h"
 
-double timediff()
+double timediffZ()
 {
 	static struct timespec ts =
 	{ 0, 0 };
@@ -21,12 +21,13 @@ C1983ShooterPIDSource::C1983ShooterPIDSource(Encoder * e, double topSpeed,bool r
 	values = new double[(int)AVERAGE_LENGTH];
 	times = new double [(int)AVERAGE_LENGTH];
 	average = 0;
+	lastPos = 0.0;
 	for(int i = 0;i < AVERAGE_LENGTH;i++)
 	{
 		values[i] = 0.0;
 		times[i] = 1.0;
 	}
-	timediff();
+	timediffZ();
 }
 
 void C1983ShooterPIDSource::setMaxSpeed(double newSpeed)
@@ -46,19 +47,32 @@ double C1983ShooterPIDSource::PIDGet()
 
 void C1983ShooterPIDSource::updateAverage()
 {
-	double position = theEncoder->GetDistance();
-	for (int i = ((int)AVERAGE_LENGTH) - 1; i > 0; i--)
+		times[0] = timediffZ();
+		double position = theEncoder->GetDistance();
+		average = (lastPos - position)/times[0];
+		lastPos = position;
+
+		for (int i = ((int)AVERAGE_LENGTH) - 1; i > 0; i--)
+		{
+			//shift the values up the array
+			values[i] = values[i-1];
+			times[i] = times[i-1];
+		}
+		values[0] = position;
+		double temp = 0;
+		for (int i = 1; i < AVERAGE_LENGTH; i++)
+		{
+			temp += (values[i] - values[i - 1])/times[i];// * (AVERAGE_LENGTH - i);
+		}
+		realAverage = temp/((float)(AVERAGE_LENGTH - 1));
+}
+
+double C1983ShooterPIDSource::getRealAverage()
+{
+	if(reverse)
 	{
-		//shift the values up the array
-		values[i] = values[i-1];
-		times[i] = times[i-1];
+		return -realAverage/maxSpeed;
+	}else{
+		return realAverage/maxSpeed;
 	}
-	values[0] = position;
-	times[0] = timediff();
-	double temp = 0;
-	for (int i = 1; i < AVERAGE_LENGTH; i++)
-	{
-		temp += (values[i] - values[i - 1])/times[i];// * (AVERAGE_LENGTH - i);
-	}
-	average = temp/(AVERAGE_LENGTH - 1);
 }

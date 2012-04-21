@@ -4,6 +4,7 @@
  *  Created on: Jan 25, 2012
  *      Author: Westin
  */
+#if TRACKING_CAMERA
 #ifndef __C1983GLYPHCAMERA_H
 #define __C1983GLYPHCAMERA_H
 
@@ -44,5 +45,6 @@ public:
 
 	void sendCameraChange(Camera camera);
 };
+#endif
 #endif
 

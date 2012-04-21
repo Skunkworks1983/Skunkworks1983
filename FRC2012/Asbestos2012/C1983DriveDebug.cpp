@@ -78,6 +78,7 @@ void C1983Drive::dDown()
 #endif
 void C1983Drive::debugPrint()
 {
-	cout << "P: " << getP() << "\tI: " << getI() << "\tD: " << getD();
+	cout<<"Angle: "<<gyro->GetAngle();
+	//cout << "P: " << getP() << "\tI: " << getI() << "\tD: " << getD();
 	//cout<<"LRate: " << leftEncoder->GetRate() << "\t\t\tRRate: " << rightEncoder->GetRate();
 }
