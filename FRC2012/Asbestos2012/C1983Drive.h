@@ -46,6 +46,10 @@ private:
 	Solenoid *shiftHigh;
 	Solenoid *shiftLow;
 	
+	//Poker
+	Solenoid *pokerUp;
+	Solenoid *pokerDown;
+	
 	//Tipper
 	
 	//Light Relay
@@ -61,6 +65,7 @@ private:
 public:
 	C1983Tipper *tipper;
 	bool shiftedHigh;
+	bool pokedUp;
 	bool lightState;
 	
 	C1983Drive();
@@ -75,6 +80,8 @@ public:
 	
 	void shift(bool high);
 	
+	void poke(bool up);
+	
 	void tip(bool down);
 	
 	void setLight(bool on);
@@ -88,6 +95,7 @@ public:
 	bool getLightSensorBridge();
 
 	bool isShiftedHigh();
+	
 	
 	float getGyro();
 	void resetGyro();

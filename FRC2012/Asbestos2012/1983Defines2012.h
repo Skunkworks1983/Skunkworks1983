@@ -1,7 +1,8 @@
 #ifndef __1983DEFINES_H
 #define __1983DEFINES_H
 
-#define PRACTICE_BOT 1
+#define PRACTICE_BOT 0
+#define PRACTICE_OI 0
 
 //PewPew Start
 #define DEADBAND 0.04
@@ -33,6 +34,8 @@
 #define COMPRESSOR_PORT 1
 #define SHIFTER_CHANNEL 1
 #define SHIFTER_LOW_CHANNEL 2
+#define POKER_CHANNEL 5
+#define POKER_CHANNEL_B 6
 
 //Drive Victors
 #define GOGO 0
@@ -97,12 +100,17 @@
 //DriveBase End
 
 //Shooter Start
+#define SHOOTER_MAX_SPEED 3840.0
 #define SHOOTER_CHANGE_LIMIT 1.0
 #define SHOOTER_CHANGE_LIMIT_IS_ONE 0
-#define GO_POINT .5 //this is about 1600 rpm
-#define GO_SPEED .55
-#define SPINUP_SPEED 0.8
+#define GO_POINT 2100.0/SHOOTER_MAX_SPEED //this is about 1600 rpm
+#define GO_SPEED 0.55
+#define SPINUP_SPEED 1.0
+#define SPINUP_LOW_POINT 1000.0/SHOOTER_MAX_SPEED
 #define SPINDOWN_SPEED 0.15
+#define SCALE_LOW_POINT 200.0/SHOOTER_MAX_SPEED
+#define BEGIN_SPEED 0.2
+
 #define SHOOTER 1
 #define SHOOTER_PID 1
 #define SHOOTER_BANGBANG 0
@@ -120,7 +128,7 @@
 #define SHOOTER_VELOCITY_TOLERANCE_LOW	10.0	//Tolerance of the velocity
 #define SHOOTER_VELOCITY_TOLERANCE_HIGH 20.0
 //PID Tolerance. How close does the speed have to be to the setpoint for us to engage pid mode?
-#define SHOOTER_PID_RANGE 400.0/SHOOTER_MAX_SPEED
+//#define SHOOTER_PID_RANGE 400.0/SHOOTER_MAX_SPEED
 //SHooter PIDs
 #define KU 5.85
 #define TU 50.0
@@ -133,12 +141,10 @@
 #define SHOOTER_READY_STABLITY 10
 
 //Preset shot speeds
-#define SHOT_KEYTOP_SPEED 500.0 
+#define SHOT_KEYTOP_SPEED 3300.0 
 
 #define SHOT_FREETHROW_SPEED 2525.0//2560.0
 #define SHOT_OTHER_SPEED 0.0
-
-#define SHOOTER_MAX_SPEED 3500.0
 
 #define BALL_SPEED_TO_RPM(speed) {return speed;}   //TODO Conversion
 #define AVERAGE_LENGTH 10.0
@@ -173,9 +179,9 @@
 #define COLLECTOR_IR_MID_CHANNEL 6
 #define COLLECTOR_IR_TOP_CHANNEL 8
 #else
-#define COLLECTOR_IR_LOW_CHANNEL 6
-#define COLLECTOR_IR_MID_CHANNEL 7
-#define COLLECTOR_IR_TOP_CHANNEL 8
+#define COLLECTOR_IR_LOW_CHANNEL 5
+#define COLLECTOR_IR_MID_CHANNEL 6
+#define COLLECTOR_IR_TOP_CHANNEL 7
 #endif
 //Collector End
 
@@ -187,27 +193,34 @@
 //Controls Begin
 #define SHIFT_BUTTON lStick->GetRawButton(1)
 #define COLLECT_BUTTON (rStick->GetRawButton(1) || !myEIO->GetDigital(12))
-#if PRACTICE_BOT
+#if PRACTICE_OI
+#define ARM_BUTTON (!myEIO->GetDigital(16))
 #define SHOOT_BUTTON  (!myEIO->GetDigital(14))
+#define POKE_SWITCH (rStick->GetRawButton(10))
 #else
-#define SHOOT_BUTTON  (myEIO->GetDigital(14))
-#endif
 #define ARM_BUTTON (myEIO->GetDigital(16))
+#define SHOOT_BUTTON (myEIO->GetDigital(14))
+#define POKE_SWITCH (!myEIO->GetDigital(2))
+#endif
 #define FORWARD_SWITCH (!myEIO->GetDigital(4))
 #define REVERSE_SWITCH (!myEIO->GetDigital(6))
 #define TIPPER_SWITCH (!myEIO->GetDigital(10))
 #define SHORT_SHOT_SWITCH (myEIO->GetDigital(8))
 #define RPM_MANUAL_SLIDER
+#if !PRACTICE_OI
 #define KEY_ALIGN_BUTTON (!myEIO->GetDigital(15))
+#else
+#define KEY_ALIGN_BUTTON (lStick->GetRawButton(5))
+#endif
 #define AUTO_TARGET_BUTTON (!myEIO->GetDigital(11))
-#define FULL_AUTO_SWTICH (!myEIO->GetDigital(13))
+#define FULL_AUTO_SWTICH (!myEIO->GetDigital(13)) //spelled wrong
 #define LIGHT_BUTTON (lStick->GetRawButton(3))
 #define SHOOTER_MANUAL_MODE false
-#define KINECT_OVERRIDE (!myEIO->GetDigital(13))
+#define KINECT_OVERRIDE (0)
 
 //Autonomous Controls
-#define AUTONOMOUS_DELAY_SWITCH (!myEIO->GetDigital(2))
-#define AUTONOMOUS_FULL_AUTO_SWITCH (!myEIO->GetDigital(13))
+#define AUTONOMOUS_DELAY_SWITCH (!myEIO->GetDigital(13))
+#define AUTONOMOUS_FULL_AUTO_SWITCH 0//(!myEIO->GetDigital(13))
 
 //Slider stuff
 #define PID_SLIDER (myEIO->GetAnalogIn(2))

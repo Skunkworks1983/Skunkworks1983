@@ -126,6 +126,8 @@ void PewPewBot::OperatorControl()
 		{
 			count = 0;
 			updateDriverStation();
+			collector->debugPrint();
+			cout<<endl;
 			/*
 			 #if DRIVE_PID
 			 drive->debugPrint();
@@ -194,6 +196,14 @@ void PewPewBot::OperatorControl()
 			shifterToggle = SHIFT_BUTTON;
 		}
 
+		if(POKE_SWITCH)
+		{
+			cout<<"Poking false"<<endl;
+			drive->poke(false);
+		}else{
+			drive->poke(true);	
+		}
+		
 		//COLLECTOR
 		if (COLLECT_BUTTON)
 		{

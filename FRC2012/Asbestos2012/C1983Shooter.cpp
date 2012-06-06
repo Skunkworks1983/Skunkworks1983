@@ -198,7 +198,7 @@ void C1983Shooter::setEnabled(bool enable)
 #if SHOOTER_PID
 void C1983Shooter::setPIDAdjust(double adjust)
 {
-	PIDMod = 0.0;//adjust;
+	PIDMod = adjust;
 	setShot(currentShot);
 }
 

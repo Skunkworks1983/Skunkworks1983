@@ -44,8 +44,12 @@ void C1983ShooterPIDOutput::PIDWrite(float output)
 		curr = SPINDOWN_SPEED;
 	}else if(speed >= GO_POINT && output != 0.0){
 		curr = GO_SPEED;
-	}else if (output != 0.0){
+	}else if (speed >= SPINUP_LOW_POINT && output != 0.0){
 		curr = SPINUP_SPEED;
+	}else if (speed >= SCALE_LOW_POINT && output != 0.0){
+		curr = speed * SHOOTER_MAX_SPEED * 0.001; //this makes the power 10% when at 100 RPM, 30% when at 300 etc
+	}else if(output != 0.0){
+		curr = BEGIN_SPEED;
 	}else{
 		curr = 0;
 	}

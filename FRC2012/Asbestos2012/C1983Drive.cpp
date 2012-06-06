@@ -72,6 +72,9 @@ C1983Drive::C1983Drive()
 	shiftHigh = new Solenoid(SOLENOID_MODULE,SHIFTER_CHANNEL);
 	shiftLow = new Solenoid(SOLENOID_MODULE,SHIFTER_LOW_CHANNEL);
 
+	pokerUp = new Solenoid(SOLENOID_MODULE,POKER_CHANNEL_B);
+	pokerDown = new Solenoid(SOLENOID_MODULE,POKER_CHANNEL);
+	
 	tipper = new C1983Tipper();
 
 	light = new Relay(DIGITAL_MODULE,LIGHT_CHANNEL);
@@ -85,6 +88,7 @@ C1983Drive::C1983Drive()
 	lightState = false;
 	setLight(false);
 	shift(true);
+	poke(true);
 }
 
 //Set both vicss left side to the given speed -1.0 to 1.0
@@ -169,6 +173,22 @@ void C1983Drive::shift(bool high)
 
 	} else
 	{
+		return;
+	}
+}
+
+void C1983Drive::poke(bool up)
+{
+	if(up && !pokedUp)
+	{
+		pokerUp->Set(true);
+		pokerDown->Set(false);
+		pokedUp = true;
+	}else if(!up && pokedUp){
+		pokerUp->Set(false);
+		pokerDown->Set(true);
+		pokedUp = false;
+	}else{
 		return;
 	}
 }
