@@ -3,8 +3,6 @@
 #include "1983Defines2012.h"
 #include "WPILib.h"
 
-
-
 /*
  * Created: January 23, 2012
  * By: Quinn Schiller
@@ -17,15 +15,15 @@
 class C1983Tipper
 {
 private:
-	Solenoid *tipper;
-	bool tipperState;
+	Solenoid *tipperUp;
+	Solenoid *tipperDown;
+	bool isDown;
 
 public:
-	//UNLEASH THE FLOOD
 	C1983Tipper();
 	
 	// Raise and lower the tipper
-	void tip(bool open);
+	void tip(bool down);
 	
 	//returns the state of tipper
 	bool getState();

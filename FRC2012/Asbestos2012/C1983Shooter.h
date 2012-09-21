@@ -1,51 +1,88 @@
-#ifndef __C1983SHOOTER_H
-#define __C1983SHOOTER_H
-#include "WPIlib.h"
+#ifndef __C1983Shooter_H
+#define __C1983Shooter_H
+#include "WPILib.h"
+#include "math.h"
 #include "1983Defines2012.h"
-
+#include "C1983ShooterPIDOutput.h"
+#include "C1983Encoder.h"
+#include "C1983ShooterPIDSource.h"
+#include <fstream>
+#include <sstream>
 class C1983Shooter
 {
-
 private:
-	Victor *shooterVic; //Victor for the shooting wheel
-	Victor *hoodVic; //Victor for the hood
+	Victor *shooterVic1;
+	Victor *shooterVic2;
+#if SHOOTER_PID
+	C1983ShooterPIDOutput *shooterPIDOutput;
+	C1983ShooterPIDSource *shooterPIDSource;
+	PIDController *shooterPID;
+#endif
+#if SHOOTER_BANGBANG
+	SEM_ID m_semaphore;
+	Notifier *m_controlLoop;
+#endif
+	//C1983Encoder *shooterEncoder;
+	Encoder *shooterEncoder;
 
-	//Encoder *encoder1;
-	//Encoder *encoder2;
+	bool enabled;
+	float power;
+	bool manual;
+	short currentShot;
+	double PIDMod;
+	//File stuff
+	int fileNumber;
+	ofstream *data;
+	float fileIndex;
+	bool fileOpen;
+	//End file stuff
+	int stableReady;
+	float pLow, iLow, dLow, pHigh, iHigh, dHigh;
 
 public:
 	C1983Shooter();
-	//Does the shooter keep itself up to speed
-	bool isWheelRunning;
-	
-	//shooting function
-	void shoot();
-
-	//setting the velocity needed
-	void setVelocity(float velocity);
-
-	//Checks to see if ball is ready to be shot
 	bool isReady();
+	bool isStableReady();
+	double getRate();
+	bool getEnabled();
+	void setShot(short shotNum);
+	void setJankyPower(float power);
+	void jankyStop();
+	void debugPrint();
+	void setEnabled(bool enabled);
+	char * getShotName();
+	static void callBangBang(void * inst);
+	void bangBang();
 
-	//Gets the cordinates of the hoop
-	//void getCoordinates();
-	//void getCorrections();
+#if SHOOTER_PID
+	void setPower(float powerRPM);
+	void cleanPID();
+	void dUp();
+	void dDown();
+	void pUp();
+	void pDown();
+	void iUp();
+	void iDown();
+	void setPIDAdjust(double adjust);
+	double getPIDAdjust();
 
-	//Get the current wheel speed
-	float getVelocity();
-
-	//Get the angle needed to shoot at the hoop.
-	float getAngle();
-
-	//Set the angle that is needed to shoot.
-	void angle(float angle);
-	
-	//sets the spead and angle to the presets!
-	void aim(int Preset=0);
-	
-	//shooter class variable for speed
-	float targetSpeed;
-	//shooter class global variable for angle
-	float targetAngle;
+	float getError();
+	float getI();
+	float getP();
+	float getD();
+	float getSetpoint();
+	double getPercent();
+#endif
+	//file stuff
+	char* getFileName();
+	void openFile();
+	void closeFile();
+	bool getIsOpen();
+	void writeFile();
+	void readPIDFromFile();
+	//end file stuff
+	void update();
+	enum
+	{	kKeytop, kFreethrow, kOther} shot;
 };
 #endif

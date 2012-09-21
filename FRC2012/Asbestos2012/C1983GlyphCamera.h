@@ -4,24 +4,47 @@
  *  Created on: Jan 25, 2012
  *      Author: Westin
  */
+#if TRACKING_CAMERA
 #ifndef __C1983GLYPHCAMERA_H
 #define __C1983GLYPHCAMERA_H
 
-#include "WPILib.h"
-#include "Vision/BinaryImage.h"
-#include "Vision/RGBImage.h"
+#include "server1180.h"
+#include "1983Defines2012.h"
+#include "Utility.h"
 
 class C1983GlyphCamera
 {
 private:
-	AxisCamera * camera;
-	BinaryImage * image;
-	RGBImage * camBuffer;
+	enum Camera
+	{
+		kShooter, kCollector
+	};
+	double currentBasketYaw;
+	double currentBasketDepth;
+	double basketDataUpdate;
+
+	double currentBallYaw;
+	double currentBallDepth;
+	double ballDataUpdate;
+
+	Camera currentCamera;
+
+	Server1180 * server;
 public:
 	C1983GlyphCamera();
+	void processPacket(char * data);
+	static void callProcessPacket(void * cam, char * data);
+	double getCurrentBasketYaw();
+	double getCurrentBasketDepth();
 
-	//Get the location of the current set of glyphs
-	void doTracking();
+	double getCurrentBallYaw();
+	double getCurrentBallDepth();
+
+	double getBallDataAge();
+	double getBasketDataAge();
+
+	void sendCameraChange(Camera camera);
 };
+#endif
 #endif
 

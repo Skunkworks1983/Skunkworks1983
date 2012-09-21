@@ -2,30 +2,76 @@
 #define __C1983COLLECTOR_H
 #include "WPILib.h"
 #include "1983Defines2012.h"
+#include "C1983Shooter.h"
+#include "C1983Tipper.h"
 
-class C1983Collector {
+//IR Sensor Macros
+#if PRACTICE_BOT
+#define LOWSLOT (lowSlot->Get() == 0)
+#define MIDSLOT (midSlot->Get() == 0)
+#else
+#define LOWSLOT (lowSlot->Get() == 1)
+#define MIDSLOT (midSlot->Get() == 1)
+#endif
+#define TOPSLOT (topSlot->Get() == 1)
+class C1983Collector
+{
 
 private:
-	Victor *collectorVicBottom; //Victors for the collection belts
+	Victor *collectorVicLow; //Victors for the collection belts
 	Victor *collectorVicTop;
-	Victor *feedVic;
-	int goalSlot;
-	bool autoFeed; //Automatically feed balls in the collector
-	typedef enum {kTop, kMid, kBottom, kShooter, kNull} SlotName;
+	Victor *collectorVicPickup;
 
+	DigitalInput * lowSlot;
+	DigitalInput * midSlot;
+	DigitalInput * topSlot;
+
+	C1983Tipper * tipper;
+	C1983Shooter * shooter;
+
+	bool lowLastState;
+	bool collectorTransition;
+	bool shooting;
+	bool collecting;
+	int collectorCount;
+	int shooterCount;
+	bool runInReverse;
+
+	void setCollectSpeed(float speed);
 public:
-	C1983Collector();
+	Victor *collectorVicTipper;
+	bool automatic;
+	C1983Collector(C1983Shooter *sh, C1983Tipper * tip);
 
 	// Reads if a ball has entered the conveyor.
 	//bool ballEnter();
 
-	//Feeds the ball through the collector.
-	void feed();
+	void update();
 
-	// Checks the amount of balls that has entered the collector.
-	int getBallCount();
+	//Sets the collector right
+	void requestCollect();
 
-	//Checks if a bell is in a slot.  Top-Bottom, starting at 0
-	bool ballInSlot(int slot);
+	//Feeds to the shooter
+	void requestShot();
+
+	//Requests the collector to stop.  Only does something when we don't have collector sensors
+	void requestStop();
+
+	//Requests that the collector goes into reverse
+	void requestReverse();
+
+	bool getSense(int height);
+
+	bool isShooting();
+
+	bool isCollecting();
+
+	void setAutomatic(bool bleh);
+	void jankyGo();
+	void jankyStop();
+	void jankyReverse();
+	void clean();
+
+	void debugPrint();
 };
 #endif

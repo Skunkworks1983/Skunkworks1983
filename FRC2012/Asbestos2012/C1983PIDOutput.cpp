@@ -1,13 +1,24 @@
 #include "C1983PIDOutput.h"
 
-C1983PIDOutput::C1983PIDOutput(Jaguar *jag01, Jaguar *jag02)
+C1983PIDOutput::C1983PIDOutput(Victor *vic01, Victor *vic02,bool reversed)
 {
-	jag1 = jag01;
-	jag2 = jag02;
+	vic1 = vic01;
+	vic2 = vic02;
+	reverse = reversed;
 }
 
 void C1983PIDOutput::PIDWrite(float output)
 {
-	jag1->Set(output);
-	jag2->Set(output);
+	if(reverse)
+	{
+#if !(GOGO)
+		vic1->Set(-output);
+#endif
+		vic2->Set(-output);
+	}else{
+#if !(GOGO)
+		vic1->Set(output);
+#endif
+		vic2->Set(output);
+	}
 }

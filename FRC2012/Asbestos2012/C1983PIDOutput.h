@@ -5,10 +5,11 @@
 class C1983PIDOutput : public PIDOutput
 {
 private:
-	Jaguar *jag1;
-	Jaguar *jag2;
+	Victor *vic1;
+	Victor *vic2;
+	bool reverse;
 public:
-	C1983PIDOutput(Jaguar *jag01, Jaguar *jag02);
+	C1983PIDOutput(Victor *vic01, Victor *vic02,bool reversed);
 	void PIDWrite(float output);
 };
 

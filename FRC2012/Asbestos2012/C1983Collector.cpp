@@ -1,123 +1,258 @@
-/*
- * C1983Collector.cpp
- *
- *  Created on: Jan 14, 2012
- *      Author: Austin
- *
 #include "C1983Collector.h"
 
-C1983Collector::C1983Collector()
+C1983Collector::C1983Collector(C1983Shooter * sh, C1983Tipper * tip)
 {
+	shooter = sh;
+	tipper = tip;
+	
 	//Victor used for feeding
-	feedVic = new Victor (COLLECTOR_FEED_VIC);
+	collectorVicPickup = new Victor (COLLECTOR_VIC_PICKUP);
 
+	//Ye old tipper victor
+#ifdef COLLECTOR_VIC_TIPPER
+	collectorVicTipper = new Victor(COLLECTOR_VIC_TIPPER);
+#endif
+	
 	//First victor used for collector
-	collectorVicBottom = new Victor (COLLECTOR_VIC_BOTTOM);
+	collectorVicLow = new Victor (COLLECTOR_VIC_LOW);
 
 	//Second victor used for collecting
 	collectorVicTop = new Victor (COLLECTOR_VIC_TOP);
 
-	//The auto feed for the collector, setting it to true.
-	autoFeed = true;
+	//Sensors
+	lowSlot = new DigitalInput(COLLECTOR_IR_LOW_CHANNEL);
+	midSlot = new DigitalInput(COLLECTOR_IR_MID_CHANNEL);
+	topSlot = new DigitalInput(COLLECTOR_IR_TOP_CHANNEL);
+
+	lowLastState = false;
+	collectorTransition = false;
+	collectorCount = 0;
+	shooterCount = 0;
+
+	shooting = false;
+	collecting = false;
+	automatic = true;  //We haz light sensors
+	runInReverse = false;
+
 }
 
-void C1983Collector::feed()
+void C1983Collector::update()
 {
-	//Runs the ball through the collector.
-
-	//Checks to see if the goal slot is empty.
-	if (goalSlot != kNull)
+	if (!automatic && runInReverse && !shooting)//Manual reverse
 	{
-		//If the goal slot is the shooter which is controlled by the driver, do this.
-		if (goalSlot == kShooter)
-		{
-			//Set the speed of the top and bottom victor.
-			collectorVicTop->Set(COLLECTORDRIVESPEED);
-			collectorVicBottom->Set(COLLECTORDRIVESPEED);
-		}
-		
-		//If the top microswitch has found that a ball has shot, then do the following:
-		if (ballInSlot(goalSlot))
-		{
-			//Set the top slot under the shooter as empty, which will allow the autofeed to to move the balls up again.
-			kTop = goalslot;
-			kTop = kNull;
-		}
-
-	}
-
-	if (goalSlot == kTop) //If the goal slot is the top, or the shooter
-	{
-		//Set the speed of the first collector victor to move the ball through the feeder.
-		collectorVicBottom->Set(COLLECTORDRIVESPEED); //Top belt
-	}
-
-	//Set the speed of the second collector victor to move the ball through the feeder.
-	collectorVicTop->Set(COLLECTORDRIVESPEED);
-
-	//If the goal slot is filled.
-	if (ballInSlot(goalSlot))
-	{
-		//Set the goal slot as full.
-		goalSlot = kNull;
-	}
-}
-
-//if the goal slot for the feeder is full.
-if (goalSlot == kNull)
-{
-	//Stop the victors in the collector.
-	collectorVicBottom->Set(0.0); //If there isn't a goal stop the victors
-	collectorVicTop->Set(0.0);
-
-	if (autoFeed)//Auto feed the next possible ball
-
-	{
-		//Setting the area after the shot equal to variable i.
-		for (int i = kTop + 1; i <= kBottom; i++)
-		{
-			//Checks if the ball has been shot and there is not a ball in the area underneath it.
-			if (ballInSlot(i) && !ballInSlot(i - 1))
+		collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
+		collectorVicLow->Set(COLLECTOR_BELT_SPEED);
+		collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
 			{
-				//Feed the ball, and balls below up a level
-				goalSlot = i - 1;
+				collectorVicTipper->Set(-COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
 			}
-		}
-	}
-
-}
-}
-
-int C1983Collector::getBallCount()
-{
-//If the goalslot is full.
-if (goalSlot == kNull)
-{
-
-	//Set the total ball count to zero.
-	cacheBallCount = 0;
-
-	//When i is less then the slots availiable in the feeder add one ball to the total ball count.
-	for (int i = 0; i < COLLECTOR_SLOT_COUNT; i++)
+#endif
+	} else if (!automatic && collecting && !shooting) //Manual forward
 	{
-		if (ballInSlot(i))
+		collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+		collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
+		collectorVicTop->Set(COLLECTOR_BELT_SPEED);
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
+			{
+				collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
+			}
+#endif
+	}else if (shooting)	{
+		shooterCount++;
+		collectorVicTop->Set(COLLECTOR_FEED_SPEED);
+		if (shooterCount > SHOOTER_TIMEOUT)
 		{
-			cacheBallCount++;
+			collectorVicTop->Set(0.0);
+			shooting = false;
+			shooterCount = 0;
+			collecting = automatic;
+			//If we want to autocollect after shooting we need to be in auto mode
 		}
+	} else if (automatic && collecting && !shooting)
+	{
+		if (collectorCount > COLLECTOR_TIMEOUT)
+		{
+			collectorVicPickup->Set(0.0);
+			collectorVicLow->Set(-0.0);
+			collectorVicTop->Set(0.0);
+#ifdef COLLECTOR_VIC_TIPPER
+			collectorVicTipper->Set(0.0);
+#endif
+			collecting = false;
+			collectorCount = 0;
+		} else if (!TOPSLOT)
+		{
+			collectorVicTop->Set(COLLECTOR_BELT_SPEED);
+			collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
+			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
+			{
+				collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
+			}
+#endif
+		} else if (!MIDSLOT)
+		{
+			collectorVicTop->Set(0.0);
+			collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
+			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
+			{
+				collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
+			}
+#endif
+		} else if (!LOWSLOT)
+		{
+			collectorVicTop->Set(0.0);
+			collectorVicLow->Set(-0.0);
+			collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+#ifdef COLLECTOR_VIC_TIPPER
+			if(tipper->getState())
+			{
+				collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+			}else{
+				collectorVicTipper->Set(0.0);
+			}
+#endif
+		} else
+		{
+			collectorVicTop->Set(0.0);
+			collectorVicLow->Set(-0.0);
+			collectorVicPickup->Set(0.0);
+#ifdef COLLECTOR_VIC_TIPPER
+			collectorVicTipper->Set(0.0);
+#endif
+		}
+		collectorCount++;
+	} else
+	{
+		collectorVicTop->Set(0.0);
+		collectorVicLow->Set(-0.0);
+		collectorVicPickup->Set(0.0);
+#ifdef COLLECTOR_VIC_TIPPER
+		collectorVicTipper->Set(0.0);
+#endif
 	}
 }
-return cacheBallCount;
+
+void C1983Collector::requestShot()
+{
+	shooting = shooting || shooter->isStableReady();
 }
 
-bool C1983Collector::ballInSlot(int slot)
+void C1983Collector::requestCollect()
 {
-	return false;
+	collecting = true;
 }
 
-//Sees if the collector is feeding balls.
-bool C1983Collector::isFeeding()
+void C1983Collector::requestStop()
 {
-	//Makes sure the collector victors are equal to zero to see if the collector is feeding.
-	return collectorVicBottom->Get() != 0 || collectorVicTop->Get() != 0;
+	runInReverse = false;
+	collecting = collecting && automatic; //Only works in manual mode
 }
-*/
+
+void C1983Collector::requestReverse()
+{
+	runInReverse = true;
+}
+
+bool C1983Collector::isShooting()
+{
+	return shooting;
+}
+
+bool C1983Collector::isCollecting()
+{
+	return collecting;
+}
+
+bool C1983Collector::getSense(int height)
+{
+	switch (height)
+	{
+	case 0:
+		return LOWSLOT;
+		break;
+	case 1:
+		return MIDSLOT;
+		break;
+	case 2:
+		return TOPSLOT;
+		break;
+	}
+	return 0;
+}
+
+void C1983Collector::setAutomatic(bool bleh)
+{
+	automatic = bleh;
+}
+
+void C1983Collector::jankyGo()
+{
+#ifdef COLLECTOR_VIC_TIPPER
+	if(tipper->getState())
+	{
+		collectorVicTipper->Set(COLLECTOR_TIPPER_SPEED);
+	}else{
+		collectorVicTipper->Set(0.0);
+	}
+#endif
+	collectorVicPickup->Set(COLLECTOR_PICKUP_SPEED);
+	collectorVicLow->Set(-COLLECTOR_BELT_SPEED);
+	collectorVicTop->Set(COLLECTOR_BELT_SPEED);
+}
+
+void C1983Collector::jankyReverse()
+{
+#ifdef COLLECTOR_VIC_TIPPER
+	if(tipper->getState())
+	{
+		collectorVicTipper->Set(-COLLECTOR_TIPPER_SPEED);
+	}else{
+		collectorVicTipper->Set(0.0);
+	}
+#endif
+	collectorVicPickup->Set(-COLLECTOR_PICKUP_SPEED);
+	collectorVicLow->Set(COLLECTOR_BELT_SPEED);
+	collectorVicTop->Set(-COLLECTOR_BELT_SPEED);
+}
+
+void C1983Collector::jankyStop()
+{
+	collectorVicTipper->Set(0.0);
+	collectorVicPickup->Set(0.0);
+	collectorVicLow->Set(0.0);
+	collectorVicTop->Set(0.0);
+}
+
+void C1983Collector::clean()
+{
+	shooting = false;
+	collecting = false;
+	automatic = true;
+	runInReverse = false;
+	collectorCount = 0;
+	shooterCount = 0;
+}
+
+void C1983Collector::debugPrint()
+{
+	//if (automatic){
+	cout << "Collector Sensors: " << getSense(0) << " " << getSense(1) << " "
+			<< getSense(2) << "\t";
+	//}
+	//cout << "Automatic: " << automatic << "\tCollecting: " << collecting << "\tShooting: " << shooting << "\tReverse: " << runInReverse;
+}

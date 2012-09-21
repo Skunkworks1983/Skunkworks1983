@@ -4,49 +4,85 @@
  *  Created on: Jan 25, 2012
  *      Author: Westin
  */
-
 #include "C1983GlyphCamera.h"
-#include "1983Defines2012.h"
+#if TRACKING_CAMERA
+
 C1983GlyphCamera::C1983GlyphCamera()
 {
-	camera = &AxisCamera::GetInstance(GLYPH_CAMERA_IP);
-	image = new BinaryImage();
-	camBuffer = new RGBImage("C:\\Users\\Westin\\some.bmp");
+	currentBasketDepth = -1;
+	currentBasketYaw = -1;
+	basketDataUpdate = -1;
+
+	currentBallYaw = -1;
+	currentBallDepth = -1;
+	ballDataUpdate = -1;
+
+	currentCamera = kShooter;
+
+	server = new Server1180(C1983GlyphCamera::callProcessPacket, this, false);
 }
-void C1983GlyphCamera::doTracking()
+
+void C1983GlyphCamera::callProcessPacket(void *obj, char * data)
 {
-	if (camera->IsFreshImage())
+	((C1983GlyphCamera*)obj)->processPacket(data);
+}
+void C1983GlyphCamera::processPacket(char * data)
+{
+	double d1, d2;
+	unsigned int key;
+	sscanf(data, "%u,%lf,%lf", &key, &d1, &d2);
+	if (key == 0)
 	{
-		if (camera->GetImage(camBuffer)==1) //Fetch
-		{
-			Range range1 =
-			{ GLYPH_THRESH_R_L, GLYPH_THRESH_R_H };
-			Range range2 =
-			{ GLYPH_THRESH_G_L, GLYPH_THRESH_G_H };
-			Range range3 =
-			{ GLYPH_THRESH_B_L, GLYPH_THRESH_B_H };
-			int success = imaqColorThreshold(image->GetImaqImage(),
-					camBuffer->GetImaqImage(), 1, IMAQ_RGB, &range1, &range2,
-					&range3);
-			if (success==0)
-				return;
-			LineDescriptor * lineDescriptor = new LineDescriptor();
-			lineDescriptor->minLength =10;
-			lineDescriptor->maxLength = 250;
-			CurveOptions * curveOptions = new CurveOptions();
-			ShapeDetectionOptions * shapeDetect = new ShapeDetectionOptions();
-			int * numLines;
-			ROI* roi = imaqCreateROI();
-			imaqAddRectContour(roi, IMAQ_NO_RECT);
-			LineMatch * lines = imaqDetectLines(image->GetImaqImage(),
-					lineDescriptor, curveOptions, shapeDetect, roi, numLines);
-			int i;
-			for (i = 0; i<*numLines; i++)
-			{
-				printf("Start: %f,%f End: %f,%f\n", lines[i].startPoint.x,
-						lines[i].startPoint.y, lines[i].endPoint.x,
-						lines[i].endPoint.y);
-			}
-		}
+		currentBasketDepth = d1;
+		currentBasketYaw = d2;
+		basketDataUpdate = System::currentTimeMillis();
+	} else if (key == 1)
+	{
+		currentBallDepth = d1;
+		currentBallYaw = d2;
+		ballDataUpdate = System::currentTimeMillis();
+	} else
+	{
+		//cout << "Bad packet key: " << key << endl;
 	}
 }
+
+double C1983GlyphCamera::getCurrentBasketDepth()
+{
+	return currentBasketDepth;
+}
+double C1983GlyphCamera::getCurrentBasketYaw()
+{
+	return currentBasketYaw;
+}
+
+double C1983GlyphCamera::getBasketDataAge()
+{
+	return System::currentTimeMillis() - basketDataUpdate;
+}
+
+double C1983GlyphCamera::getCurrentBallDepth()
+{
+	return currentBasketDepth;
+}
+double C1983GlyphCamera::getCurrentBallYaw()
+{
+	return currentBasketYaw;
+}
+
+double C1983GlyphCamera::getBallDataAge()
+{
+	return System::currentTimeMillis() - ballDataUpdate;
+}
+
+void C1983GlyphCamera::sendCameraChange(Camera cam)
+{
+	if (server->Connected())
+	{
+		char * data = new char[2];
+		data[0] = cam;
+		data[1] = 0;
+		server->SendData(data);
+	}
+}
+#endif
