@@ -44,6 +44,7 @@ PPC603gnu
 PPC603diab
 PPC32gnu
 PPC32diab
+*.out
 
 # ucpp + sublime #
 ##################
