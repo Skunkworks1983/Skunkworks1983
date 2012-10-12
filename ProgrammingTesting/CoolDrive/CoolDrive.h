@@ -15,6 +15,7 @@ public:
 	void setSpeedLeft(float speed);
 	void setSpeedRight(float speed);
 	void tankDrive(Joystick *leftStick, Joystick *rightStick);
+	void arcadeDrive(Joystick *stick);
 };
 
 #endif
