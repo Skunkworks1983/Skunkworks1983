@@ -10,9 +10,10 @@
 RobotDemo::RobotDemo()
 // as they are declared above.
 {
-	driveBase = new CoolDrive(1, 2, 3, 4); // these must be initialized in the same order
-	leftStick = new Joystick(1);
-	rightStick = new Joystick(2);
+	driveBase = new CoolDrive(FRONT_LEFT_MOTOR, REAR_LEFT_MOTOR, FRONT_RIGHT_MOTOR, REAR_RIGHT_MOTOR);
+	// these must be initialized in the same order
+	leftStick = new Joystick(LEFT_JOYSTICK);
+	rightStick = new Joystick(RIGHT_JOYSTICK);
 }
 
 RobotDemo::~RobotDemo() {
@@ -32,6 +33,6 @@ void RobotDemo::Autonomous() {
  */
 void RobotDemo::OperatorControl() {
 	while (IsOperatorControl()) {
-		driveBase->tankDrive(leftStick, rightStick);
+		driveBase->arcadeDrive(leftStick);
 	}
 }
